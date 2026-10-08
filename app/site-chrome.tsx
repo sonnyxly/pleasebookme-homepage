@@ -3,7 +3,7 @@ import Mark from "./mark";
 import { CONTACT_EMAIL, CONTACT_HREF } from "./site";
 
 const NAV = [
-  { href: "/#how", label: "How it works" },
+  { href: "/#assistant", label: "Assistant" },
   { href: "/#in-use", label: "On your site" },
   { href: "/#dashboard", label: "Dashboard" },
   { href: "/#questions", label: "Questions" },
@@ -19,7 +19,7 @@ export function SiteHeader() {
         <Mark className="h-8 w-8 text-ink sm:h-9 sm:w-9" />
         <span className="wordmark text-[0.8125rem] sm:text-xl">pleasebookme</span>
       </Link>
-      <nav aria-label="Sections" className="hidden items-center gap-7 text-sm text-muted md:flex">
+      <nav aria-label="Sections" className="hidden items-center gap-7 text-sm text-muted lg:flex">
         {NAV.map((n) => (
           <Link key={n.href} href={n.href} className="hover:text-ink">
             {n.label}

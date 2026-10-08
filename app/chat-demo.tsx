@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { usePlayback } from "./use-playback";
 
 const CHAT: { from: "customer" | "shop"; text: string }[] = [
   { from: "customer", text: "Mai còn lịch không anh?" },
@@ -11,39 +11,9 @@ const CHAT: { from: "customer" | "shop"; text: string }[] = [
 ];
 
 // The chat plays out one message at a time when it scrolls into view. Layout is
-// reserved up front, so nothing jumps. Without JavaScript, or with reduced
-// motion, the container is never armed and every message is simply shown (see
-// .chat in globals.css).
+// reserved up front, so nothing jumps.
 export default function ChatDemo() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [shown, setShown] = useState(0);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    el.setAttribute("data-armed", "");
-    let timer: ReturnType<typeof setInterval> | undefined;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        io.disconnect();
-        let n = 0;
-        timer = setInterval(() => {
-          n += 1;
-          setShown(n);
-          if (n >= CHAT.length) clearInterval(timer);
-        }, 650);
-      },
-      { threshold: 0.5 },
-    );
-    io.observe(el);
-    return () => {
-      io.disconnect();
-      if (timer) clearInterval(timer);
-    };
-  }, []);
+  const { ref, shown } = usePlayback(CHAT.length);
 
   return (
     <div ref={ref} className="chat">

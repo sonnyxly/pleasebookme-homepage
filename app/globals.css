@@ -264,6 +264,60 @@ body {
   animation: count-after 12s ease-in-out infinite;
 }
 
+/* Menu photo to services: a scan line sweeps the photo, then the draft rows
+   appear one by one. One 10s loop. */
+@keyframes scan {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  50% {
+    top: calc(100% - 3px);
+    opacity: 1;
+  }
+  58%,
+  100% {
+    top: calc(100% - 3px);
+    opacity: 0;
+  }
+}
+
+.scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  background: var(--highlight);
+  box-shadow: 0 0 18px 4px rgb(200 223 242 / 0.55);
+  animation: scan 10s ease-in-out infinite;
+}
+
+@keyframes row-in {
+  0%,
+  4% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  12%,
+  90% {
+    opacity: 1;
+    transform: none;
+  }
+  97%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.row-in {
+  animation: row-in 10s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 1.4s + 0.4s);
+}
+
 /* Questions */
 .faq summary {
   list-style: none;
@@ -495,11 +549,15 @@ body {
   .pop,
   .float,
   .arrive,
+  .row-in,
   .count-before,
   .count-after,
   .field-cell,
   .flow path {
     animation: none;
+  }
+  .scan {
+    display: none;
   }
   /* Reduced motion: show the dashboard with the sixth booking in place. */
   .count-before {

@@ -55,7 +55,7 @@ export function DashboardMock({ className = "" }: { className?: string }) {
     <div
       role="img"
       aria-label="Sample dashboard: a day schedule with five bookings of different lengths, and a sixth booking arriving."
-      className={`overflow-hidden rounded-2xl border border-line bg-surface shadow-[0_30px_70px_-35px_rgba(26,26,26,0.5)] ${className}`}
+      className={`overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_30px_70px_-35px_rgba(26,26,26,0.5)] ${className}`}
     >
       <div aria-hidden>
         <div className="flex items-center gap-2 border-b border-line px-4 py-3">
@@ -217,6 +217,104 @@ export function PhoneMock({ className = "" }: { className?: string }) {
 
           <span className="mt-3 block rounded-lg bg-ink py-2.5 text-center text-xs font-semibold text-paper">
             Confirm Tomorrow, 16:00
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const MENU = [
+  { vi: "Cắt tóc", en: "Haircut", board: "80k", price: "80,000₫", len: "30 min" },
+  { vi: "Cắt + cạo râu", en: "Haircut and beard", board: "110k", price: "110,000₫", len: "45 min" },
+  { vi: "Cạo mặt", en: "Shave", board: "40k", price: "40,000₫", len: null },
+];
+
+// A menu board photo on the left, and the draft list of services it becomes on
+// the right. The last row has no length on purpose: a menu names services and
+// prices, so the owner sets how long each one takes and checks every line.
+export function MenuMock({ className = "" }: { className?: string }) {
+  return (
+    <div
+      role="img"
+      aria-label="Sample: a photo of a printed menu on the left becomes a draft list of services on the right. The owner checks each line and sets any missing length."
+      className={`grid items-center gap-8 md:grid-cols-[1fr_auto_1.15fr] ${className}`}
+    >
+      <div aria-hidden className="relative mx-auto w-full max-w-[19rem] px-3 py-3">
+        <span className="absolute left-0 top-0 h-6 w-6 rounded-tl-lg border-l-2 border-t-2 border-ink" />
+        <span className="absolute right-0 top-0 h-6 w-6 rounded-tr-lg border-r-2 border-t-2 border-ink" />
+        <span className="absolute bottom-0 left-0 h-6 w-6 rounded-bl-lg border-b-2 border-l-2 border-ink" />
+        <span className="absolute bottom-0 right-0 h-6 w-6 rounded-br-lg border-b-2 border-r-2 border-ink" />
+        <div className="relative -rotate-2 overflow-hidden rounded-lg bg-soft-black p-6 text-titanium ring-1 ring-line shadow-[0_24px_50px_-28px_rgba(26,26,26,0.7)]">
+          <p lang="vi" className="display text-2xl">
+            Bảng giá
+          </p>
+          <ul lang="vi" className="mt-5 grid gap-3.5">
+            {MENU.map((m) => (
+              <li key={m.vi} className="flex items-baseline gap-2">
+                <span>{m.vi}</span>
+                <span className="flex-1 border-b border-dotted border-titanium/40" />
+                <span className="tabular-nums">{m.board}</span>
+              </li>
+            ))}
+          </ul>
+          <span className="scan" />
+        </div>
+      </div>
+
+      <svg
+        aria-hidden
+        viewBox="0 0 24 24"
+        className="mx-auto h-8 w-8 rotate-90 text-muted md:rotate-0"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M4 12h15M13 6l6 6-6 6" />
+      </svg>
+
+      <div
+        aria-hidden
+        className="overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_30px_70px_-40px_rgba(26,26,26,0.5)]"
+      >
+        <div className="flex items-center gap-3 border-b border-line px-5 py-3.5">
+          <span className="text-sm font-semibold">Your services</span>
+          <span className="ml-auto rounded-full border border-line px-2.5 py-0.5 text-xs text-muted">
+            Draft
+          </span>
+        </div>
+        <ul className="grid gap-2.5 p-4">
+          {MENU.map((m, i) => (
+            <li
+              key={m.vi}
+              className="row-in flex items-center gap-3 rounded-lg border border-line px-3.5 py-3 text-sm"
+              style={{ ["--i" as string]: i }}
+            >
+              <span className="min-w-0">
+                <span lang="vi" className="font-semibold">
+                  {m.vi}
+                </span>
+                <span className="block text-xs text-muted">{m.en}</span>
+              </span>
+              <span className="ml-auto tabular-nums">{m.price}</span>
+              <span
+                className={`rounded-md px-2 py-1 text-xs tabular-nums ${
+                  m.len
+                    ? "bg-highlight text-highlight-ink"
+                    : "border border-dashed border-ink text-ink"
+                }`}
+              >
+                {m.len ?? "Set length"}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <div className="flex items-center gap-3 border-t border-line px-5 py-3.5 text-xs text-muted">
+          <span>3 services read. Check each line before it goes live.</span>
+          <span className="ml-auto whitespace-nowrap rounded-md bg-ink px-3 py-1.5 font-semibold text-paper opacity-40">
+            Publish
           </span>
         </div>
       </div>

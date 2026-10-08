@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "app/mockups.tsx"
+        ],
+        "createdAt": "2026-10-08T17:45:02.592Z",
+        "reason": "assistant decision, no user confirmation: four decorative camera-viewfinder corner brackets framing the sample menu photo in MenuMock (neutral ink, not a card accent stripe)"
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "app/mockups.tsx"
+        ],
+        "createdAt": "2026-10-08T17:45:03.536Z",
+        "reason": "assistant decision, no user confirmation: same viewfinder brackets; the corner radius matches each bracket's own L shape, not a rounded card"
+      }
+    ]
+  }
+}

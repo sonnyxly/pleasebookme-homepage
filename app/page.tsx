@@ -1,7 +1,8 @@
+import AssistantDemo from "./assistant-demo";
 import BookingDemo from "./booking-demo";
 import ChatDemo from "./chat-demo";
 import Field from "./field";
-import { DashboardMock, PhoneMock } from "./mockups";
+import { DashboardMock, MenuMock, PhoneMock } from "./mockups";
 import Reveal from "./reveal";
 import { SiteFooter, SiteHeader } from "./site-chrome";
 import { CONTACT_EMAIL, CONTACT_HREF } from "./site";
@@ -14,11 +15,11 @@ import { CONTACT_EMAIL, CONTACT_HREF } from "./site";
 const STEPS = [
   {
     title: "Set up your shop",
-    body: "Add your services, how long each one takes, and your opening hours. The first time, we do it with you.",
+    body: "Add your services, how long each takes and your opening hours, or photograph your menu and check our draft. The first time, we do it with you.",
   },
   {
     title: "Customers pick a time",
-    body: "They choose a service and a free slot. Taken slots are already crossed out.",
+    body: "They choose a service and a free slot, or just ask the assistant. Taken slots are already crossed out.",
   },
   {
     title: "You see your day",
@@ -38,6 +39,14 @@ const QUESTIONS = [
   {
     q: "What do I need to start?",
     a: "Your list of services, how long each one takes, and your opening hours. That is the whole setup, and we do it with you the first time.",
+  },
+  {
+    q: "Does the assistant make mistakes?",
+    a: "It can, which is why it never guesses. It checks your real availability through our booking system before it offers a time, and a booking only counts once the system confirms it. Everything it books shows up on your schedule.",
+  },
+  {
+    q: "Will it read my menu photo correctly?",
+    a: "Often, but not always: handwriting and small print are hard. That is why you check every line, and set how long each service takes, before anything goes live.",
   },
   {
     q: "Who sees my customers' details?",
@@ -115,7 +124,7 @@ export default function Home() {
             >
               pleasebookme is a booking widget for barbershops, PMU studios and
               other small shops in Vietnam. A customer picks a service and a
-              free time. The slot holds, you see your day, and you stop
+              free time, or just asks. The slot holds, you see your day, and you stop
               answering the same questions in chat.
             </p>
             <div
@@ -155,7 +164,58 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="whole" className="mx-auto w-full max-w-6xl scroll-mt-4 px-5 py-20 sm:px-8">
+                <section id="assistant" className="scroll-mt-4">
+          <div className="mx-auto grid w-full max-w-6xl gap-14 px-5 py-24 sm:px-8 lg:grid-cols-2 lg:items-center">
+            <Reveal>
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="text-sm font-semibold text-accent">Customer assistant</p>
+                <span className="rounded-full border border-line px-2.5 py-0.5 text-xs text-muted">
+                  In development
+                </span>
+              </div>
+              <h2 className="display mt-3 max-w-xl text-4xl sm:text-5xl">
+                Customers can just ask.
+              </h2>
+              <p className="mt-5 max-w-[32rem] text-lg leading-relaxed text-muted">
+                Most customers already book by chatting. The pleasebookme
+                assistant takes that chat. It reads the question in Vietnamese,
+                checks your real availability, holds the slot and books it, so
+                you are not the one typing.
+              </p>
+              <ul className="mt-8 grid max-w-[32rem] gap-4">
+                <li className="border-t border-line pt-4">
+                  <span className="font-semibold">It never guesses.</span>{" "}
+                  <span className="text-muted">
+                    Every time it offers comes from your real schedule, through
+                    our booking system.
+                  </span>
+                </li>
+                <li className="border-t border-line pt-4">
+                  <span className="font-semibold">It says what it is.</span>{" "}
+                  <span className="text-muted">
+                    Customers always know they are talking to an assistant.
+                  </span>
+                </li>
+                <li className="border-t border-line pt-4">
+                  <span className="font-semibold">You see every booking.</span>{" "}
+                  <span className="text-muted">
+                    What it books appears on your schedule like any other.
+                  </span>
+                </li>
+              </ul>
+            </Reveal>
+            <Reveal delay={120}>
+              <AssistantDemo />
+              <p className="mt-5 text-sm text-muted">
+                Sample conversation. The assistant is in development, and this
+                is how we are building it to work.
+              </p>
+            </Reveal>
+          </div>
+        </section>
+
+        <section id="whole" className="scroll-mt-4 border-y border-line bg-surface">
+          <div className="mx-auto w-full max-w-6xl px-5 py-20 sm:px-8">
           <Reveal>
             <h2 className="display max-w-3xl text-4xl sm:text-5xl">
               Whole from the first tap.
@@ -182,11 +242,12 @@ export default function Home() {
               </Reveal>
             ))}
           </div>
+          </div>
         </section>
 
         <section
           id="in-use"
-          className="relative scroll-mt-4 overflow-hidden border-y border-line bg-surface"
+          className="relative scroll-mt-4 overflow-hidden"
         >
           <Field lines={5} />
           <div className="relative mx-auto grid w-full max-w-6xl gap-14 px-5 py-24 sm:px-8 lg:grid-cols-2 lg:items-center">
@@ -231,7 +292,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="dashboard" className="scroll-mt-4">
+        <section id="dashboard" className="scroll-mt-4 border-y border-line bg-surface">
           <div className="mx-auto w-full max-w-6xl px-5 py-24 sm:px-8">
             <Reveal>
               <p className="text-sm font-semibold text-accent">For the owner</p>
@@ -250,6 +311,35 @@ export default function Home() {
               <p className="mt-5 text-sm text-muted">
                 Sample data. An illustration of the dashboard while we finish
                 building it.
+              </p>
+            </Reveal>
+          </div>
+        </section>
+
+                <section id="menu" className="scroll-mt-4">
+          <div className="mx-auto w-full max-w-6xl px-5 py-24 sm:px-8">
+            <Reveal>
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="text-sm font-semibold text-accent">Setting up</p>
+                <span className="rounded-full border border-line px-2.5 py-0.5 text-xs text-muted">
+                  In development
+                </span>
+              </div>
+              <h2 className="display mt-3 max-w-3xl text-4xl sm:text-5xl">
+                Photograph your menu. We draft your services.
+              </h2>
+              <p className="mt-5 max-w-[40rem] text-lg leading-relaxed text-muted">
+                Setting up should not mean typing out a price list. Take a photo
+                of the menu you already have, and pleasebookme reads the names
+                and prices into a draft list of services. You check every line
+                and set how long each one takes. Nothing goes live until you say
+                so.
+              </p>
+            </Reveal>
+            <Reveal delay={120} className="mt-14">
+              <MenuMock />
+              <p className="mt-6 text-sm text-muted">
+                Sample menu and prices. Reading menu photos is in development.
               </p>
             </Reveal>
           </div>

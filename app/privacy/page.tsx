@@ -14,7 +14,10 @@ export const metadata: Metadata = {
   - the 2 working day acknowledgement in section 9;
   - the named providers once hosting and messaging are decided (currently generic);
   - who "we" is once the household business (HKD) is registered;
-  - that the Vietnamese version is published and kept in step.
+  - that the Vietnamese version is published and kept in step;
+  - the AI section (7): that the chosen AI providers really do not train on our data,
+    where they process it, and how long assistant chats are kept;
+  - the Vietnamese rules on AI and on automated processing, which were not checked.
   Legal references: Law on Personal Data Protection No. 91/2025/QH15 and
   Decree 356/2025/ND-CP, both in force from 1 January 2026.
 */
@@ -49,13 +52,17 @@ export default function Privacy() {
           For shop owners, we process the data needed to run your account.
         </li>
         <li>
+          Our booking assistant and menu reader are AI features in development.
+          They work through our booking system, and section 7 explains them.
+        </li>
+        <li>
           For customers who book through a shop, the shop decides what is
           collected and why. We process it on the shop&apos;s behalf, to deliver
           the booking.
         </li>
         <li>
           You can ask to see, correct or delete your data at any time. See
-          section 9.
+          section 10.
         </li>
       </ul>
 
@@ -111,6 +118,17 @@ export default function Privacy() {
             </td>
           </tr>
           <tr>
+            <td>Customers who use the booking assistant</td>
+            <td>
+              What you type, the assistant&apos;s replies, and the booking that
+              results. Please do not share sensitive details in the chat.
+            </td>
+          </tr>
+          <tr>
+            <td>Shop owners who upload a menu photo</td>
+            <td>The photo, and the list of services read from it.</td>
+          </tr>
+          <tr>
             <td>Customers who book</td>
             <td>
               The details the shop asks for, usually your name and phone number
@@ -135,13 +153,18 @@ export default function Privacy() {
           bookings, and to keep shop schedules correct.
         </li>
         <li>
+          <strong>To run the AI features:</strong> to understand a
+          customer&apos;s message and reply, to check availability and make the
+          booking, and to read a menu photo into a draft list of services.
+        </li>
+        <li>
           <strong>To send booking messages:</strong> confirmations and reminders,
           when a shop turns them on. These go through a messaging provider such
           as Zalo, SMS or email, and carry only what the message needs.
         </li>
         <li>
-          <strong>To keep the service safe:</strong> to prevent abuse, find
-          faults and fix them.
+          <strong>To keep the service safe and improve it:</strong> to prevent
+          abuse, find faults, fix them, and see how pleasebookme is used.
         </li>
         <li>
           <strong>To answer you:</strong> when you write to us.
@@ -167,7 +190,8 @@ export default function Privacy() {
         </li>
         <li>
           <strong>Service providers</strong> that help us run pleasebookme:
-          cloud hosting, security, email and the messaging channels above. They
+          cloud hosting, security, email, the messaging channels above and the
+          AI services in section 7. They
           may only use the data to provide their service to us.
         </li>
         <li>
@@ -180,12 +204,52 @@ export default function Privacy() {
         do not sell personal data.
       </p>
 
-      <h2>7. How long we keep it</h2>
+      <h2>7. AI features</h2>
+      <p>
+        pleasebookme is building AI features. They are in development and may
+        change.
+      </p>
+      <ul>
+        <li>
+          <strong>The booking assistant.</strong> Customers can chat with an
+          assistant to ask about times and book. It works through our booking
+          system: it checks the shop&apos;s real availability, holds a slot and
+          creates the booking. Customers are told they are talking to an
+          automated assistant. What you type to it, and its replies, are
+          processed by an AI service provider so that it can answer, and are
+          kept with the booking.
+        </li>
+        <li>
+          <strong>Menu photos.</strong> A shop owner can upload a photo of a
+          menu or price list. An AI service provider reads it and drafts a list
+          of services, and the owner checks the draft before it is used. Please
+          upload only the menu, not photos of people.
+        </li>
+        <li>
+          <strong>Understanding how pleasebookme is used.</strong> We use AI
+          tools to look at how the service is used, so we can fix problems and
+          improve it. We do this mostly with combined or de-identified data.
+        </li>
+      </ul>
+      <p>
+        The assistant only helps people book. It does not decide anything about
+        a person beyond offering and confirming a booking. We choose AI
+        providers whose terms do not allow them to train their models on the
+        data we send them. Those providers may process data on servers outside
+        Vietnam, so section 6 applies to them. Please do not tell the assistant
+        sensitive details, such as health information.
+      </p>
+
+      <h2>8. How long we keep it</h2>
       <ul>
         <li>
           Shop accounts and booking records: while the shop&apos;s account is open.
           After it closes, we delete or anonymise them within 30 days, unless
           the law requires us to keep something longer.
+        </li>
+        <li>
+          Chats with the assistant: with the booking they belong to, so for as
+          long as the shop&apos;s account is open.
         </li>
         <li>
           Emails to us: for as long as we need to deal with your message, and up
@@ -197,7 +261,7 @@ export default function Privacy() {
         </li>
       </ul>
 
-      <h2>8. How we protect it</h2>
+      <h2>9. How we protect it</h2>
       <p>
         The site and the service are served over HTTPS only. Access to personal
         data is limited to the people who need it to run pleasebookme. No system
@@ -205,7 +269,7 @@ export default function Privacy() {
         the affected shops and the authorities as the law requires.
       </p>
 
-      <h2>9. Your rights</h2>
+      <h2>10. Your rights</h2>
       <p>Under Vietnamese law you can ask us to:</p>
       <ul>
         <li>tell you what we do with your personal data;</li>
@@ -223,7 +287,7 @@ export default function Privacy() {
         person the data is about.
       </p>
 
-      <h2>10. Children</h2>
+      <h2>11. Children</h2>
       <p>
         pleasebookme is built for businesses and their customers, not for
         children. A booking for a child, such as a haircut, should be made by a
@@ -232,13 +296,13 @@ export default function Privacy() {
         own purposes. If you think we have, write to us and we will delete it.
       </p>
 
-      <h2>11. Cookies</h2>
+      <h2>12. Cookies</h2>
       <p>
         This website does not set cookies. If that changes, we will update this
         page and ask first where the law requires it.
       </p>
 
-      <h2>12. Changes to this policy</h2>
+      <h2>13. Changes to this policy</h2>
       <p>
         We will update this page when something changes and show the date at the
         top. For material changes, we will also tell shop owners by email. A
@@ -246,7 +310,7 @@ export default function Privacy() {
         prevails if the two differ.
       </p>
 
-      <h2>13. Contact</h2>
+      <h2>14. Contact</h2>
       <p>
         Questions, requests or complaints:{" "}
         <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.

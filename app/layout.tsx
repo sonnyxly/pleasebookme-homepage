@@ -27,7 +27,7 @@ const beVietnam = Be_Vietnam_Pro({
 export const metadata: Metadata = {
   title: "pleasebookme: booking for barbershops and PMU studios",
   description:
-    "Booking for barbershops, PMU studios and small shops in Vietnam. Customers pick a service and a free time. The slot holds, and you see your day.",
+    "Booking for barbershops, PMU studios and small shops in Vietnam. Customers pick a time or just ask. The slot holds, and you see your day.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

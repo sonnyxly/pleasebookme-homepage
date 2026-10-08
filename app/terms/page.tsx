@@ -16,7 +16,8 @@ export const metadata: Metadata = {
   - the liability cap wording against Vietnamese commercial and civil law (section 13);
   - the courts of Hanoi as the forum (section 15);
   - who "we" is once the household business (HKD) is registered;
-  - that the Vietnamese version is published and kept in step.
+  - that the Vietnamese version is published and kept in step;
+  - the AI clauses (section 7) against Vietnamese rules on AI, which were not checked.
 */
 
 export default function Terms() {
@@ -124,15 +125,54 @@ export default function Terms() {
         </li>
       </ul>
 
-      <h2>7. Your content and your data</h2>
+      <h2>7. AI features</h2>
+      <p>
+        pleasebookme includes AI features: an assistant that helps your
+        customers ask about times and book, and a tool that reads a photo of
+        your menu into a draft list of services. They are in development and may
+        change or be removed.
+      </p>
+      <ul>
+        <li>
+          <strong>Check the drafts.</strong> A list of services read from a
+          photo is only a draft. You must check the names, prices and lengths
+          before you publish it, and you are responsible for what you publish.
+        </li>
+        <li>
+          <strong>The assistant can be wrong.</strong> It works through our
+          booking system, which is the record of what is booked, but AI can
+          misunderstand a message. Look at your schedule, and tell your customer
+          if a booking is not right.
+        </li>
+        <li>
+          <strong>Tell your customers.</strong> The assistant says that it is an
+          automated assistant. Do not present it as a person.
+        </li>
+        <li>
+          <strong>What you upload.</strong> Upload only menus and price lists
+          you have the right to use, not photos of people or their personal
+          details.
+        </li>
+        <li>
+          <strong>Use it properly.</strong> Do not try to make the assistant do
+          anything other than help people book.
+        </li>
+      </ul>
+      <p>
+        We use third-party AI providers to run these features, and the{" "}
+        <Link href="/privacy">Privacy Policy</Link> explains how data is handled.
+        We do not promise that AI output is free of errors.
+      </p>
+
+      <h2>8. Your content and your data</h2>
       <p>
         What you put into pleasebookme, such as your services, hours and
         bookings, stays yours. You give us permission to store it, show it and
         process it, only so that we can run the service for you. When you leave,
-        you can ask for a copy of your data (see section 12).
+        you can ask for a copy of your data (see section 13).
       </p>
 
-      <h2>8. Our property</h2>
+      <h2>9. Our property</h2>
       <p>
         pleasebookme, its software, its name, its logo and its design belong to
         us. These terms give you the right to use the service as it is offered.
@@ -140,14 +180,14 @@ export default function Terms() {
         open-source software and fonts, which stay under their own licences.
       </p>
 
-      <h2>9. Other services</h2>
+      <h2>10. Other services</h2>
       <p>
         pleasebookme relies on other services, for example hosting and messaging
-        providers such as Zalo. We do not control them. If one of them changes
+        providers such as Zalo, and the AI services we use. We do not control them. If one of them changes
         or goes down, parts of pleasebookme may be affected.
       </p>
 
-      <h2>10. Availability</h2>
+      <h2>11. Availability</h2>
       <p>
         We work to keep pleasebookme running and your bookings safe, but we
         cannot promise it will always be available or free of errors, and
@@ -155,7 +195,7 @@ export default function Terms() {
         suggest you also keep your own note of it until you trust the service.
       </p>
 
-      <h2>11. Suspending or ending your access</h2>
+      <h2>12. Suspending or ending your access</h2>
       <p>
         You can stop using pleasebookme and close your account at any time by
         emailing <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. We
@@ -164,14 +204,14 @@ export default function Terms() {
         reasonably can, we will warn you first and explain why.
       </p>
 
-      <h2>12. When you leave</h2>
+      <h2>13. When you leave</h2>
       <p>
         After you close your account, you can ask us for a copy of your data for
         30 days. After that, we delete or anonymise it as the{" "}
         <Link href="/privacy">Privacy Policy</Link> describes.
       </p>
 
-      <h2>13. Limits on our liability</h2>
+      <h2>14. Limits on our liability</h2>
       <p>
         To the extent the law allows, we are not liable for indirect or
         consequential loss, for lost profit, or for appointments that are missed
@@ -187,7 +227,7 @@ export default function Terms() {
         protection law.
       </p>
 
-      <h2>14. Changes to these terms</h2>
+      <h2>15. Changes to these terms</h2>
       <p>
         We may update these terms as pleasebookme grows. For material changes
         we will email you at least 14 days before they apply. If you do not
@@ -195,7 +235,7 @@ export default function Terms() {
         after that date means you accept the new terms.
       </p>
 
-      <h2>15. Law and disputes</h2>
+      <h2>16. Law and disputes</h2>
       <p>
         These terms are governed by the laws of Vietnam. If we disagree, we will
         first try to settle it by talking. If that does not work, the competent
@@ -203,7 +243,7 @@ export default function Terms() {
         planned. When it is published, it prevails if the two differ.
       </p>
 
-      <h2>16. Contact</h2>
+      <h2>17. Contact</h2>
       <p>
         Questions about these terms:{" "}
         <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
