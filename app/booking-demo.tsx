@@ -44,24 +44,27 @@ export default function BookingDemo() {
   const chip =
     "rounded-lg border px-3.5 py-2 text-sm font-medium transition-colors";
   const chipOff = "border-line text-ink hover:border-ink";
-  const chipOn = "border-accent bg-accent text-accent-ink";
+  const chipOn = "pop border-accent bg-accent text-accent-ink";
 
   return (
-    <div className="rounded-2xl border border-line bg-surface p-5 shadow-[0_24px_60px_-30px_rgba(16,28,46,0.45)] sm:p-7">
-      <div className="mb-6 flex items-baseline justify-between gap-3">
-        <p className="text-lg font-semibold">Book a visit</p>
+    <div className="rounded-2xl border border-line bg-surface p-5 shadow-[0_24px_60px_-30px_rgba(26,26,26,0.45)] sm:p-7">
+      <div className="mb-6 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <p className="whitespace-nowrap text-lg font-semibold">Book a visit</p>
         <p className="text-sm text-muted">Sample barbershop, live demo</p>
       </div>
 
       {done ? (
         <div className="settle py-6" role="status">
-          <p className="text-sm text-muted">Booked</p>
-          <p className="display mt-1 text-4xl font-semibold">
+          <p className="text-sm font-semibold text-confirm">Booked</p>
+          <p className="display mt-1 text-4xl">
             {day}, {time}
           </p>
           <p className="mt-2 text-muted">
             {chosen.name}, {chosen.minutes} min. The slot is now held for this
             customer and gone from everyone else&apos;s list.
+          </p>
+          <p className="mt-2 text-sm text-muted">
+            This is a demo. Nothing was sent.
           </p>
           <button
             type="button"

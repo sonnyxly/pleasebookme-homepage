@@ -1,23 +1,41 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque } from "next/font/google";
+import { Be_Vietnam_Pro } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
+// Display and headlines: Libron (SIL OFL, see app/fonts/NOTICE.txt). Full
+// Vietnamese coverage, checked glyph by glyph. Text and UI: Be Vietnam Pro, a
+// static font, so only the two weights the type system uses are loaded.
+const libron = localFont({
+  src: [
+    { path: "./fonts/Libron-Regular.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/Libron-Italic.woff2", weight: "400", style: "italic" },
+    { path: "./fonts/Libron-Bold.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-libron",
+  display: "swap",
+  fallback: ["Georgia", "Times New Roman", "serif"],
+});
+
+const beVietnam = Be_Vietnam_Pro({
+  variable: "--font-be-vietnam",
   subsets: ["latin", "vietnamese"],
-  axes: ["opsz", "wdth"],
+  weight: ["400", "600"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "pleasebookme: online booking for small shops",
+  title: "pleasebookme: booking for barbershops and PMU studios",
   description:
-    "A booking widget for barbershops, PMU studios and other small appointment-based shops in Vietnam. Customers pick a time. You see your day.",
+    "Booking for barbershops, PMU studios and small shops in Vietnam. Customers pick a service and a free time. The slot holds, and you see your day.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${bricolage.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      className={`${libron.variable} ${beVietnam.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
