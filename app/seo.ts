@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 
-// Canonical origin. pleasebookme.app is the registered domain; the apex (no www)
-// is assumed to be the canonical host. Change it here if that is not the case.
-export const SITE_URL = "https://pleasebookme.app";
+// Canonical origin. The Vercel project redirects the apex (pleasebookme.app) to
+// www with a 308, so www is the host that serves pages. Canonical URLs, the
+// sitemap and structured data must name the host that answers 200, never one
+// that redirects. If the primary domain is switched to the apex in Vercel,
+// change this to match.
+export const SITE_URL = "https://www.pleasebookme.app";
 export const SITE_NAME = "pleasebookme";
 
 export const HOME_TITLE = "pleasebookme: booking for barbershops and PMU studios";
