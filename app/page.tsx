@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import AssistantDemo from "./assistant-demo";
 import BookingDemo from "./booking-demo";
 import ChatDemo from "./chat-demo";
@@ -6,6 +7,45 @@ import { DashboardMock, MenuMock, PhoneMock } from "./mockups";
 import Reveal from "./reveal";
 import { SiteFooter, SiteHeader } from "./site-chrome";
 import { CONTACT_EMAIL, CONTACT_HREF } from "./site";
+import { HOME_DESCRIPTION, HOME_TITLE, SITE_NAME, SITE_URL, pageMetadata } from "./seo";
+
+export const metadata: Metadata = pageMetadata({
+  title: HOME_TITLE,
+  description: HOME_DESCRIPTION,
+  path: "/",
+  absoluteTitle: true,
+});
+
+// Structured data for search engines. Deliberately small: who we are, the site,
+// and how to reach us. No ratings, reviews, prices or app listing, because there
+// are none to claim yet.
+const STRUCTURED_DATA = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: SITE_NAME,
+      url: `${SITE_URL}/`,
+      description: HOME_DESCRIPTION,
+      areaServed: "VN",
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: CONTACT_EMAIL,
+        availableLanguage: ["en", "vi"],
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      name: SITE_NAME,
+      url: `${SITE_URL}/`,
+      inLanguage: "en",
+      publisher: { "@id": `${SITE_URL}/#organization` },
+    },
+  ],
+};
 
 // Copy follows the brand brief: plain, calm, specific, "we" and "you". Two
 // customer words stay Vietnamese on purpose: chắc chắn (the slot holds) and
@@ -89,6 +129,12 @@ function CtaLink({
 export default function Home() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(STRUCTURED_DATA).replace(/</g, "\u003c"),
+        }}
+      />
       <div data-spot className="relative">
         <Field
           spotlight

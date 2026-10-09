@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import LegalShell from "../legal-shell";
 import { CONTACT_EMAIL } from "../site";
+import { pageMetadata } from "../seo";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy | pleasebookme",
+export const metadata: Metadata = pageMetadata({
+  title: "Privacy Policy",
   description:
     "What pleasebookme collects, why, who sees it, how long we keep it, and how to use your rights.",
-};
+  path: "/privacy",
+});
 
 /*
   DRAFT BASELINE. Not reviewed by a Vietnamese lawyer. Before launch, confirm:

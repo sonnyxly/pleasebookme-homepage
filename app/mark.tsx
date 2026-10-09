@@ -4,9 +4,9 @@ import { useId } from "react";
 // top-left corner, a window, and a folded bottom-right corner. The tile follows
 // the text colour, the fold uses the brand red. Full-detail artwork lives in
 // public/brand/pleasebookme-mark.svg.
-const TILE =
+export const TILE =
   "M281.25 18.75 A64 64 0 0 1 326.51 0 L864 0 A36 36 0 0 1 900 36 L900 573.49 A64 64 0 0 1 881.25 618.75 L618.75 881.25 A64 64 0 0 1 573.49 900 L36 900 A36 36 0 0 1 0 864 L0 326.51 A64 64 0 0 1 18.75 281.25 Z";
-const WINDOW =
+export const WINDOW =
   "M342 312 H534 A30 30 0 0 1 564 342 V534 A30 30 0 0 1 534 564 H342 A30 30 0 0 1 312 534 V342 A30 30 0 0 1 342 312 Z";
 
 // The mark as a repeating pattern: two marks per tile, diagonal, each sitting

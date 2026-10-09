@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
+import { HOME_DESCRIPTION, HOME_TITLE, SITE_NAME, SITE_URL } from "./seo";
 
 // Display and headlines: Libron (SIL OFL, see app/fonts/NOTICE.txt). Full
 // Vietnamese coverage, checked glyph by glyph. Text and UI: Be Vietnam Pro, a
@@ -25,9 +26,19 @@ const beVietnam = Be_Vietnam_Pro({
 });
 
 export const metadata: Metadata = {
-  title: "pleasebookme: booking for barbershops and PMU studios",
-  description:
-    "Booking for barbershops, PMU studios and small shops in Vietnam. Customers pick a time or just ask. The slot holds, and you see your day.",
+  metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
+  title: { default: HOME_TITLE, template: `%s | ${SITE_NAME}` },
+  description: HOME_DESCRIPTION,
+  robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f7f7f7" },
+    { media: "(prefers-color-scheme: dark)", color: "#1a1a1a" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

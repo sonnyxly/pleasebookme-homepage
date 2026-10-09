@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import LegalShell from "../legal-shell";
 import { CONTACT_EMAIL } from "../site";
+import { pageMetadata } from "../seo";
 
-export const metadata: Metadata = {
-  title: "Terms of Service | pleasebookme",
+export const metadata: Metadata = pageMetadata({
+  title: "Terms of Service",
   description:
     "The terms for using pleasebookme: what the service is, what we each owe the other, and how to leave.",
-};
+  path: "/terms",
+});
 
 /*
   DRAFT BASELINE. Not reviewed by a Vietnamese lawyer. Before launch, confirm:
