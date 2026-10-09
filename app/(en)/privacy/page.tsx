@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
-import LegalShell from "../legal-shell";
-import { CONTACT_EMAIL } from "../site";
-import { pageMetadata } from "../seo";
+import Link from "next/link";
+import LegalShell from "../../legal-shell";
+import { getDict } from "../../i18n";
+import { pageMetadata } from "../../seo";
+import { CONTACT_EMAIL } from "../../site";
+
+const d = getDict("en");
 
 export const metadata: Metadata = pageMetadata({
-  title: "Privacy Policy",
-  description:
-    "What pleasebookme collects, why, who sees it, how long we keep it, and how to use your rights.",
-  path: "/privacy",
+  locale: "en",
+  page: "privacy",
+  title: d.meta.privacyTitle,
+  description: d.meta.privacyDescription,
 });
 
 /*
@@ -16,7 +20,7 @@ export const metadata: Metadata = pageMetadata({
   - the 2 working day acknowledgement in section 9;
   - the named providers once hosting and messaging are decided (currently generic);
   - who "we" is once the household business (HKD) is registered;
-  - that the Vietnamese version is published and kept in step;
+  - that the Vietnamese version (app/vi/privacy) is kept in step with this one;
   - the AI section (7): that the chosen AI providers really do not train on our data,
     where they process it, and how long assistant chats are kept;
   - the Vietnamese rules on AI and on automated processing, which were not checked.
@@ -27,6 +31,8 @@ export const metadata: Metadata = pageMetadata({
 export default function Privacy() {
   return (
     <LegalShell
+      locale="en"
+      page="privacy"
       title="Privacy Policy"
       intro="What we collect, why, who sees it, how long we keep it, and how you can use your rights. We have tried to write it plainly."
     >
@@ -307,9 +313,12 @@ export default function Privacy() {
       <h2>13. Changes to this policy</h2>
       <p>
         We will update this page when something changes and show the date at the
-        top. For material changes, we will also tell shop owners by email. A
-        Vietnamese version of this policy is planned. When it is published, it
-        prevails if the two differ.
+        top. For material changes, we will also tell shop owners by email. A{" "}
+        <Link href="/vi/privacy" hrefLang="vi" lang="vi">
+          Vietnamese version
+        </Link>{" "}
+        of this policy is available. If the two differ, the Vietnamese version
+        prevails.
       </p>
 
       <h2>14. Contact</h2>

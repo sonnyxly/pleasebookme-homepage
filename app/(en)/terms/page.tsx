@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import LegalShell from "../legal-shell";
-import { CONTACT_EMAIL } from "../site";
-import { pageMetadata } from "../seo";
+import LegalShell from "../../legal-shell";
+import { getDict } from "../../i18n";
+import { pageMetadata } from "../../seo";
+import { CONTACT_EMAIL } from "../../site";
+
+const d = getDict("en");
 
 export const metadata: Metadata = pageMetadata({
-  title: "Terms of Service",
-  description:
-    "The terms for using pleasebookme: what the service is, what we each owe the other, and how to leave.",
-  path: "/terms",
+  locale: "en",
+  page: "terms",
+  title: d.meta.termsTitle,
+  description: d.meta.termsDescription,
 });
 
 /*
@@ -18,13 +21,15 @@ export const metadata: Metadata = pageMetadata({
   - the liability cap wording against Vietnamese commercial and civil law (section 13);
   - the courts of Hanoi as the forum (section 15);
   - who "we" is once the household business (HKD) is registered;
-  - that the Vietnamese version is published and kept in step;
+  - that the Vietnamese version (app/vi/terms) is kept in step with this one;
   - the AI clauses (section 7) against Vietnamese rules on AI, which were not checked.
 */
 
 export default function Terms() {
   return (
     <LegalShell
+      locale="en"
+      page="terms"
       title="Terms of Service"
       intro="These are the terms for using pleasebookme. They are short on purpose. If something here is unclear, ask us before you sign up."
     >
@@ -241,8 +246,12 @@ export default function Terms() {
       <p>
         These terms are governed by the laws of Vietnam. If we disagree, we will
         first try to settle it by talking. If that does not work, the competent
-        courts in Hanoi will decide. A Vietnamese version of these terms is
-        planned. When it is published, it prevails if the two differ.
+        courts in Hanoi will decide. A{" "}
+        <Link href="/vi/terms" hrefLang="vi" lang="vi">
+          Vietnamese version
+        </Link>{" "}
+        of these terms is available. If the two differ, the Vietnamese version
+        prevails.
       </p>
 
       <h2>17. Contact</h2>

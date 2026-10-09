@@ -1,7 +1,10 @@
 "use client";
 
+import type { Dict } from "./i18n";
 import { usePlayback } from "./use-playback";
 
+// The customer and shop talk in Vietnamese on both language versions: that is
+// the real conversation. Only the label and caption are translated.
 const CHAT: { from: "customer" | "shop"; text: string }[] = [
   { from: "customer", text: "Mai còn lịch không anh?" },
   { from: "shop", text: "Còn em, mấy giờ em?" },
@@ -12,13 +15,13 @@ const CHAT: { from: "customer" | "shop"; text: string }[] = [
 
 // The chat plays out one message at a time when it scrolls into view. Layout is
 // reserved up front, so nothing jumps.
-export default function ChatDemo() {
+export default function ChatDemo({ t }: { t: Dict["chat"] }) {
   const { ref, shown } = usePlayback(CHAT.length);
 
   return (
     <div ref={ref} className="chat">
       <ol
-        aria-label="Example chat that books one haircut"
+        aria-label={t.aria}
         className="flex flex-col gap-2.5 rounded-2xl bg-paper p-5 sm:p-7"
       >
         {CHAT.map((m, i) => (
@@ -40,7 +43,7 @@ export default function ChatDemo() {
         data-on={shown >= CHAT.length ? "" : undefined}
         className="chat-note mt-4 text-sm text-muted"
       >
-        Five messages for one haircut.
+        {t.caption}
       </p>
     </div>
   );

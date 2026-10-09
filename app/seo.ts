@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { getDict, otherLocale, pagePath, type Locale, type PageKey } from "./i18n";
 
 // Canonical origin. The Vercel project redirects the apex (pleasebookme.app) to
 // www with a 308, so www is the host that serves pages. Canonical URLs, the
@@ -8,32 +9,61 @@ import type { Metadata } from "next";
 export const SITE_URL = "https://www.pleasebookme.app";
 export const SITE_NAME = "pleasebookme";
 
-export const HOME_TITLE = "pleasebookme: booking for barbershops and PMU studios";
-export const HOME_DESCRIPTION =
-  "Booking for barbershops, PMU studios and small shops in Vietnam. Customers pick a time or just ask. The slot holds, and you see your day.";
+// Site-wide metadata for a language's root layout.
+export function baseMetadata(locale: Locale): Metadata {
+  const d = getDict(locale);
+  return {
+    metadataBase: new URL(SITE_URL),
+    applicationName: SITE_NAME,
+    title: { default: d.meta.homeTitle, template: `%s | ${SITE_NAME}` },
+    description: d.meta.homeDescription,
+    robots: { index: true, follow: true },
+  };
+}
+
+export const baseViewport: Viewport = {
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f7f7f7" },
+    { media: "(prefers-color-scheme: dark)", color: "#1a1a1a" },
+  ],
+};
 
 // Per-page metadata. A page that sets `openGraph` replaces the layout's whole
-// object, so each page spells out its own title, URL and card type here.
+// object, so each page spells out its own title, URL and card type here. Every
+// page names its twin in the other language (hreflang), and its own canonical.
 export function pageMetadata({
+  locale,
+  page,
   title,
   description,
-  path,
   absoluteTitle = false,
 }: {
+  locale: Locale;
+  page: PageKey;
   title: string;
   description: string;
-  path: string;
   absoluteTitle?: boolean;
 }): Metadata {
+  const d = getDict(locale);
   const full = absoluteTitle ? title : `${title} | ${SITE_NAME}`;
+  const path = pagePath(locale, page);
   return {
     title: absoluteTitle ? { absolute: title } : title,
     description,
-    alternates: { canonical: path },
+    alternates: {
+      canonical: path,
+      languages: {
+        en: pagePath("en", page),
+        vi: pagePath("vi", page),
+        "x-default": pagePath("en", page),
+      },
+    },
     openGraph: {
       type: "website",
       siteName: SITE_NAME,
-      locale: "en_US",
+      locale: d.ogLocale,
+      alternateLocale: [getDict(otherLocale(locale)).ogLocale],
       url: path,
       title: full,
       description,

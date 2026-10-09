@@ -1,12 +1,15 @@
 import { ImageResponse } from "next/og";
+import { getDict, type Locale } from "./i18n";
 import { TILE, WINDOW } from "./mark";
 
 // Share card for links on Zalo, Facebook, X and search previews (1200x630).
 // It uses the renderer's built-in sans, because it cannot read the site's web
 // fonts. Replace with a designed PNG (app/opengraph-image.png) when one exists.
 export const OG_SIZE = { width: 1200, height: 630 };
-export const OG_ALT =
-  "pleasebookme: if it says booked, it's booked. Booking for barbershops and PMU studios in Vietnam.";
+
+export function ogAlt(locale: Locale) {
+  return getDict(locale).og.alt;
+}
 
 const FOLD =
   "M600 600 H894 A64 64 0 0 1 881.25 618.75 L618.75 881.25 A64 64 0 0 1 600 894 Z";
@@ -15,7 +18,8 @@ function wave(y: number, amp: number) {
   return `M0 ${y} Q150 ${y - amp * 2} 300 ${y} T600 ${y} T900 ${y} T1200 ${y}`;
 }
 
-export function ogCard() {
+export function ogCard(locale: Locale) {
+  const og = getDict(locale).og;
   return new ImageResponse(
     (
       <div
@@ -40,9 +44,9 @@ export function ogCard() {
           viewBox="0 0 1200 630"
           style={{ position: "absolute", left: 0, top: 0 }}
         >
-          <path d={wave(430, 22)} fill="none" stroke="#C8DFF2" strokeOpacity="0.5" strokeWidth="2" />
-          <path d={wave(480, 30)} fill="none" stroke="#C8DFF2" strokeOpacity="0.3" strokeWidth="2" />
-          <path d={wave(530, 18)} fill="none" stroke="#C8DFF2" strokeOpacity="0.18" strokeWidth="2" />
+          <path d={wave(404, 22)} fill="none" stroke="#C8DFF2" strokeOpacity="0.5" strokeWidth="2" />
+          <path d={wave(448, 28)} fill="none" stroke="#C8DFF2" strokeOpacity="0.3" strokeWidth="2" />
+          <path d={wave(492, 18)} fill="none" stroke="#C8DFF2" strokeOpacity="0.18" strokeWidth="2" />
         </svg>
 
         <div style={{ display: "flex", alignItems: "center" }}>
@@ -63,24 +67,31 @@ export function ogCard() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ fontSize: 96, fontWeight: 700, lineHeight: 1.15 }}>
-            If it says booked,
-          </div>
-          <div style={{ fontSize: 96, fontWeight: 700, lineHeight: 1.15 }}>
-            it&apos;s booked.
-          </div>
+          {og.lines.map((line) => (
+            <div
+              key={line}
+              style={{
+                fontSize: og.lines.length > 2 ? 84 : 100,
+                fontWeight: 700,
+                lineHeight: 1.15,
+              }}
+            >
+              {line}
+            </div>
+          ))}
         </div>
 
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
+            gap: 32,
             fontSize: 30,
             color: "#C8DFF2",
           }}
         >
-          <span>Booking for barbershops and PMU studios in Vietnam</span>
-          <span>pleasebookme.app</span>
+          <span>{og.tagline}</span>
+          <span style={{ flexShrink: 0 }}>pleasebookme.app</span>
         </div>
       </div>
     ),
