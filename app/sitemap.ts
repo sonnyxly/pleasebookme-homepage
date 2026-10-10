@@ -5,8 +5,8 @@ import { LEGAL_UPDATED_ISO } from "./site";
 
 // Served at /sitemap.xml. Dates are fixed, not "now", so the file only changes
 // when a page really does. Update them when a page's content changes.
-// Each URL lists its twin in the other language (hreflang) so search engines
-// pair the English and Vietnamese pages.
+// Plain entries only: the English/Vietnamese pairing (hreflang) is declared in
+// each page's own <head> (see pageMetadata in seo.ts), not repeated here.
 const HOME_UPDATED = "2026-10-09";
 
 const PAGES: { page: PageKey; lastModified: string; changeFrequency: "weekly" | "yearly"; priority: number }[] = [
@@ -22,13 +22,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     (["en", "vi"] as const).map((locale) => ({
       url: abs(pagePath(locale, page)),
       ...rest,
-      alternates: {
-        languages: {
-          en: abs(pagePath("en", page)),
-          vi: abs(pagePath("vi", page)),
-          "x-default": abs(pagePath("en", page)),
-        },
-      },
     })),
   );
 }
