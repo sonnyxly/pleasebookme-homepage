@@ -44,9 +44,9 @@ export function ogCard(locale: Locale) {
           viewBox="0 0 1200 630"
           style={{ position: "absolute", left: 0, top: 0 }}
         >
-          <path d={wave(404, 22)} fill="none" stroke="#C8DFF2" strokeOpacity="0.5" strokeWidth="2" />
-          <path d={wave(448, 28)} fill="none" stroke="#C8DFF2" strokeOpacity="0.3" strokeWidth="2" />
-          <path d={wave(492, 18)} fill="none" stroke="#C8DFF2" strokeOpacity="0.18" strokeWidth="2" />
+          <path d={wave(404, 22)} fill="none" stroke="#9DBBE5" strokeOpacity="0.5" strokeWidth="2" />
+          <path d={wave(448, 28)} fill="none" stroke="#9DBBE5" strokeOpacity="0.3" strokeWidth="2" />
+          <path d={wave(492, 18)} fill="none" stroke="#9DBBE5" strokeOpacity="0.18" strokeWidth="2" />
         </svg>
 
         <div style={{ display: "flex", alignItems: "center" }}>
@@ -87,7 +87,7 @@ export function ogCard(locale: Locale) {
             justifyContent: "space-between",
             gap: 32,
             fontSize: 30,
-            color: "#C8DFF2",
+            color: "#9DBBE5",
           }}
         >
           <span>{og.tagline}</span>

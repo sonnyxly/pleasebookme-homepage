@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 /*
-  pleasebookme palette (agreed with Trung, 2026-10-02; values set 2026-10-02/03).
-  Primitives: Titanium #F7F7F7, Black #1A1A1A, Glacier #C8DFF2, Burgundy #4D1821,
+  pleasebookme palette (agreed with Trung, 2026-10-02; values set 2026-10-02/03;
+  Glacier and Burgundy moved to the fills in the Figma Branding file, 2026-10-13).
+  Primitives: Titanium #F7F7F7, Black #1A1A1A, Glacier #9DBBE5, Burgundy #492A3B,
   Deep green #214D18. Light and dark mirror each other: titanium page with black
   text, then black page with titanium text.
   Error colours are proposed, not agreed. Neutral steps (surface, line, muted)
@@ -17,11 +18,11 @@
   --ink: #1a1a1a;
   --muted: #5e5e5e;
   --line: #cbcbcb;
-  --accent: #4d1821;
+  --accent: #492a3b;
   --accent-ink: #f7f7f7;
-  --brand: #4d1821;
+  --brand: #492a3b;
   --brand-ink: #f7f7f7;
-  --highlight: #c8dff2;
+  --highlight: #9dbbe5;
   --highlight-ink: #1a1a1a;
   --confirm: #214d18;
   --signal: #b3261e;
@@ -30,8 +31,8 @@
   /* Patterns: gridlines (small boxes) and water flow. */
   --grid: rgb(26 26 26 / 0.07);
   --grid-hot: rgb(26 26 26 / 0.22);
-  --flow: #9fc3e0;
-  --cell: rgb(200 223 242 / 0.7);
+  --flow: #9dbbe5;
+  --cell: rgb(157 187 229 / 0.7);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -41,16 +42,16 @@
     --ink: #f7f7f7;
     --muted: #9f9f9f;
     --line: #464646;
-    --accent: #c8dff2;
+    --accent: #9dbbe5;
     --accent-ink: #1a1a1a;
-    --confirm: #c8dff2;
+    --confirm: #9dbbe5;
     --signal: #ff8a5c;
 
     --grid: rgb(247 247 247 / 0.07);
-    --grid-hot: rgb(200 223 242 / 0.28);
-    --flow: #c8dff2;
+    --grid-hot: rgb(157 187 229 / 0.28);
+    --flow: #9dbbe5;
     --flow-alpha: 0.5;
-    --cell: rgb(200 223 242 / 0.14);
+    --cell: rgb(157 187 229 / 0.14);
   }
 }
 
@@ -336,7 +337,7 @@ body {
   top: 0;
   height: 3px;
   background: var(--highlight);
-  box-shadow: 0 0 18px 4px rgb(200 223 242 / 0.55);
+  box-shadow: 0 0 18px 4px rgb(157 187 229 / 0.55);
   animation: scan 10s ease-in-out infinite;
 }
 
@@ -508,9 +509,9 @@ body {
 .on-brand {
   --flow-alpha: 0.6;
   --grid: rgb(247 247 247 / 0.08);
-  --grid-hot: rgb(200 223 242 / 0.3);
-  --flow: #c8dff2;
-  --cell: rgb(200 223 242 / 0.16);
+  --grid-hot: rgb(157 187 229 / 0.3);
+  --flow: #9dbbe5;
+  --cell: rgb(157 187 229 / 0.16);
 }
 
 /* ---------- Legal pages ---------- */
