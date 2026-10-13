@@ -1,0 +1,468 @@
+/* Giờ làm việc: the list of weekly schedules, and the form for one. */
+
+/* The layout answers to the room the page really has, which changes when the
+   sidebar opens or closes, so the breakpoints below are container queries. */
+.page {
+  container: page / inline-size;
+}
+
+/* ---------- Heading ---------- */
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin: 0 4px 12px;
+}
+
+.head h1 {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-title);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+/* The line under the heading always takes a row of its own; the padding, not
+   a max-width, keeps it to a readable length (a max-width would let it share
+   the heading's row). */
+.head p {
+  flex: 0 0 100%;
+  margin: 0;
+  padding-right: max(0px, 100% - 78ch);
+  font-size: var(--text-body);
+  color: var(--muted);
+}
+
+.head .back {
+  margin-left: -6px;
+}
+
+.head .back:hover {
+  background: var(--well);
+}
+
+.head-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.note {
+  margin: 14px 4px 4px;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* ---------- The list ---------- */
+/* One row per schedule: its name and timezone, the week as a picture, the same
+   week in words, and what can be done to it. */
+
+.list {
+  padding: 4px 0;
+}
+
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(200px, 1.2fr) 150px minmax(200px, 1.3fr) minmax(96px, auto);
+  align-items: center;
+  gap: 6px 24px;
+  padding: 14px 18px;
+  transition: background-color 0.18s ease;
+}
+
+.row + .row {
+  border-top: 1px solid var(--line);
+}
+
+.row:not(.row-head):hover {
+  background: var(--well);
+}
+
+.row-head {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.cell-name {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+/* The name is the link; its hit area is the whole row. */
+.row-open {
+  font-size: var(--text-body);
+  color: inherit;
+  text-decoration: none;
+}
+
+.row-open strong {
+  font-weight: 600;
+}
+
+.row-open::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.row-open:focus-visible {
+  outline: none;
+}
+
+.row-open:focus-visible::after {
+  outline: 2px solid var(--focus);
+  outline-offset: -3px;
+  border-radius: var(--r-control);
+}
+
+.row-zone {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.row-zone .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.cell-hours {
+  display: grid;
+  gap: 2px;
+  font-size: var(--text-ui);
+}
+
+.cell-actions {
+  position: relative; /* above the row's stretched link */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.cell-actions .icon-btn:hover {
+  background: var(--line);
+}
+
+.switch:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 48px 20px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-panel);
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty p {
+  margin: 0;
+}
+
+/* ---------- The week as a picture ---------- */
+/* Seven columns, midnight at the top and at the bottom. A filled stretch is
+   working time; a hatched column is a day off. */
+
+.week {
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 4px;
+  width: 150px;
+}
+
+.week-day {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+
+.week-track {
+  position: relative;
+  width: 100%;
+  height: 38px;
+  border-radius: var(--r-tick);
+  background: var(--well);
+  overflow: hidden;
+}
+
+.week-track i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-radius: var(--r-tick);
+  background: var(--accent);
+}
+
+.week-day.is-off .week-track {
+  background: repeating-linear-gradient(-45deg, transparent 0 3px, var(--line) 3px 4px);
+}
+
+.week-day b {
+  font-size: var(--text-micro);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--muted);
+}
+
+.week.is-big {
+  position: relative;
+  width: 100%;
+  gap: 6px;
+  padding: 6px 0 0 46px;
+}
+
+.week.is-big .week-track {
+  height: 216px;
+  border-radius: var(--r-chip);
+  /* A faint line every six hours. */
+  background-image: repeating-linear-gradient(to bottom, transparent 0 calc(25% - 1px), var(--line) calc(25% - 1px) 25%);
+  background-color: var(--well);
+}
+
+.week.is-big .week-day.is-off .week-track {
+  background: repeating-linear-gradient(-45deg, transparent 0 4px, var(--line) 4px 5px);
+}
+
+.week.is-big .week-track i {
+  border-radius: var(--r-chip);
+}
+
+.week.is-big b {
+  font-size: var(--text-micro);
+}
+
+.week-scale {
+  position: absolute;
+  top: 6px;
+  left: 0;
+  width: 40px;
+  height: 216px;
+}
+
+.week-scale span {
+  position: absolute;
+  right: 0;
+  font-size: var(--text-micro);
+  line-height: 1;
+  color: var(--muted);
+  transform: translateY(-50%);
+}
+
+/* ---------- The form ---------- */
+
+.form {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  align-items: start;
+  gap: 12px;
+}
+
+.form-main,
+.form-side {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.card {
+  display: grid;
+  gap: 14px;
+  padding: 18px 22px 22px;
+}
+
+.card h2,
+.reserved h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-h3);
+  line-height: 1.25;
+}
+
+.alert {
+  margin: 0;
+  padding: 11px 14px;
+  border: 1px solid color-mix(in srgb, var(--signal) 45%, transparent);
+  border-radius: var(--r-control);
+  background: color-mix(in srgb, var(--signal) 9%, transparent);
+  font-size: var(--text-ui);
+  font-weight: 500;
+  color: var(--signal);
+}
+
+.day {
+  display: grid;
+  grid-template-columns: 124px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px 14px;
+  min-height: 58px;
+  padding: 8px 0;
+}
+
+.day + .day {
+  border-top: 1px solid var(--line);
+}
+
+.day-name {
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.day-hours {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  color: var(--muted);
+}
+
+.day-hours .error {
+  flex-basis: 100%;
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--signal);
+}
+
+select.time {
+  width: 104px;
+  font-variant-numeric: tabular-nums;
+}
+
+.day-off {
+  display: none;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.day.is-off .day-hours {
+  display: none;
+}
+
+.day.is-off .day-off {
+  display: block;
+}
+
+.day.is-off .day-name {
+  color: var(--muted);
+}
+
+.pic-total {
+  margin: 0;
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+/* What the server cannot do yet: there, but plainly not ready. */
+.reserved {
+  padding: 16px 20px 18px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-panel);
+}
+
+.reserved h2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: var(--text-lead);
+}
+
+.reserved p {
+  margin: 6px 0 0;
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+.link-btn {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: var(--text-ui);
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--r-chip);
+  background: var(--well);
+  font-family: var(--font-ui);
+  font-size: var(--text-small);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ---------- Narrower rooms ---------- */
+
+@container page (max-width: 900px) {
+  .form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@container page (max-width: 760px) {
+  .row-head {
+    display: none;
+  }
+
+  .row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .cell-actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .row > .week,
+  .cell-hours {
+    grid-column: 1 / -1;
+  }
+}
+
+@container page (max-width: 480px) {
+  .day {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .day .switch {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .day-hours,
+  .day-off {
+    grid-column: 1 / -1;
+  }
+
+  .head-actions {
+    flex-basis: 100%;
+  }
+
+  .head-actions .btn {
+    flex: 1;
+  }
+}

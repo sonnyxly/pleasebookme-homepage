@@ -1,0 +1,1253 @@
+/* Widget đặt lịch: the list of widgets, the editor for one, and the preview of
+   the widget as a customer meets it. */
+
+/* The layout answers to the room the page really has, which changes when the
+   sidebar opens or closes, so the breakpoints below are container queries. */
+.page {
+  container: page / inline-size;
+}
+
+/* ---------- Heading ---------- */
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 20px;
+  margin: 0 4px 12px;
+}
+
+.head h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-title);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+.head p {
+  flex-basis: 100%;
+  max-width: 78ch;
+  margin: 0;
+  font-size: var(--text-body);
+  color: var(--muted);
+}
+
+.note {
+  margin: 14px 4px 4px;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* ---------- The list ---------- */
+/* One row per widget: what it is called and where its link goes, what it
+   offers, where it appears, whether it is running, and how much it is used. */
+
+.list {
+  padding: 4px 0;
+}
+
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(220px, 1.5fr) minmax(210px, 1.3fr) minmax(150px, 0.9fr) 150px 76px 92px;
+  align-items: center;
+  gap: 4px 16px;
+  padding: 13px 18px;
+  transition: background-color 0.18s ease;
+}
+
+.row + .row {
+  border-top: 1px solid var(--line);
+}
+
+.row:not(.row-head):hover {
+  background: var(--well);
+}
+
+.row-head {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.cell-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  min-width: 0;
+}
+
+/* The name is the button; its hit area is the whole row. */
+.row-open {
+  font-size: var(--text-body);
+  text-align: left;
+}
+
+.row-open strong {
+  font-weight: 600;
+}
+
+.row-open::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.row-open:focus-visible {
+  outline: none;
+}
+
+.row-open:focus-visible::after {
+  outline: 2px solid var(--focus);
+  outline-offset: -3px;
+  border-radius: var(--r-control);
+}
+
+.row-link {
+  flex-basis: 100%;
+  overflow: hidden;
+  font-size: var(--text-small);
+  color: var(--muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--r-chip);
+  background: var(--well);
+  font-size: var(--text-small);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.cell-scope,
+.cell-where {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: var(--text-ui);
+}
+
+.cell-scope span + span::before {
+  content: "";
+  display: inline-block;
+  width: 1px;
+  height: 11px;
+  margin-right: 10px;
+  background: var(--line-strong);
+  vertical-align: -1px;
+}
+
+.cell-where {
+  gap: 4px;
+}
+
+.cell-week {
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+.cell-actions {
+  position: relative; /* above the row's stretched button */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.cell-actions .icon-btn:hover {
+  background: var(--line);
+}
+
+/* ---------- The editor: heading ---------- */
+
+.ed-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin: 0 4px 12px;
+}
+
+.ed-name {
+  flex: 1;
+  min-width: 220px;
+  display: grid;
+}
+
+/* The widget's name is typed straight into the page heading. */
+.ed-name input {
+  width: 100%;
+  padding: 2px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--r-block);
+  background: none;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.3vw, 32px);
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+.ed-name input:hover {
+  border-color: var(--line-strong);
+}
+
+.ed-name input[aria-invalid="true"] {
+  border-color: var(--signal);
+}
+
+.ed-name .error {
+  padding-left: 9px;
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--signal);
+}
+
+.ed-on {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-ui);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ed-head .btn-danger span:empty {
+  display: none;
+}
+
+/* ---------- The editor: sections, form, preview ---------- */
+
+.ed {
+  display: grid;
+  grid-template-columns: 196px minmax(0, 1fr) 372px;
+  align-items: start;
+  gap: 12px;
+}
+
+.ed-tabs {
+  position: sticky;
+  top: calc(var(--bar-h) + var(--gap) * 2 + 14px);
+  display: grid;
+  gap: 2px;
+  padding: 8px;
+}
+
+.ed-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: var(--r-control);
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+  transition: background-color 0.18s ease;
+}
+
+.ed-tabs button:hover {
+  background: var(--well);
+}
+
+.ed-tabs button[aria-current="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.ed-form {
+  display: grid;
+  gap: 16px;
+  padding: 18px 22px 22px;
+}
+
+.ed-form h2,
+.side-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-h2);
+  line-height: 1.25;
+}
+
+.tab-lede {
+  max-width: 66ch;
+  margin: -12px 0 0;
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+/* A block of related settings. */
+.group {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-card);
+}
+
+.group-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.group-head h3,
+.place-head h3 {
+  margin: 0;
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.link-btn {
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+.sub-label {
+  margin: 0 0 -4px;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.hint {
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.group-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+.group-row .label {
+  font-size: var(--text-ui);
+  font-weight: 600;
+}
+
+.field-short {
+  max-width: 260px;
+}
+
+/* Services: a ticked list, each with its length and price. */
+.svc-list {
+  display: grid;
+}
+
+.svc-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 68px 118px;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 2px;
+  cursor: pointer;
+}
+
+.svc-row + .svc-row {
+  border-top: 1px solid var(--line);
+}
+
+.svc-row input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.svc-name {
+  display: grid;
+  font-weight: 500;
+}
+
+.svc-name small {
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--signal);
+}
+
+.svc-meta {
+  font-size: var(--text-ui);
+  color: var(--muted);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ---------- Where it appears ---------- */
+
+.place {
+  padding: 14px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-card);
+  transition: border-color 0.2s ease;
+}
+
+.place.is-on {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.place-head {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+}
+
+.place-head p {
+  margin: 2px 0 0;
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+.diagram {
+  width: 96px;
+  border-radius: var(--r-chip);
+  background: var(--well);
+  fill: var(--line-strong);
+}
+
+.diagram .d-on {
+  fill: var(--accent);
+}
+
+.place-body {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.place-link {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+.qr-box {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  margin: 0;
+}
+
+.qr {
+  width: 104px;
+  padding: 6px;
+  border-radius: var(--r-block);
+  background: white;
+  fill: var(--black);
+}
+
+.qr-box figcaption {
+  max-width: 116px;
+  font-size: var(--text-micro);
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Real code to paste, so it is set in a code face. */
+.code {
+  margin: 0;
+  padding: 11px 13px;
+  border-radius: var(--r-control);
+  background: var(--well);
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: var(--text-small);
+  line-height: 1.55;
+  overflow-x: auto;
+}
+
+/* Folded: the keys look after themselves. */
+.adv {
+  padding: 0 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-control);
+}
+
+.adv summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: var(--text-ui);
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+
+.adv summary::-webkit-details-marker {
+  display: none;
+}
+
+.adv summary::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  margin: 0 4px 3px auto;
+  border-right: 1.75px solid currentColor;
+  border-bottom: 1.75px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.25s var(--ease-out);
+}
+
+.adv[open] summary::after {
+  margin-bottom: -3px;
+  transform: rotate(225deg);
+}
+
+.adv .hint {
+  margin-bottom: 10px;
+}
+
+.adv .link-row {
+  padding-bottom: 14px;
+}
+
+/* ---------- Look ---------- */
+
+.dots {
+  display: flex;
+  gap: 10px;
+}
+
+.dot {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  transition: box-shadow 0.2s ease;
+}
+
+.dot-burgundy {
+  background: var(--burgundy);
+}
+
+.dot-glacier {
+  background: var(--glacier);
+}
+
+.dot-black {
+  background: var(--black);
+}
+
+.dot[aria-pressed="true"] {
+  box-shadow:
+    0 0 0 2px var(--panel-solid),
+    0 0 0 4px var(--accent);
+}
+
+/* ---------- Beside the form: preview and path ---------- */
+
+.ed-side {
+  position: sticky;
+  top: calc(var(--bar-h) + var(--gap) * 2 + 14px);
+  display: grid;
+  gap: 10px;
+}
+
+.side-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  margin: 0 4px;
+}
+
+.side-head h2 {
+  font-size: var(--text-h3);
+}
+
+.side-head span {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* The questions the customer is asked, in order. */
+.path {
+  padding: 13px 16px 14px;
+}
+
+.path h3 {
+  margin: 0 0 8px;
+  font-size: var(--text-ui);
+  font-weight: 600;
+}
+
+.path ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.path li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px 0 4px;
+  border-radius: var(--r-pill);
+  background: var(--well);
+  font-size: var(--text-small);
+  font-weight: 500;
+  counter-increment: step;
+}
+
+.path li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: var(--text-micro);
+  font-weight: 600;
+}
+
+.path p {
+  margin: 9px 0 0;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.path b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* ---------- The preview ---------- */
+/* The widget is the customer's, not the dashboard's: plain surfaces in its
+   own colours, set by the Look section, whatever theme the dashboard is in. */
+
+.pv {
+  --pv-bg: white;
+  --pv-ink: var(--black);
+  --pv-muted: color-mix(in srgb, var(--black) 66%, white);
+  --pv-line: rgb(26 26 26 / 0.14);
+  --pv-well: rgb(26 26 26 / 0.05);
+  --a: var(--burgundy);
+  --a-ink: var(--silver);
+  display: flex;
+  flex-direction: column;
+  min-height: 560px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-frame);
+  background: var(--pv-bg);
+  color: var(--pv-ink);
+  box-shadow: 0 30px 60px -38px var(--panel-drop);
+  overflow: hidden;
+}
+
+.pv[data-theme="dark"] {
+  --pv-bg: color-mix(in srgb, var(--black) 88%, black);
+  --pv-ink: var(--silver);
+  --pv-muted: color-mix(in srgb, var(--silver) 64%, black);
+  --pv-line: rgb(247 247 247 / 0.16);
+  --pv-well: rgb(247 247 247 / 0.07);
+}
+
+.pv[data-accent="glacier"] {
+  --a: var(--glacier);
+  --a-ink: var(--black);
+}
+
+.pv[data-accent="black"] {
+  --a: var(--black);
+  --a-ink: var(--silver);
+}
+
+/* On a dark widget, burgundy and black would sink into the background. */
+.pv[data-theme="dark"][data-accent="burgundy"] {
+  --a: color-mix(in srgb, var(--burgundy) 58%, white);
+  --a-ink: var(--black);
+}
+
+.pv[data-theme="dark"][data-accent="black"] {
+  --a: var(--silver);
+  --a-ink: var(--black);
+}
+
+.pv :focus-visible {
+  outline-color: var(--pv-ink);
+}
+
+.pv-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 16px 12px;
+}
+
+.pv-logo {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--a);
+  color: var(--a-ink);
+}
+
+.pv-shop {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  line-height: 1.3;
+}
+
+.pv-shop strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-h3);
+}
+
+.pv-shop span {
+  font-size: var(--text-small);
+  color: var(--pv-muted);
+}
+
+.pv-lang {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--pv-line);
+  border-radius: var(--r-pill);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+.pv-progress {
+  height: 3px;
+  background: var(--pv-well);
+}
+
+/* --p is how far along the customer is, from 0 to 1. */
+.pv-progress i {
+  display: block;
+  height: 100%;
+  background: var(--a);
+  transform: scaleX(var(--p, 0));
+  transform-origin: left;
+}
+
+.pv-body {
+  flex: 1;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 14px 16px;
+}
+
+.pv-centre {
+  place-content: center;
+  justify-items: center;
+  text-align: center;
+  color: var(--pv-muted);
+}
+
+.pv-centre p {
+  max-width: 26ch;
+  margin: 0;
+}
+
+.pv-step {
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--pv-muted);
+}
+
+.pv-body h4 {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-h3);
+  line-height: 1.2;
+}
+
+.pv-sub,
+.pv-note {
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--pv-muted);
+}
+
+.pv-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--pv-line);
+  border-radius: var(--r-control);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.pv-opt.is-on {
+  border-color: var(--a);
+  background: color-mix(in srgb, var(--a) 13%, transparent);
+}
+
+.pv-opt:has(:focus-visible) {
+  outline: 2px solid var(--pv-ink);
+  outline-offset: 2px;
+}
+
+.pv-opt-main {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  line-height: 1.35;
+}
+
+.pv-opt-main strong {
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.pv-opt-main span {
+  font-size: var(--text-small);
+  color: var(--pv-muted);
+}
+
+.pv-tick {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--pv-line);
+  border-radius: var(--r-chip);
+  color: transparent;
+}
+
+.pv-tick .icon {
+  width: 13px;
+  height: 13px;
+  stroke-width: 2.6;
+}
+
+.pv-tick.is-round {
+  border-radius: 50%;
+}
+
+.is-on > .pv-tick {
+  border-color: var(--a);
+  background: var(--a);
+  color: var(--a-ink);
+}
+
+.is-on > .pv-tick.is-round {
+  box-shadow: inset 0 0 0 4px var(--pv-bg);
+}
+
+.pv-price {
+  font-size: var(--text-ui);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pv-price s {
+  font-weight: 400;
+  color: var(--pv-muted);
+}
+
+.pv-days {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.pv-day {
+  display: grid;
+  gap: 1px;
+  padding: 7px 0;
+  border: 1px solid var(--pv-line);
+  border-radius: var(--r-control);
+  font-size: var(--text-small);
+  line-height: 1.3;
+}
+
+.pv-day b {
+  font-weight: 600;
+}
+
+.pv-slots {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.pv-slot {
+  height: 36px;
+  border: 1px solid var(--pv-line);
+  border-radius: var(--r-block);
+  font-size: var(--text-ui);
+  font-weight: 500;
+}
+
+.pv-day.is-on,
+.pv-slot.is-on {
+  border-color: var(--a);
+  background: var(--a);
+  color: var(--a-ink);
+}
+
+.pv-field {
+  display: grid;
+  gap: 5px;
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+.pv-field input {
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--pv-line);
+  border-radius: var(--r-block);
+  background: none;
+}
+
+.pv-foot {
+  display: grid;
+  gap: 10px;
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--pv-line);
+}
+
+/* The bill: each service on its own line, then the total. */
+.pv-bill {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-small);
+}
+
+.pv-bill th,
+.pv-bill td {
+  padding: 2px 0;
+  font-weight: 400;
+  text-align: left;
+}
+
+.pv-bill td {
+  padding-left: 10px;
+  color: var(--pv-muted);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.pv-bill td.num {
+  color: inherit;
+}
+
+.pv-bill .is-less th,
+.pv-bill .is-less td {
+  color: var(--pv-muted);
+}
+
+.pv-bill tfoot th,
+.pv-bill tfoot td {
+  padding-top: 5px;
+  border-top: 1px solid var(--pv-line);
+  font-weight: 600;
+  color: inherit;
+}
+
+.pv-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.pv-btn {
+  flex: 1;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: var(--r-control);
+  background: var(--a);
+  color: var(--a-ink);
+  font-weight: 600;
+  transition:
+    opacity 0.18s ease,
+    transform 0.25s var(--ease-out);
+}
+
+.pv-btn:active {
+  transform: scale(0.98);
+}
+
+.pv-btn:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+.pv-btn.is-quiet {
+  flex: none;
+  border: 1px solid var(--pv-line);
+  background: none;
+  color: inherit;
+}
+
+.pv-done {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  background: var(--a);
+  color: var(--a-ink);
+}
+
+/* ---------- Narrower pages ---------- */
+
+/* The sections move above the form as a row of tabs. */
+@container page (max-width: 1080px) {
+  .ed {
+    grid-template-columns: minmax(0, 1fr) 356px;
+  }
+
+  .ed-tabs {
+    position: static;
+    grid-column: 1 / -1;
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  /* What a row offers and where it appears drop to a second line. */
+  .row {
+    grid-template-columns: minmax(0, 1fr) 150px 92px;
+  }
+
+  .row-head span:nth-child(n + 2):nth-child(-n + 3),
+  .row-head span:nth-child(5),
+  .cell-week {
+    display: none;
+  }
+
+  .cell-scope,
+  .cell-where {
+    grid-row: 2;
+  }
+
+  .cell-scope {
+    grid-column: 1;
+  }
+
+  .cell-where {
+    grid-column: 2 / -1;
+    justify-content: flex-end;
+  }
+}
+
+/* One column: the preview follows the form. */
+@container page (max-width: 780px) {
+  .ed {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ed-side {
+    position: static;
+  }
+
+  .place-head {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .diagram {
+    display: none;
+  }
+
+  .place-link {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .svc-row {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .svc-row .svc-meta:nth-of-type(2) {
+    display: none;
+  }
+
+  .field-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .row-head,
+  .cell-where {
+    display: none;
+  }
+
+  .cell-state {
+    grid-row: 2;
+    grid-column: 2;
+    justify-self: end;
+  }
+}
+
+/* ---------- Services first, then the resource layers ---------- */
+
+.group-head h3 .icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 7px;
+  vertical-align: -3px;
+  color: var(--muted);
+}
+
+.layer {
+  margin-top: 6px;
+}
+
+.layer h3 {
+  margin: 0;
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.layer p {
+  max-width: 66ch;
+  margin: 3px 0 0;
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+.cell-name .code-dot {
+  margin-right: -2px;
+}
+
+/* ---------- The preview: a month to pick a day from ---------- */
+
+.pv-month {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.pv-month strong {
+  flex: 1;
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.pv-month button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-chip);
+}
+
+.pv-month button:hover {
+  background: var(--pv-well);
+}
+
+.pv-month button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.pv-month .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.pv-cal {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.pv-cal b {
+  padding: 2px 0 4px;
+  font-size: var(--text-micro);
+  font-weight: 500;
+  text-align: center;
+  color: var(--pv-muted);
+}
+
+/* A shaded square can be booked; a bare number cannot. */
+.pv-date {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--r-block);
+  background: var(--pv-well);
+  font-size: var(--text-ui);
+  font-weight: 600;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.pv-date:disabled {
+  background: none;
+  font-weight: 400;
+  color: var(--pv-muted);
+  opacity: 0.55;
+  cursor: default;
+}
+
+.pv-date.is-on {
+  background: var(--a);
+  color: var(--a-ink);
+}
+
+.pv-date.is-today::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  transform: translateX(-50%);
+}
+
+.pv-opt.is-off {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* After booking: the customer's own link to the booking. */
+.pv-manage {
+  font-weight: 600;
+  color: var(--a);
+  text-underline-offset: 3px;
+}
+
+.pv[data-theme="dark"] .pv-manage {
+  color: inherit;
+}

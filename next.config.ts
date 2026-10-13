@@ -10,6 +10,16 @@ const nextConfig: NextConfig = {
   },
   cacheComponents: true,
   partialPrefetching: true,
+  // The dashboard design mockups are plain HTML in public/dashboard, copied in
+  // by scripts/sync-dashboard.mjs. These give each page a clean address:
+  // /dashboard, /dashboard/bookings and so on. A page that has no mockup yet
+  // falls through to the 404.
+  async rewrites() {
+    return [
+      { source: "/dashboard", destination: "/dashboard/index.html" },
+      { source: "/dashboard/:page", destination: "/dashboard/:page/index.html" },
+    ];
+  },
   turbopack: {
     rules: {
       "*.css": {

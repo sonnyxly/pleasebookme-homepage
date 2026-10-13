@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- A design mockup with sample data: keep it out of search results. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/dashboard/assets/brand/pleasebookme-mark-small.svg" />
+    <title>Thiết lập tiệm | pleasebookme</title>
+    <script>
+      // Set the theme before the first paint: the saved choice, else the device setting.
+      (function () {
+        var saved;
+        try {
+          saved = localStorage.getItem("pbm-theme");
+        } catch (e) {}
+        if (saved !== "light" && saved !== "dark") {
+          saved = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = saved;
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Josefin+Slab&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/dashboard/assets/tokens.css" />
+    <link rel="stylesheet" href="/dashboard/assets/shell.css" />
+    <link rel="stylesheet" href="/dashboard/setup/setup.css" />
+  </head>
+  <body>
+    <!-- What a new owner sees straight after signing up: three short steps, then
+         the booking link. There is no sidebar yet, because there is nothing to
+         manage yet. Everything asked here can be changed later in the dashboard. -->
+    <header class="setup-top">
+      <div class="setup-brand" id="brand"></div>
+      <div id="lang"></div>
+    </header>
+
+    <main class="setup" id="view"></main>
+
+    <script src="/dashboard/assets/shell.js"></script>
+    <script src="/dashboard/setup/setup.js"></script>
+  </body>
+</html>

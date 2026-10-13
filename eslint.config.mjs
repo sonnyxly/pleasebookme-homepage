@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // A copy of the design mockups, written by scripts/sync-dashboard.mjs.
+    "public/dashboard/**",
   ]),
 ]);
 

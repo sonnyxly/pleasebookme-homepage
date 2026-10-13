@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- A design mockup with sample data: keep it out of search results. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/dashboard/assets/brand/pleasebookme-mark-small.svg" />
+    <title>Lịch hẹn của bạn | Tiệm tóc Mẫu</title>
+    <script>
+      // The customer's page follows their device: there is no saved choice to read.
+      document.documentElement.dataset.theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/dashboard/assets/tokens.css" />
+    <link rel="stylesheet" href="/dashboard/manage/manage.css" />
+  </head>
+  <body>
+    <!-- The page a customer opens from the link in their confirmation: see the
+         booking, move it or cancel it. It is not part of the dashboard, so it
+         carries none of its chrome. In the app its address would be
+         /booking/<shop>/b/<booking code>. -->
+    <main class="wrap">
+      <article class="card" id="card" aria-live="polite"></article>
+      <p class="powered">pleasebookme</p>
+
+      <!-- Not part of the product: lets a reviewer see every state of the page. -->
+      <details class="mock">
+        <summary id="mock-title"></summary>
+        <div class="mock-picks" id="mock"></div>
+      </details>
+    </main>
+
+    <script src="/dashboard/assets/sample.js"></script>
+    <script src="/dashboard/manage/manage.js"></script>
+  </body>
+</html>

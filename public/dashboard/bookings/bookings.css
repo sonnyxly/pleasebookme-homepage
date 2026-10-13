@@ -1,0 +1,1043 @@
+/* Lịch hẹn: heading, toolbar, calendar, table, right rail, booking sheet. */
+
+:root {
+  --hour: 64px; /* keep in step with HOUR in bookings.js */
+}
+
+/* ---------- Page frame ---------- */
+/* The page is exactly one window tall, so the calendar takes every pixel the
+   heading leaves and scrolls inside its own panel. */
+
+.page-fill {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* Date and controls share one row when there is room; the summary line always
+   takes a full row beneath them. */
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 20px;
+  margin: 0 4px 12px;
+}
+
+.head h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-title);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+.head p {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: var(--text-body);
+  color: var(--muted);
+}
+
+/* ---------- Toolbar ---------- */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+
+.datenav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.datenav .icon-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line-strong);
+}
+
+.datenav .icon-btn:hover {
+  background: var(--well);
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-ui);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.toggle input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.pending-btn[aria-pressed="true"] {
+  background: var(--well);
+}
+
+.pending-btn .pill[hidden] {
+  display: none;
+}
+
+/* ---------- Layout ---------- */
+/* The right rail is closed by default so the calendar runs the full width;
+   the "waiting" button in the toolbar slides it in. */
+
+.board {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 0px;
+  transition: grid-template-columns 0.42s var(--ease-out);
+}
+
+.board.rail-open {
+  grid-template-columns: minmax(0, 1fr) 334px;
+}
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: clip;
+}
+
+.rail-wrap {
+  min-width: 0;
+  overflow: hidden;
+  visibility: hidden;
+  transition: visibility 0s 0.42s;
+}
+
+.rail-open .rail-wrap {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.rail {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  width: 334px;
+  height: 100%;
+  padding-left: 14px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* ---------- Calendar ---------- */
+
+.cal-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border-radius: calc(var(--r-panel) - 1px) calc(var(--r-panel) - 1px) 0 0;
+  scrollbar-width: thin;
+}
+
+.cal {
+  --gutter: 58px;
+  --col-min: 150px;
+  min-width: calc(var(--gutter) + var(--cols) * var(--col-min));
+}
+
+.cal-week {
+  --col-min: 88px;
+}
+
+.cal-head,
+.cal-body {
+  display: grid;
+  grid-template-columns: var(--gutter) repeat(var(--cols), minmax(0, 1fr));
+}
+
+.cal-head {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: color-mix(in srgb, var(--panel-solid) 72%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+
+.cal-colhead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 11px 12px;
+  border-left: 1px solid var(--line);
+}
+
+.cal-colhead .avatar {
+  background: var(--well);
+  color: var(--ink);
+}
+
+.colhead-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.colhead-text strong {
+  font-weight: 600;
+}
+
+.colhead-text span {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.colhead-text.is-date {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.colhead-text.is-date strong {
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: var(--text-body);
+}
+
+.cal-colhead.is-today .is-date strong {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.cal-colhead.is-today .is-date span {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.cal-body {
+  position: relative;
+  height: calc(var(--hours) * var(--hour));
+  margin: 14px 0 18px;
+}
+
+.cal-times {
+  position: relative;
+}
+
+.cal-times span {
+  position: absolute;
+  right: 10px;
+  transform: translateY(-50%);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.cal-col {
+  position: relative;
+  border-left: 1px solid var(--line);
+  background-image:
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line) 45%, transparent) 1px, transparent 1px);
+  background-size:
+    100% var(--hour),
+    100% var(--hour);
+  background-position:
+    0 0,
+    0 calc(var(--hour) / 2);
+}
+
+.cal-col.is-today {
+  background-color: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.block {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 5px 9px;
+  border-radius: var(--r-block);
+  overflow: hidden;
+  min-height: 18px;
+  text-align: left;
+  font-size: var(--text-small);
+  line-height: 1.3;
+  transition:
+    transform 0.28s var(--ease-out),
+    filter 0.2s ease;
+}
+
+.block:hover,
+.block:focus-visible {
+  z-index: 2;
+  transform: translateY(-1px) scale(1.015);
+  filter: brightness(1.06);
+}
+
+.block-top {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.block strong,
+.block-svc {
+  max-width: 100%;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.block strong {
+  font-size: var(--text-ui);
+  font-weight: 600;
+}
+
+.block-time,
+.block-svc {
+  opacity: 0.78;
+}
+
+.block-time {
+  font-size: var(--text-micro);
+}
+
+.block.is-short {
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  padding: 0 9px;
+}
+
+.block.is-short .block-top {
+  flex: none;
+  max-width: 70%;
+}
+
+.block.is-short .block-svc {
+  flex: 1;
+}
+
+.block.is-compact {
+  padding-left: 7px;
+  padding-right: 7px;
+}
+
+.block.is-compact.is-short .block-svc {
+  display: none;
+}
+
+/* Week columns are narrow. When bookings sit side by side, the name is enough:
+   the block's position already gives the time. */
+.block.is-narrow {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.block.is-narrow .block-time,
+.block.is-narrow .block-svc {
+  display: none;
+}
+
+.block.is-narrow.st-pending::after {
+  top: 4px;
+  right: 4px;
+  width: 5px;
+  height: 5px;
+}
+
+.block.is-narrow.is-short.st-pending {
+  padding-right: 12px;
+}
+
+/* A ring marks "waiting", so the state does not rest on colour alone. */
+.block.st-pending::after {
+  content: "";
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+}
+
+.block.is-short.st-pending {
+  padding-right: 20px;
+}
+
+.block.st-cancelled strong,
+.block.st-rejected strong {
+  text-decoration: line-through;
+}
+
+.now {
+  position: absolute;
+  left: var(--gutter);
+  right: 0;
+  z-index: 3;
+  border-top: 1.5px solid var(--signal);
+  pointer-events: none;
+}
+
+.now.in-col {
+  left: 0;
+}
+
+.now::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: -4.75px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--signal);
+}
+
+.now span {
+  position: absolute;
+  top: -10px;
+  right: calc(100% + 8px);
+  padding: 1px 6px;
+  border-radius: var(--r-chip);
+  background: var(--signal);
+  color: var(--paper);
+  font-size: var(--text-micro);
+  font-weight: 600;
+}
+
+.now.in-col span {
+  display: none;
+}
+
+.stage-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 18px;
+  padding: 10px 18px;
+  border-top: 1px solid var(--line);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 18px;
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--r-tick);
+}
+
+/* The one load moment: today's bookings settle onto the calendar. */
+.is-entering .block,
+.is-entering .tr[data-bk] {
+  animation: settle 0.55s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 32ms + 80ms);
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+}
+
+.is-changed {
+  animation: pop 0.5s var(--ease-liquid);
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.94);
+    filter: brightness(1.3);
+  }
+}
+
+/* ---------- Table ---------- */
+
+.tbl-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+.tbl {
+  min-width: 760px;
+}
+
+.tr {
+  display: grid;
+  grid-template-columns: 124px minmax(120px, 1.2fr) minmax(130px, 1.2fr) minmax(100px, 0.9fr) 150px 84px;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 0 18px;
+  border-top: 1px solid var(--line);
+}
+
+.tr.th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: color-mix(in srgb, var(--panel-solid) 72%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  min-height: 44px;
+  border-top: 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.tr.th + .tr {
+  border-top: 0;
+}
+
+.tr.group {
+  grid-template-columns: 1fr auto;
+  min-height: 40px;
+  background: var(--well);
+  font-weight: 600;
+}
+
+.group-count {
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.tr[data-bk] {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.tr[data-bk]:hover {
+  background: var(--well);
+}
+
+.tr[data-bk]:focus-visible {
+  outline-offset: -2px;
+}
+
+.cell-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.cell-main strong {
+  font-weight: 600;
+}
+
+.cell-main span {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.cell-staff {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cell-staff .avatar {
+  width: 26px;
+  height: 26px;
+  background: var(--well);
+  color: var(--ink);
+  font-size: var(--text-small);
+}
+
+.cell-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.cell-actions .icon-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line-strong);
+}
+
+.cell-actions .act-yes {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.cell-actions .act-no:hover {
+  background: var(--well);
+}
+
+.st-row-cancelled .cell-main strong,
+.st-row-rejected .cell-main strong {
+  color: var(--st-ghost-ink);
+  text-decoration: line-through;
+}
+
+.empty {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  padding: 36px 24px;
+}
+
+.empty p {
+  margin: 0;
+  max-width: 46ch;
+  font-size: var(--text-body);
+  color: var(--muted);
+}
+
+/* ---------- Right rail ---------- */
+
+.rail-panel {
+  padding: 16px;
+}
+
+.rail-panel h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-h3);
+  line-height: 1.25;
+}
+
+.rail-empty {
+  margin: 0;
+  color: var(--muted);
+}
+
+.queue,
+.upnext {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+
+.queue li {
+  display: grid;
+  gap: 10px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.queue li:first-child {
+  border-top: 0;
+  padding-top: 2px;
+}
+
+.queue li:last-child {
+  padding-bottom: 2px;
+}
+
+.queue-main {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 10px;
+  text-align: left;
+  border-radius: var(--r-chip);
+}
+
+.queue-main strong {
+  font-weight: 600;
+}
+
+.queue-main span {
+  grid-column: 1;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.queue-main .queue-when {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: var(--text-ui);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.queue-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.upnext li + li {
+  border-top: 1px solid var(--line);
+}
+
+.upnext button {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 0;
+  text-align: left;
+  border-radius: var(--r-chip);
+}
+
+.upnext-time {
+  flex: none;
+  width: 52px;
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+}
+
+.upnext-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.upnext-text strong {
+  font-weight: 600;
+}
+
+.upnext-text span {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* ---------- Booking sheet ---------- */
+
+.sheet {
+  position: fixed;
+  z-index: 40;
+  top: var(--gap);
+  right: var(--gap);
+  bottom: var(--gap);
+  width: min(380px, calc(100vw - var(--gap) * 2));
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border-radius: var(--r-sidebar);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--panel-solid) 80%, transparent), color-mix(in srgb, var(--panel-solid) 60%, transparent));
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  backdrop-filter: blur(30px) saturate(160%);
+  box-shadow:
+    inset 0 1px 0 var(--panel-shine),
+    0 30px 70px -30px rgb(0 0 0 / 0.55);
+  animation: sheet-in 0.42s var(--ease-out);
+}
+
+.sheet[hidden] {
+  display: none;
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateX(28px) scale(0.98);
+  }
+}
+
+.sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.sheet-head h2 {
+  margin: 10px 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-display);
+  line-height: 1.2;
+}
+
+.sheet-head .icon-btn {
+  border: 1px solid var(--line-strong);
+}
+
+.sheet-head .icon-btn:hover {
+  background: var(--well);
+}
+
+.facts {
+  flex: 1;
+  margin: 18px 0 0;
+  overflow-y: auto;
+}
+
+.facts div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.facts dt {
+  color: var(--muted);
+}
+
+.facts dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.facts dd span {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.sheet-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.sheet-actions .btn {
+  flex: 1;
+  height: 42px;
+}
+
+/* ---------- View transitions ---------- */
+
+::view-transition-group(*) {
+  animation-duration: 0.5s;
+  animation-timing-function: var(--ease-out);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.22s;
+}
+
+/* ---------- Narrow or short screens: the page scrolls normally ---------- */
+
+@media (max-width: 1000px), (max-height: 560px) {
+  .page-fill {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .cal-scroll,
+  .tbl-scroll {
+    flex: none;
+    max-height: 72vh;
+  }
+
+  .board,
+  .board.rail-open {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 14px;
+  }
+
+  .rail-wrap {
+    display: none;
+  }
+
+  .rail-open .rail-wrap {
+    display: block;
+  }
+
+  .rail {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    width: auto;
+    height: auto;
+    padding-left: 0;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .sheet,
+  .cal-head {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--panel-solid);
+  }
+}
+
+/* ---------- Branches on show, and what the colours stand for ---------- */
+
+.colour-by {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--text-ui);
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* A booking that is waiting keeps a dashed edge when the fill is busy saying
+   which branch, person or widget it belongs to. */
+.block.is-waiting {
+  outline: 1.5px dashed var(--code-ink);
+  outline-offset: -4px;
+}
+
+.swatch-waiting {
+  border: 1.5px dashed var(--muted);
+}
+
+.cell-time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.colhead-text .code-dot {
+  width: 8px;
+  height: 8px;
+  margin-right: 5px;
+}
+
+.cell-staff .cell-main {
+  min-width: 0;
+}
+
+/* In "colour by staff" the column heading is the key: its initial wears the colour. */
+.cal-colhead .avatar.code-fill {
+  background: var(--code);
+  color: var(--code-ink);
+}
+
+/* ---------- After the time: done, no-show, waiting to be marked ---------- */
+
+.out-done {
+  background: var(--well);
+  color: var(--ink);
+}
+
+.out-noshow {
+  background: color-mix(in srgb, var(--signal) 14%, transparent);
+  color: var(--signal);
+}
+
+.out-wait {
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+
+.block.is-done {
+  opacity: 0.6;
+}
+
+.block.is-noshow {
+  background: transparent;
+  color: var(--st-ghost-ink);
+  box-shadow: inset 0 0 0 1.5px var(--signal);
+}
+
+.block.is-noshow strong {
+  text-decoration: line-through;
+}
+
+/* Waiting to be marked: a ring, so it asks for attention without a new colour. */
+.block.is-wait {
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+.rail-hint {
+  margin: -4px 0 4px;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* ---------- Blocked time on the calendar ---------- */
+
+.closed {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  display: flex;
+  align-items: flex-start;
+  padding: 5px 9px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-block);
+  background: repeating-linear-gradient(-45deg, transparent 0 6px, var(--line) 6px 7px);
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--muted);
+  text-align: left;
+  overflow: hidden;
+}
+
+.closed span {
+  padding: 1px 6px;
+  border-radius: var(--r-chip);
+  background: var(--panel-solid);
+}
+
+.closed:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.cal-col {
+  cursor: copy; /* an empty spot can be clicked to start a booking */
+}
+
+/* ---------- The window's own parts ---------- */
+
+.dialog-note {
+  margin: -6px 0 0;
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+.warn {
+  padding: 11px 14px;
+  border: 1px solid color-mix(in srgb, var(--signal) 45%, transparent);
+  border-radius: var(--r-control);
+  background: color-mix(in srgb, var(--signal) 8%, transparent);
+  font-size: var(--text-ui);
+}
+
+.warn strong {
+  font-weight: 600;
+}
+
+.warn ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+}
+
+.warn strong + ul {
+  margin-top: 6px;
+}

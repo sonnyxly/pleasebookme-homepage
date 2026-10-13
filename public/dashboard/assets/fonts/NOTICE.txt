@@ -1,0 +1,14 @@
+Libron (Libron-Regular, Libron-Bold, Libron-Italic) - web fonts, release v0.30
+Source: https://github.com/nicoverbruggen/libron
+
+Copyright (c) The Newsreader Project Authors (2020)
+Copyright (c) Nico Verbruggen (2026), Readerly and Libron
+"Libron" is a Reserved Font Name.
+
+Licensed under the SIL Open Font License, Version 1.1.
+Full licence text: https://github.com/nicoverbruggen/libron/blob/main/LICENSE
+
+These files are used unmodified. Do not rename or modify them and keep the name
+"Libron" without the copyright holder's written permission.
+
+TODO: add the upstream LICENSE file next to this notice before the site goes live.

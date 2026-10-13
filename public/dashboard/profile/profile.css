@@ -1,0 +1,187 @@
+/* Hồ sơ tiệm: one short form, and a picture of how customers see it. */
+
+.page {
+  container: page / inline-size;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin: 0 4px 12px;
+}
+
+.head h1 {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-title);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+.head p {
+  flex: 0 0 100%;
+  margin: 0;
+  padding-right: max(0px, 100% - 78ch);
+  font-size: var(--text-body);
+  color: var(--muted);
+}
+
+.note {
+  margin: 14px 4px 4px;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.form {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
+  align-items: start;
+  gap: 12px;
+}
+
+.card {
+  display: grid;
+  gap: 14px;
+  padding: 18px 22px 22px;
+}
+
+.card h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-h3);
+  line-height: 1.25;
+}
+
+.form-main {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.area {
+  height: auto;
+  padding: 10px 12px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--r-card);
+  background: var(--accent) center / cover no-repeat;
+  color: var(--accent-ink);
+}
+
+.logo .icon {
+  width: 26px;
+  height: 26px;
+}
+
+.logo.has-image .icon {
+  display: none;
+}
+
+.logo-row small {
+  display: block;
+  margin-top: 4px;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* How the top of the booking page looks with what is typed. */
+.seen {
+  position: sticky;
+  top: calc(var(--bar-h) + var(--gap) * 2 + 14px);
+}
+
+.seen-card {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-panel);
+  background: white;
+  color: var(--black);
+}
+
+.seen-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.seen-head .logo {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--r-control);
+  background-color: var(--burgundy);
+  color: var(--silver);
+}
+
+.seen-head strong {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-h3);
+  line-height: 1.25;
+}
+
+.seen-card p {
+  margin: 0;
+  font-size: var(--text-ui);
+  color: rgb(26 26 26 / 0.68);
+}
+
+.seen-card dl {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  font-size: var(--text-ui);
+}
+
+.seen-card dl div {
+  display: flex;
+  gap: 8px;
+}
+
+.seen-card dl .icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  color: rgb(26 26 26 / 0.55);
+}
+
+.seen-card dd {
+  margin: 0;
+}
+
+.seen-empty {
+  color: rgb(26 26 26 / 0.45);
+}
+
+@container page (max-width: 860px) {
+  .form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .seen {
+    position: static;
+  }
+}

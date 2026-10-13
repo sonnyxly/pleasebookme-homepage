@@ -1,0 +1,1466 @@
+/* Shell: page canvas, glass sidebar, glass top bar, and the shared controls. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.chrome :focus-visible {
+  outline-color: var(--chrome-ink);
+}
+
+.icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* `hidden` wins over any display a class sets. */
+[hidden] {
+  display: none !important;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Sidebar width ---------- */
+/* The sidebar can be closed down to a strip of icons. --side is the room the
+   rest of the page leaves for it. --leg is the width it is drawn at: the same,
+   except while a closed sidebar is pointed at and opens over the page. */
+
+:root {
+  --rail-w: 60px;
+  --side: var(--sidebar-w);
+  --leg: var(--side);
+}
+
+:root[data-sidebar="collapsed"] {
+  --side: var(--rail-w);
+}
+
+/* ---------- Canvas: gridlines and water, the brand pattern ---------- */
+/* The glass needs something behind it to bend, so the page carries the same
+   grid and flow lines as the landing site, kept faint. */
+
+.canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.canvas-glow {
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(38% 46% at 8% 12%, var(--glow-1), transparent 70%),
+    radial-gradient(34% 40% at 96% 92%, var(--glow-2), transparent 72%),
+    radial-gradient(30% 34% at 2% 96%, var(--glow-2), transparent 70%);
+}
+
+.canvas-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ---------- Glass ---------- */
+/* The top bar and the sidebar are one piece of glass shaped like an L: the bar
+   runs the full width, the sidebar hangs from its left end, and the corner
+   where the two meet is rounded inward. .frame draws that piece. The bar and
+   the sidebar themselves only hold the controls that sit on it. */
+
+.chrome {
+  position: fixed;
+  z-index: 30;
+  color: var(--chrome-ink);
+}
+
+.frame {
+  /* B: height of the bar. S: width of the sidebar. R: the outer corners.
+     r: the inner corner. */
+  --B: var(--bar-h);
+  --S: var(--leg);
+  --R: var(--r-frame);
+  --r: var(--r-fillet);
+  /* The outline of the L, clockwise from the top-left corner. */
+  --frame-out:
+    from var(--R) 0,
+    hline to calc(100% - var(--R)),
+    arc to 100% var(--R) of var(--R) cw,
+    vline to calc(var(--B) - var(--R)),
+    arc to calc(100% - var(--R)) var(--B) of var(--R) cw,
+    hline to calc(var(--S) + var(--r)),
+    arc to var(--S) calc(var(--B) + var(--r)) of var(--r) ccw,
+    vline to calc(100% - var(--R)),
+    arc to calc(var(--S) - var(--R)) 100% of var(--R) cw,
+    hline to var(--R),
+    arc to 0 calc(100% - var(--R)) of var(--R) cw,
+    vline to var(--R),
+    arc to var(--R) 0 of var(--R) cw,
+    close;
+  /* The same outline one pixel in. The two together cut the hairline edge. */
+  --frame-in:
+    move to var(--R) 1px,
+    hline to calc(100% - var(--R)),
+    arc to calc(100% - 1px) var(--R) of calc(var(--R) - 1px) cw,
+    vline to calc(var(--B) - var(--R)),
+    arc to calc(100% - var(--R)) calc(var(--B) - 1px) of calc(var(--R) - 1px) cw,
+    hline to calc(var(--S) + var(--r)),
+    arc to calc(var(--S) - 1px) calc(var(--B) + var(--r)) of calc(var(--r) + 1px) ccw,
+    vline to calc(100% - var(--R)),
+    arc to calc(var(--S) - var(--R)) calc(100% - 1px) of calc(var(--R) - 1px) cw,
+    hline to var(--R),
+    arc to 1px calc(100% - var(--R)) of calc(var(--R) - 1px) cw,
+    vline to var(--R),
+    arc to var(--R) 1px of calc(var(--R) - 1px) cw,
+    close;
+
+  position: fixed;
+  inset: var(--gap);
+  z-index: 29;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 45% at 0% 0%, var(--chrome-sheen), transparent 62%),
+    linear-gradient(168deg, var(--chrome-a), var(--chrome-b));
+  -webkit-backdrop-filter: blur(16px) saturate(170%);
+  backdrop-filter: blur(16px) saturate(170%);
+  clip-path: shape(var(--frame-out));
+  transition: clip-path 0.36s var(--ease-out);
+}
+
+.frame i {
+  position: absolute;
+  inset: 0;
+}
+
+/* The hairline around the glass, brighter along the top where light catches. */
+.frame-edge {
+  background: linear-gradient(180deg, var(--chrome-shine), var(--chrome-edge) 72px);
+  clip-path: shape(evenodd var(--frame-out), var(--frame-in));
+  transition: clip-path 0.36s var(--ease-out);
+}
+
+/* A soft highlight that follows the pointer while it is over the glass. */
+
+.panel {
+  position: relative;
+  /* Theme tint (burgundy in light, glacier in dark) over a neutral frost. */
+  background:
+    linear-gradient(180deg, var(--panel-tint-a), var(--panel-tint-b)),
+    linear-gradient(180deg, var(--panel-a), var(--panel-b));
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(150%);
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--r-panel);
+  box-shadow:
+    inset 0 1px 0 var(--panel-shine),
+    0 22px 44px -34px var(--panel-drop);
+}
+
+/* ---------- Sidebar ---------- */
+
+.sidebar {
+  top: calc(var(--gap) + var(--bar-h));
+  bottom: var(--gap);
+  left: var(--gap);
+  z-index: 35;
+  width: var(--leg);
+  display: flex;
+  flex-direction: column;
+  padding: 0 8px 8px;
+  overflow: hidden;
+  transition: width 0.36s var(--ease-out);
+}
+
+/* The logo sits in the corner of the L: at the left end of the top bar, and
+   exactly as wide as the sidebar under it. */
+.brand {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: var(--leg);
+  height: 100%;
+  padding-left: 13px;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  transition: width 0.36s var(--ease-out);
+}
+
+/* On phones the sidebar is a drawer and shows its own copy of the logo. */
+.sidebar .brand {
+  display: none;
+}
+
+.mark {
+  flex: none;
+  width: 34px;
+  height: 34px;
+}
+
+/* The wordmark is the text style in the Figma Branding file: "PleaseBookMe"
+   in Josefin Slab Regular, tracked in by 2%. */
+.wordmark {
+  font-family: var(--font-wordmark);
+  font-weight: 400;
+  font-size: var(--text-h2);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.tagline {
+  margin: 0;
+  padding: 0 6px 10px;
+  font-size: var(--text-micro);
+  line-height: 1.35;
+  color: var(--chrome-muted);
+  white-space: nowrap;
+}
+
+.nav {
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 6px 0;
+  border-top: 1px solid var(--chrome-line);
+}
+
+.nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.nav-note {
+  margin: 14px 12px 6px;
+  font-size: var(--text-small);
+  color: var(--chrome-muted);
+  white-space: nowrap;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: var(--r-control);
+  color: var(--chrome-ink);
+  font-weight: 500;
+  text-decoration: none;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  transition:
+    background-color 0.18s ease,
+    transform 0.25s var(--ease-out);
+}
+
+.nav-link:hover {
+  background: var(--chrome-hover);
+}
+
+.nav-link:active {
+  transform: scale(0.98);
+}
+
+.nav-link[aria-current="page"] {
+  background: var(--chrome-active);
+  color: var(--chrome-active-ink);
+  font-weight: 600;
+  box-shadow: 0 8px 18px -12px rgb(0 0 0 / 0.6);
+}
+
+.nav-link[aria-disabled="true"] {
+  color: var(--chrome-muted);
+  cursor: default;
+}
+
+.nav-link[aria-disabled="true"]:hover {
+  background: none;
+}
+
+.sidebar-foot {
+  display: grid;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--chrome-line);
+}
+
+.share {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: var(--r-control);
+  border: 1px solid var(--chrome-line);
+  background: var(--chrome-well);
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: background-color 0.18s ease;
+}
+
+.share:hover {
+  background: var(--chrome-hover);
+}
+
+/* Phones have no room for the language switch in the bar, so it moves here. */
+.sidebar .drawer-lang {
+  display: none;
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 4px 4px 8px;
+  white-space: nowrap;
+}
+
+.avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--chrome-active);
+  color: var(--chrome-active-ink);
+  font-size: var(--text-ui);
+  font-weight: 600;
+}
+
+.account-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.account-text:hover strong {
+  text-decoration: underline;
+}
+
+.account-text strong {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-text span {
+  font-size: var(--text-small);
+  color: var(--chrome-muted);
+}
+
+/* ---------- Top bar ---------- */
+
+.topbar {
+  top: var(--gap);
+  left: var(--gap);
+  right: var(--gap);
+  height: var(--bar-h);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 9px;
+}
+
+/* Closed sidebar (wide screens only; on phones it is already a drawer).
+   Pointing at the strip, or at the logo above it, opens it over the page. */
+@media (min-width: 1001px) {
+  :is(.sidebar, .topbar) :is(.nav-link span, .share span, .wordmark, .tagline, .nav-note, .account-text, .account .icon-btn) {
+    transition: opacity 0.2s ease;
+  }
+
+  :root[data-sidebar="collapsed"]:has(.sidebar:is(:hover, :has(:focus-visible)), .topbar .brand:is(:hover, :focus-visible)) {
+    --leg: var(--sidebar-w);
+  }
+
+  /* Search is out of the row, so the controls on the right push themselves over. */
+  .topbar .lang-seg {
+    margin-left: auto;
+  }
+
+  :root[data-sidebar="collapsed"]:not(:has(.sidebar:is(:hover, :has(:focus-visible)), .topbar .brand:is(:hover, :focus-visible)))
+    :is(.nav-link span, .share span, .wordmark, .tagline, .nav-note, .account-text, .account .icon-btn) {
+    opacity: 0;
+  }
+}
+
+.topbar .menu-btn {
+  display: none;
+}
+
+/* Search sits in the true middle of the bar, where people look for it, and
+   stays there while the sidebar opens and closes beside it. */
+.search {
+  position: absolute;
+  left: 50%;
+  width: min(440px, 32vw);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--r-card);
+  background: var(--chrome-well);
+  border: 1px solid var(--chrome-line);
+  color: var(--chrome-muted);
+}
+
+.search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  color: var(--chrome-ink);
+}
+
+.search input::placeholder {
+  color: var(--chrome-muted);
+}
+
+.search:focus-within {
+  outline: 2px solid var(--chrome-ink);
+  outline-offset: 1px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.icon-btn {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  transition:
+    background-color 0.18s ease,
+    transform 0.25s var(--ease-out);
+}
+
+.chrome .icon-btn:hover {
+  background: var(--chrome-hover);
+}
+
+.icon-btn:active {
+  transform: scale(0.92);
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--r-control);
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    transform 0.25s var(--ease-out),
+    background-color 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+a.btn {
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-quiet {
+  border: 1px solid var(--line-strong);
+  color: var(--ink);
+}
+
+.btn-quiet:hover {
+  background: var(--well);
+}
+
+.btn-on-chrome {
+  border-radius: var(--r-card);
+  background: var(--chrome-active);
+  color: var(--chrome-active-ink);
+}
+
+.btn-small {
+  height: 30px;
+  padding: 0 11px;
+  font-size: var(--text-ui);
+  border-radius: var(--r-block);
+}
+
+/* ---------- Segmented control: a thumb that slides between options ---------- */
+
+.seg {
+  --seg-bg: var(--well);
+  --seg-edge: var(--line);
+  --seg-ink: var(--muted);
+  --seg-thumb: var(--accent);
+  --seg-thumb-ink: var(--accent-ink);
+  position: relative;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  padding: 3px;
+  border-radius: var(--r-pill);
+  background: var(--seg-bg);
+  border: 1px solid var(--seg-edge);
+}
+
+.seg::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc((100% - 6px) / var(--n, 2));
+  border-radius: var(--r-pill);
+  background: var(--seg-thumb);
+  transform: translateX(calc(var(--i, 0) * 100%));
+  transition: transform 0.34s var(--ease-liquid);
+}
+
+.seg button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 30px;
+  padding: 0 14px;
+  border-radius: var(--r-pill);
+  font-size: var(--text-ui);
+  font-weight: 600;
+  color: var(--seg-ink);
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.seg button[aria-pressed="true"] {
+  color: var(--seg-thumb-ink);
+}
+
+.seg .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.chrome .seg {
+  --seg-bg: var(--chrome-well);
+  --seg-edge: var(--chrome-line);
+  --seg-ink: var(--chrome-muted);
+  --seg-thumb: var(--chrome-active);
+  --seg-thumb-ink: var(--chrome-active-ink);
+}
+
+.chrome .seg button {
+  height: 28px;
+  padding: 0 11px;
+}
+
+/* ---------- Form controls ---------- */
+
+.field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr); /* so a long value inside cannot widen it */
+  gap: 6px;
+  min-width: 0;
+}
+
+.field > label,
+.field > .label {
+  font-size: var(--text-ui);
+  font-weight: 600;
+}
+
+.field small {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.field .error {
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--signal);
+}
+
+.input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-control);
+  background: var(--well);
+  color: var(--ink);
+}
+
+.input:focus-visible {
+  outline-offset: 1px;
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--signal);
+}
+
+select.input {
+  padding-right: 34px;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 17px,
+    calc(100% - 13px) 17px;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+/* The list a select opens is drawn by the browser on a sheet of its own. The
+   field's see-through background would land there on white, leaving light
+   text unreadable in the dark theme, so the options carry a solid one. */
+select.input option,
+select.input optgroup {
+  background: var(--panel-solid);
+  color: var(--ink);
+}
+
+/* A unit that sits inside the right end of an input: "phút", "₫". */
+.with-unit {
+  position: relative;
+}
+
+.with-unit .input {
+  padding-right: 52px;
+}
+
+.with-unit span {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.switch {
+  flex: none;
+  position: relative;
+  width: 40px;
+  height: 24px;
+  margin: 0;
+  border-radius: var(--r-pill);
+  appearance: none;
+  background: var(--line-strong);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+  transition: transform 0.28s var(--ease-liquid);
+}
+
+.switch:checked {
+  background: var(--accent);
+}
+
+.switch:checked::after {
+  transform: translateX(16px);
+}
+
+/* Two fields side by side, a ticked line of text, chips that toggle, and a
+   row that ends in a switch. */
+
+.field-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: -8px;
+  font-size: var(--text-ui);
+  cursor: pointer;
+}
+
+.check input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip-pick span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px 0 5px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.chip-pick i {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--well);
+  font-style: normal;
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+.chip-pick input:checked + span {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.chip-pick input:checked + span i {
+  background: color-mix(in srgb, var(--accent-ink) 22%, transparent);
+}
+
+.chip-pick input:focus-visible + span {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: var(--r-control);
+  background: var(--well);
+  font-size: var(--text-ui);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* A link beside its copy button, and a delete button that asks twice. */
+
+.link-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.link-row code {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border-radius: var(--r-control);
+  background: var(--well);
+  font-family: var(--font-ui);
+  font-size: var(--text-ui);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-danger {
+  color: var(--signal);
+}
+
+.btn-danger.is-sure {
+  border-color: transparent;
+  background: var(--signal);
+  color: white;
+}
+
+/* ---------- Booking status (blocks, badges, swatches, counts) ---------- */
+
+.st-accepted {
+  background: var(--st-confirmed-bg);
+  color: var(--st-confirmed-ink);
+}
+
+.st-pending {
+  background: var(--st-pending-bg);
+  color: var(--st-pending-ink);
+  box-shadow: inset 0 0 0 1px var(--st-pending-edge);
+}
+
+.st-awaiting_host {
+  background: color-mix(in srgb, var(--burgundy) 14%, transparent);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.st-cancelled,
+.st-rejected {
+  background: transparent;
+  color: var(--st-ghost-ink);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--r-pill);
+  font-size: var(--text-small);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pill {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: var(--r-pill);
+  background: var(--st-pending-bg);
+  color: var(--st-pending-ink);
+  box-shadow: inset 0 0 0 1px var(--st-pending-edge);
+  font-family: var(--font-ui);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+/* ---------- Colour codes (branches, people, widgets) ---------- */
+/* A code class only names the colour; .code-fill and .code-dot paint with it. */
+
+.code-1 {
+  --code: var(--code-1);
+  --code-ink: var(--code-1-ink);
+}
+
+.code-2 {
+  --code: var(--code-2);
+  --code-ink: var(--code-2-ink);
+}
+
+.code-3 {
+  --code: var(--code-3);
+  --code-ink: var(--code-3-ink);
+}
+
+.code-4 {
+  --code: var(--code-4);
+  --code-ink: var(--code-4-ink);
+}
+
+.code-5 {
+  --code: var(--code-5);
+  --code-ink: var(--code-5-ink);
+}
+
+.code-6 {
+  --code: var(--code-6);
+  --code-ink: var(--code-6-ink);
+}
+
+.code-7 {
+  --code: var(--code-7);
+  --code-ink: var(--code-7-ink);
+}
+
+.code-8 {
+  --code: var(--code-8);
+  --code-ink: var(--code-8-ink);
+}
+
+.code-fill {
+  background: var(--code);
+  color: var(--code-ink);
+  box-shadow: inset 0 0 0 1px var(--st-pending-edge);
+}
+
+.code-dot {
+  flex: none;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--code);
+  box-shadow: inset 0 0 0 1px var(--st-pending-edge);
+}
+
+/* ---------- A button that opens a list of ticks ---------- */
+
+.ticks {
+  position: relative;
+}
+
+.ticks > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.ticks > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ticks > summary .icon:last-child {
+  width: 14px;
+  height: 14px;
+  margin-right: -3px;
+  transition: transform 0.24s var(--ease-out);
+}
+
+.ticks[open] > summary .icon:last-child {
+  transform: rotate(180deg);
+}
+
+.ticks-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 220px;
+  padding: 6px;
+  border-radius: var(--r-card);
+  transform-origin: top left;
+  animation: menu-in 0.26s var(--ease-out);
+}
+
+.tick {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 36px;
+  padding: 0 10px;
+  border-radius: var(--r-block);
+  font-size: var(--text-ui);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.tick:hover {
+  background: var(--well);
+}
+
+.tick input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.tick:first-child {
+  margin-bottom: 4px;
+}
+
+/* A select the height of a small button, for toolbars. */
+select.input-small {
+  width: auto;
+  height: 30px;
+  padding: 0 28px 0 10px;
+  border-radius: var(--r-block);
+  font-size: var(--text-ui);
+  font-weight: 600;
+  background-position:
+    calc(100% - 15px) 12px,
+    calc(100% - 10px) 12px;
+}
+
+/* ---------- A plain table of records ---------- */
+
+.dt-wrap {
+  overflow-x: auto;
+}
+
+.dt {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: var(--text-body);
+}
+
+.dt th {
+  padding: 10px 18px;
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.dt td {
+  padding: 12px 18px;
+  border-top: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.dt tbody tr {
+  transition: background-color 0.18s ease;
+}
+
+.dt tbody tr:hover {
+  background: var(--well);
+}
+
+.dt .dt-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.dt .dt-name strong {
+  display: block;
+  font-weight: 600;
+}
+
+.dt .dt-name small {
+  display: block;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.dt .dt-quiet {
+  color: var(--muted);
+}
+
+/* ---------- A window for a short form ---------- */
+
+.dialog {
+  position: fixed;
+  inset: 0;
+  width: min(560px, calc(100vw - 24px));
+  height: fit-content;
+  max-height: calc(100dvh - 24px);
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--r-panel);
+  background: color-mix(in srgb, var(--panel-solid) 94%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  backdrop-filter: blur(22px) saturate(150%);
+  color: var(--ink);
+  box-shadow:
+    inset 0 1px 0 var(--panel-shine),
+    0 40px 90px -30px rgb(0 0 0 / 0.6);
+  overflow: auto;
+}
+
+.dialog[open] {
+  animation: dialog-in 0.34s var(--ease-out);
+}
+
+.dialog::backdrop {
+  background: rgb(0 0 0 / 0.42);
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+}
+
+.dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 14px 8px 22px;
+}
+
+.dialog-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-h2);
+  line-height: 1.2;
+}
+
+.dialog-head .icon-btn:hover {
+  background: var(--well);
+}
+
+.dialog-body {
+  display: grid;
+  gap: 14px;
+  padding: 8px 22px 18px;
+}
+
+.dialog-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 22px 18px;
+  border-top: 1px solid var(--line);
+}
+
+.dialog-foot .spacer {
+  flex: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog[open] {
+    animation: none;
+  }
+}
+
+/* ---------- Quick-create menu and toast ---------- */
+
+.menu {
+  position: fixed;
+  z-index: 45;
+  top: calc(var(--gap) + var(--bar-h) + 8px);
+  right: var(--gap);
+  min-width: 220px;
+  padding: 6px;
+  border-radius: var(--r-card);
+  transform-origin: top right;
+  animation: menu-in 0.26s var(--ease-out);
+}
+
+.menu[hidden] {
+  display: none;
+}
+
+.menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: var(--r-control);
+  color: var(--ink);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.menu a:hover {
+  background: var(--well);
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(-6px);
+  }
+}
+
+.toast {
+  position: fixed;
+  z-index: 60;
+  left: 50%;
+  bottom: 26px;
+  padding: 11px 18px;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 500;
+  transform: translate(-50%, 0);
+  animation: toast-in 0.36s var(--ease-out);
+}
+
+.toast.is-leaving {
+  opacity: 0;
+  transform: translate(-50%, 8px);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 14px) scale(0.96);
+  }
+}
+
+/* ---------- Page area ---------- */
+
+.page {
+  position: relative;
+  z-index: 1;
+  padding: calc(var(--bar-h) + var(--gap) * 2 + 14px) 14px 14px calc(var(--side) + var(--gap) * 2 + 14px);
+  transition: padding-left 0.36s var(--ease-out);
+}
+
+.scrim {
+  display: none;
+}
+
+/* ---------- Browsers that cannot cut the L ---------- */
+/* Without shape() the bar and the sidebar are two plain pieces of glass. */
+
+@supports not (clip-path: shape(from 0 0, line to 1px 1px, close)) {
+  .frame {
+    inset: var(--gap) var(--gap) auto;
+    height: var(--bar-h);
+    border: 1px solid var(--chrome-edge);
+    border-radius: var(--r-bar);
+    clip-path: none;
+  }
+
+  .frame-edge {
+    display: none;
+  }
+
+  .sidebar {
+    top: calc(var(--gap) * 2 + var(--bar-h));
+    padding-top: 8px;
+    border: 1px solid var(--chrome-edge);
+    border-radius: var(--r-sidebar);
+    background: linear-gradient(168deg, var(--chrome-a), var(--chrome-b));
+    -webkit-backdrop-filter: blur(16px) saturate(170%);
+    backdrop-filter: blur(16px) saturate(170%);
+  }
+}
+
+/* ---------- Narrow screens: the sidebar becomes a drawer ---------- */
+
+@media (max-width: 1000px) {
+  /* The glass shrinks to the bar alone, and the drawer gets glass of its own. */
+  .frame {
+    inset: var(--gap) var(--gap) auto;
+    height: var(--bar-h);
+    border: 1px solid var(--chrome-edge);
+    border-radius: var(--r-bar);
+    box-shadow: inset 0 1px 0 var(--chrome-shine);
+    clip-path: none;
+  }
+
+  .frame-edge {
+    display: none;
+  }
+
+  .sidebar {
+    top: var(--gap);
+    z-index: 50;
+    width: var(--sidebar-w);
+    padding: 8px;
+    border: 1px solid var(--chrome-edge);
+    border-radius: var(--r-sidebar);
+    background: linear-gradient(168deg, var(--chrome-a), var(--chrome-b));
+    -webkit-backdrop-filter: blur(16px) saturate(170%);
+    backdrop-filter: blur(16px) saturate(170%);
+    transform: translateX(calc(-100% - var(--gap) * 2));
+    transition: transform 0.4s var(--ease-out);
+  }
+
+  .sidebar .brand {
+    display: flex;
+    width: auto;
+    height: auto;
+    padding: 6px 4px 8px;
+  }
+
+  .nav-open .sidebar {
+    transform: none;
+  }
+
+  .nav-open .scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 49;
+    background: rgb(0 0 0 / 0.4);
+  }
+
+  /* Menu button first, then the logo, as on most phone apps. */
+  .topbar {
+    padding-left: 7px;
+  }
+
+  .topbar .brand {
+    width: auto;
+    padding-left: 2px;
+  }
+
+  .topbar .side-btn {
+    display: none;
+  }
+
+  .topbar .menu-btn {
+    display: grid;
+    order: -1;
+  }
+
+  .search {
+    position: static;
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    transform: none;
+  }
+
+  .page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+@media (max-width: 760px) {
+  .topbar .wordmark {
+    display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .topbar .lang-seg {
+    display: none;
+  }
+
+  .sidebar .drawer-lang {
+    display: grid;
+  }
+
+  .quick-label {
+    display: none;
+  }
+
+  .topbar .btn-on-chrome {
+    width: 36px;
+    padding: 0;
+    border-radius: 50%;
+  }
+}
+
+/* ---------- Preferences ---------- */
+
+/* The glass falls back to solid colour for people who turn transparency off,
+   which is the setting the macOS reference screenshot is about. */
+@media (prefers-reduced-transparency: reduce) {
+  .frame,
+  .sidebar,
+  .panel {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .frame {
+    background: var(--chrome-solid);
+  }
+
+  .panel {
+    background: var(--panel-solid);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) and (max-width: 1000px) {
+  .sidebar {
+    background: var(--chrome-solid);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

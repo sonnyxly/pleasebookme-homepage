@@ -1,0 +1,205 @@
+/*
+  pleasebookme dashboard tokens.
+  Primitives are the fills in the Figma "Branding" file, with Black kept at
+  #1A1A1A (Sonny, 2026-10-13). Light pairs with Burgundy, dark pairs with
+  Glacier. Role names follow the landing site (paper, ink, muted, line, accent).
+*/
+
+@font-face {
+  font-family: "Libron";
+  src: url("fonts/Libron-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Libron";
+  src: url("fonts/Libron-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Libron";
+  src: url("fonts/Libron-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Primitives */
+  --silver: #f7f7f7;
+  --black: #1a1a1a;
+  --glacier: #9dbbe5;
+  --burgundy: #492a3b;
+  --glacier-rgb: 157 187 229;
+  --burgundy-rgb: 73 42 59;
+  --mark-fold: #9a2a3d;
+
+  /* Type */
+  --font-display: "Libron", Georgia, "Times New Roman", serif;
+  --font-ui: "Be Vietnam Pro", system-ui, "Segoe UI", sans-serif;
+  --font-wordmark: "Josefin Slab", "Libron", Georgia, serif;
+
+  /* Text: nine sizes and the page title. Every page uses these names, so a
+     size is changed here and nowhere else. */
+  --text-micro: 11px; /* axis labels, weekday letters */
+  --text-small: 12.5px; /* hints, second lines, table headings, tags */
+  --text-ui: 13.5px; /* buttons, options, field labels, table cells */
+  --text-body: 14.5px; /* running text and the main value in a row */
+  --text-lead: 17px; /* a large field or a figure inside a card */
+  --text-h3: 21px; /* headings inside a panel */
+  --text-h2: 25px; /* a window's or a section's heading */
+  --text-display: 32px; /* a date or a name set large */
+  --text-figure: 40px; /* the big number on a card */
+  --text-title: clamp(26px, 2.5vw, 36px); /* the page title */
+
+  /* Shape: sidebar and bar radii are the Figma shell's (27 / 25). */
+  --sidebar-w: 260px;
+  --bar-h: 54px;
+  --gap: 10px;
+  --r-sidebar: 27px;
+  --r-bar: 25px;
+  --r-frame: 26px; /* outer corners of the glass L */
+  --r-fillet: 18px; /* the inner corner, where the bar meets the sidebar */
+  /* Corners, small to large. Circles use 50% and are not listed. */
+  --r-tick: 3px; /* bars, tracks, tiny marks */
+  --r-chip: 8px; /* tags, small swatches */
+  --r-block: 10px; /* a booking on the calendar, small buttons */
+  --r-control: 12px; /* fields, buttons, options */
+  --r-card: 18px; /* a box inside a panel, menus */
+  --r-panel: 22px; /* panels */
+  /* --r-frame (26px, above) is also the corner of windows and the widget card. */
+  --r-pill: 999px; /* fully round ends */
+
+  /* Two ways of moving. The spring is for something sliding into a place the
+     user chose (a switch, the thumb of a segmented control, a picked colour).
+     Everything else, pressing and appearing, uses the plain ease. */
+  --ease-liquid: cubic-bezier(0.3, 1.35, 0.5, 1);
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Booking status, the same in both themes so the colours keep one meaning. */
+  --st-confirmed-bg: var(--glacier);
+  --st-confirmed-ink: var(--black);
+  --st-pending-bg: var(--burgundy);
+  --st-pending-ink: var(--silver);
+
+  /* Colour codes: one per branch, person or widget on the calendar. They stay
+     clear of Glacier and Burgundy, which already mean "confirmed" and
+     "waiting". Light and dark fills alternate, so two neighbours differ in
+     lightness as well as in hue. */
+  --code-1: #8fc9b5; /* sage */
+  --code-1-ink: #1a1a1a;
+  --code-2: #5d4a8a; /* plum */
+  --code-2-ink: #f7f7f7;
+  --code-3: #e6b866; /* ochre */
+  --code-3-ink: #1a1a1a;
+  --code-4: #1f5a5e; /* pine */
+  --code-4-ink: #f7f7f7;
+  --code-5: #e39a7b; /* clay */
+  --code-5-ink: #1a1a1a;
+  --code-6: #4d5666; /* slate */
+  --code-6-ink: #f7f7f7;
+  --code-7: #c7b3e6; /* lilac */
+  --code-7-ink: #1a1a1a;
+  --code-8: #6b7f3a; /* moss */
+  --code-8-ink: #f7f7f7;
+}
+
+/* ---------- Light: paper page, burgundy glass ---------- */
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --paper: #f7f7f7;
+  --ink: #1a1a1a;
+  --muted: #575757;
+  --line: rgb(26 26 26 / 0.1);
+  --line-strong: rgb(26 26 26 / 0.18);
+  --accent: var(--burgundy);
+  --accent-ink: var(--silver);
+  --signal: #b3261e;
+  --focus: var(--burgundy);
+
+  --chrome-a: rgb(var(--burgundy-rgb) / 0.86);
+  --chrome-b: rgb(var(--burgundy-rgb) / 0.7);
+  --chrome-solid: var(--burgundy);
+  --chrome-ink: #f7f7f7;
+  --chrome-muted: rgb(247 247 247 / 0.8);
+  --chrome-line: rgb(247 247 247 / 0.14);
+  --chrome-edge: rgb(255 255 255 / 0.2);
+  --chrome-shine: rgb(255 255 255 / 0.26);
+  --chrome-sheen: rgb(255 255 255 / 0.08);
+  --chrome-hover: rgb(247 247 247 / 0.1);
+  --chrome-well: rgb(0 0 0 / 0.2);
+  --chrome-active: #f7f7f7;
+  --chrome-active-ink: var(--burgundy);
+  --chrome-drop: rgb(var(--burgundy-rgb) / 0.55);
+
+  --panel-a: rgb(255 255 255 / 0.56);
+  --panel-b: rgb(255 255 255 / 0.34);
+  --panel-tint-a: rgb(var(--burgundy-rgb) / 0.07);
+  --panel-tint-b: rgb(var(--burgundy-rgb) / 0.15);
+  --panel-solid: #f5eff2;
+  --panel-edge: rgb(26 26 26 / 0.08);
+  --panel-shine: rgb(255 255 255 / 0.95);
+  --panel-drop: rgb(26 26 26 / 0.22);
+  --well: rgb(26 26 26 / 0.05);
+
+  --st-ghost-ink: #6b6b6b;
+  --st-pending-edge: transparent;
+
+  --grid: rgb(26 26 26 / 0.045);
+  --flow: rgb(var(--glacier-rgb) / 0.95);
+  --glow-1: rgb(var(--glacier-rgb) / 0.5);
+  --glow-2: rgb(var(--burgundy-rgb) / 0.14);
+}
+
+/* ---------- Dark: black page, glacier glass ---------- */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --paper: #1a1a1a;
+  --ink: #f7f7f7;
+  --muted: #a6a6a6;
+  --line: rgb(247 247 247 / 0.1);
+  --line-strong: rgb(247 247 247 / 0.2);
+  --accent: var(--glacier);
+  --accent-ink: var(--black);
+  --signal: #ff8a5c;
+  --focus: var(--glacier);
+
+  --chrome-a: rgb(var(--glacier-rgb) / 0.2);
+  --chrome-b: rgb(var(--glacier-rgb) / 0.07);
+  --chrome-solid: #3f4a5a;
+  --chrome-ink: #f7f7f7;
+  --chrome-muted: rgb(247 247 247 / 0.7);
+  --chrome-line: rgb(247 247 247 / 0.13);
+  --chrome-edge: rgb(255 255 255 / 0.16);
+  --chrome-shine: rgb(255 255 255 / 0.22);
+  --chrome-sheen: rgb(255 255 255 / 0.05);
+  --chrome-hover: rgb(247 247 247 / 0.1);
+  --chrome-well: rgb(0 0 0 / 0.24);
+  --chrome-active: rgb(var(--glacier-rgb) / 0.8);
+  --chrome-active-ink: var(--black);
+  --chrome-drop: rgb(0 0 0 / 0.7);
+
+  --panel-a: rgb(247 247 247 / 0.04);
+  --panel-b: rgb(247 247 247 / 0.02);
+  --panel-tint-a: rgb(var(--glacier-rgb) / 0.13);
+  --panel-tint-b: rgb(var(--glacier-rgb) / 0.05);
+  --panel-solid: #21262d;
+  --panel-edge: rgb(255 255 255 / 0.1);
+  --panel-shine: rgb(255 255 255 / 0.1);
+  --panel-drop: rgb(0 0 0 / 0.6);
+  --well: rgb(247 247 247 / 0.06);
+
+  --st-ghost-ink: #9a9a9a;
+  --st-pending-edge: rgb(255 255 255 / 0.2);
+
+  --grid: rgb(247 247 247 / 0.045);
+  --flow: rgb(var(--glacier-rgb) / 0.5);
+  --glow-1: rgb(var(--glacier-rgb) / 0.2);
+  --glow-2: rgb(var(--burgundy-rgb) / 0.6);
+}

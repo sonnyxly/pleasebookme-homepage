@@ -1,0 +1,396 @@
+/* Tài nguyên: three counts, the filters, the table, and the two forms. */
+
+/* The layout answers to the room the page really has, which changes when the
+   sidebar opens or closes, so the breakpoints below are container queries. */
+.page {
+  container: page / inline-size;
+}
+
+/* ---------- Heading ---------- */
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin: 0 4px 12px;
+}
+
+.head h1 {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-title);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+/* The line under the heading always takes a row of its own; the padding, not
+   a max-width, keeps it to a readable length. */
+.head p {
+  flex: 0 0 100%;
+  margin: 0;
+  padding-right: max(0px, 100% - 78ch);
+  font-size: var(--text-body);
+  color: var(--muted);
+}
+
+.head .back {
+  margin-left: -6px;
+}
+
+.head .back:hover {
+  background: var(--well);
+}
+
+.head-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.note {
+  margin: 14px 4px 4px;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* ---------- Three counts ---------- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.stat {
+  display: grid;
+  gap: 2px;
+  padding: 16px 20px 18px;
+  border-radius: var(--r-panel);
+}
+
+.stat-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--text-ui);
+  font-weight: 600;
+}
+
+.stat strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-figure);
+  line-height: 1.1;
+}
+
+.stat-sub {
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+/* The count the server cannot work out yet: there, but plainly not ready. */
+.stat.is-reserved {
+  border: 1px dashed var(--line-strong);
+  color: var(--muted);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--r-chip);
+  background: var(--well);
+  font-size: var(--text-small);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ---------- Filters ---------- */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: var(--r-card);
+}
+
+.filter-search {
+  position: relative;
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.filter-search .icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.filter-search .input {
+  padding-left: 36px;
+}
+
+.filters select.input {
+  flex: 0 1 190px;
+  width: auto;
+}
+
+.filters .btn {
+  height: 40px;
+}
+
+/* ---------- The table ---------- */
+
+.dt {
+  min-width: 860px;
+}
+
+.dt th:nth-child(4),
+.dt td:nth-child(4) {
+  text-align: right;
+}
+
+.type,
+.link-to {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.type .icon {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+}
+
+.rs-maintenance {
+  background: color-mix(in srgb, var(--code-3) 60%, transparent);
+  color: var(--ink);
+}
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin: 12px 4px 0;
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+.pager-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pager .btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 48px 20px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-panel);
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty p,
+.empty h2 {
+  margin: 0;
+}
+
+.empty.is-left {
+  justify-items: start;
+  max-width: 760px;
+  padding: 24px;
+  text-align: left;
+}
+
+.empty h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-h3);
+  color: var(--ink);
+}
+
+/* ---------- The forms ---------- */
+
+.form {
+  display: grid;
+  gap: 12px;
+  max-width: 760px;
+}
+
+.card {
+  display: grid;
+  gap: 14px;
+  padding: 18px 22px 22px;
+}
+
+.card h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-h3);
+  line-height: 1.25;
+}
+
+.area {
+  height: auto;
+  padding: 10px 12px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.label-row label {
+  font-size: var(--text-ui);
+  font-weight: 600;
+}
+
+.link-btn {
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+/* The eight colour codes, as a row of round choices. */
+.swatches,
+.icon-picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.swatch {
+  position: relative;
+  cursor: pointer;
+}
+
+.swatch input,
+.icon-pick input {
+  position: absolute;
+  opacity: 0;
+}
+
+.swatch i {
+  display: block;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--code);
+  box-shadow: inset 0 0 0 1px var(--st-pending-edge);
+  transition: transform 0.24s var(--ease-liquid);
+}
+
+.swatch input:checked + i {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  transform: scale(0.86);
+}
+
+.swatch input:focus-visible + i {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.icon-pick {
+  position: relative;
+  cursor: pointer;
+}
+
+.icon-pick span:not(.visually-hidden) {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-control);
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.icon-pick input:checked + span {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.icon-pick input:focus-visible + span {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ---------- Narrower rooms ---------- */
+
+@container page (max-width: 760px) {
+  .stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stat {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 14px;
+  }
+
+  .stat strong {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    font-size: var(--text-display);
+  }
+
+  .filters select.input {
+    flex: 1 1 150px;
+  }
+}
+
+@container page (max-width: 480px) {
+  .head-actions {
+    flex-basis: 100%;
+  }
+
+  .head-actions .btn {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swatch i {
+    transition: none;
+  }
+}

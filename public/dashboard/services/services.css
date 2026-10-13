@@ -1,0 +1,869 @@
+/* Dịch vụ: heading, shop settings, the grid of service tiles, and the window
+   that edits one service. */
+
+/* The layout answers to the room the page really has, which changes when the
+   sidebar opens or closes, so the breakpoints below are container queries. */
+.page {
+  container: page / inline-size;
+}
+
+/* ---------- Heading ---------- */
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 20px;
+  margin: 0 4px 12px;
+}
+
+.head h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-title);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+.head p {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: var(--text-body);
+  color: var(--muted);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar [aria-pressed="true"] {
+  background: var(--well);
+}
+
+.note {
+  margin: 14px 4px 4px;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* ---------- Shop settings ---------- */
+/* What every service inherits. On the right, the one setting that decides how
+   a booking with several services is staffed, with an example from the menu. */
+
+.shop {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  margin-bottom: 12px;
+}
+
+.shop > * {
+  min-width: 0;
+  padding: 15px 18px;
+}
+
+.shop-basket {
+  border-left: 1px solid var(--line);
+}
+
+.shop-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 12px;
+}
+
+.shop h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-h3);
+  line-height: 1.25;
+}
+
+.shop h3 {
+  margin: 0 0 8px;
+  font-size: var(--text-ui);
+  font-weight: 600;
+}
+
+.shop-edit {
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.shop-edit:hover {
+  text-decoration: underline;
+}
+
+.shop-sub {
+  margin: 2px 0 12px;
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  gap: 10px 20px;
+  margin: 0;
+}
+
+.facts dt {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.facts dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.example {
+  min-height: 128px; /* its taller state, so the panel does not jump when the setting changes */
+  margin-top: 10px;
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+.example p {
+  margin: 0;
+}
+
+.example b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* The example booking, listed like a bill: each service, then the total. */
+.bill {
+  width: 100%;
+  margin: 6px 0;
+  border-collapse: collapse;
+  color: var(--ink);
+}
+
+.bill th,
+.bill td {
+  padding: 3px 0;
+  font-weight: 400;
+  text-align: left;
+}
+
+.bill td {
+  padding-left: 12px;
+  white-space: nowrap;
+}
+
+.bill td:nth-child(2) {
+  color: var(--muted);
+}
+
+.bill .num {
+  text-align: right;
+}
+
+.bill tfoot th,
+.bill tfoot td {
+  padding-top: 5px;
+  border-top: 1px solid var(--line-strong);
+  font-weight: 600;
+}
+
+/* ---------- Tiles ---------- */
+/* One tile per service: the name in the middle, one line under it, price and
+   length as two pills, and a picture rising from the bottom. The first tile
+   runs the full width. */
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* A tile's colours do not change with the theme: they are the owner's choice.
+   --t-top and --t-end are the two ends of the background, --t-ink the text. */
+.tint-glacier {
+  --t-top: color-mix(in srgb, var(--glacier) 36%, white);
+  --t-end: var(--glacier);
+  --t-ink: var(--black);
+}
+
+.tint-black {
+  --t-top: color-mix(in srgb, var(--black) 84%, white);
+  --t-end: color-mix(in srgb, var(--black) 60%, black);
+  --t-ink: var(--silver);
+}
+
+.tint-burgundy {
+  --t-top: color-mix(in srgb, var(--burgundy) 84%, white);
+  --t-end: color-mix(in srgb, var(--burgundy) 76%, black);
+  --t-ink: var(--silver);
+}
+
+.tint-silver {
+  --t-top: white;
+  --t-end: color-mix(in srgb, var(--silver) 88%, var(--black));
+  --t-ink: var(--black);
+}
+
+.tile {
+  --t-muted: color-mix(in srgb, var(--t-ink) 70%, transparent);
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 320px;
+  padding: 14px 22px 0;
+  border: 1px solid color-mix(in srgb, var(--t-ink) 12%, transparent);
+  border-radius: var(--r-panel);
+  background: linear-gradient(180deg, var(--t-top), var(--t-end));
+  color: var(--t-ink);
+  text-align: center;
+  box-shadow: 0 22px 44px -34px var(--panel-drop);
+  overflow: hidden;
+  transition: transform 0.4s var(--ease-out);
+}
+
+.tile.is-hero {
+  grid-column: 1 / -1;
+  min-height: 390px;
+}
+
+.tile:hover {
+  transform: translateY(-3px);
+}
+
+/* The owner's photo fills the tile; its top fades into the tile colour so the
+   name stays readable over any picture. */
+.tile.has-photo {
+  background:
+    linear-gradient(
+      180deg,
+      var(--t-top) 0%,
+      color-mix(in srgb, var(--t-top) 88%, transparent) 38%,
+      transparent 76%
+    ),
+    var(--photo) center / cover no-repeat;
+}
+
+.tile.is-hidden {
+  opacity: 0.6;
+  filter: saturate(0.35);
+}
+
+.tile-top {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 28px;
+}
+
+.tile-flag {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--t-ink) 14%, transparent);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+.tile-who {
+  display: inline-flex;
+  padding-left: 6px;
+}
+
+.tile-who i {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--t-ink) 16%, var(--t-top));
+  box-shadow: 0 0 0 2px var(--t-top);
+  font-style: normal;
+  font-size: var(--text-micro);
+  font-weight: 600;
+}
+
+.tile-title {
+  margin: 12px 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-display);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.is-hero .tile-title {
+  margin-top: 4px;
+  font-size: clamp(38px, 4.4cqi, 54px);
+}
+
+.tile-open {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+/* The name is the button; its hit area is the whole tile. */
+.tile-open::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.tile-open:focus-visible {
+  outline: none;
+}
+
+.tile-open:focus-visible::after {
+  outline: 2px solid var(--t-ink);
+  outline-offset: -5px;
+}
+
+.tile-line {
+  max-width: 36ch;
+  margin: 4px 0 0;
+  font-size: var(--text-body);
+  color: var(--t-muted);
+}
+
+.is-hero .tile-line {
+  font-size: var(--text-lead);
+}
+
+.tile-pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.tile-pills span {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 14px;
+  border-radius: var(--r-pill);
+  font-size: var(--text-ui);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pill-solid {
+  background: var(--t-ink);
+  color: var(--t-top);
+}
+
+.pill-line {
+  box-shadow: inset 0 0 0 1px var(--t-ink);
+}
+
+.tile-note {
+  margin: 9px 0 0;
+  font-size: var(--text-small);
+  color: var(--t-muted);
+}
+
+.tile-art {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: -1;
+  width: min(48%, 280px);
+  transform: translate(-50%, 14%);
+  opacity: 0.5;
+  pointer-events: none;
+  transition: transform 0.7s var(--ease-out);
+}
+
+.is-hero .tile-art {
+  width: min(38%, 420px);
+}
+
+.tile:hover .tile-art {
+  transform: translate(-50%, 8%);
+}
+
+.has-photo .tile-art {
+  display: none;
+}
+
+.tile-art svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Reordering: an arrow in each bottom corner. */
+.tile-move {
+  position: absolute;
+  bottom: 14px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--t-ink);
+  color: var(--t-top);
+  transition: transform 0.25s var(--ease-out);
+}
+
+.tile-move.is-prev {
+  left: 14px;
+}
+
+.tile-move.is-next {
+  right: 14px;
+}
+
+.tile-move:active {
+  transform: scale(0.9);
+}
+
+.tile-move:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.tile-move:focus-visible {
+  outline-color: var(--t-ink);
+}
+
+.tile-add {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 84px;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--r-panel);
+  font-weight: 600;
+  color: var(--muted);
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.tile-add:hover {
+  background: var(--well);
+  color: var(--ink);
+}
+
+/* First paint: the tiles settle in order and each picture rises into place. */
+.is-entering .tile {
+  animation: tile-in 0.7s var(--ease-out) backwards;
+  animation-delay: calc(var(--i) * 80ms);
+}
+
+.is-entering .tile-art {
+  animation: art-in 1s var(--ease-out) backwards;
+  animation-delay: calc(var(--i) * 80ms + 160ms);
+}
+
+@keyframes tile-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+}
+
+@keyframes art-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 46%);
+  }
+}
+
+/* A tile glides to its new place when the order changes. */
+::view-transition-group(*) {
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ---------- The window ---------- */
+
+.window {
+  position: fixed;
+  inset: 0;
+  width: min(960px, calc(100vw - 24px));
+  height: fit-content;
+  max-height: min(790px, calc(100dvh - 24px));
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--r-frame);
+  background: color-mix(in srgb, var(--panel-solid) 92%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  backdrop-filter: blur(22px) saturate(150%);
+  color: var(--ink);
+  box-shadow:
+    inset 0 1px 0 var(--panel-shine),
+    0 40px 90px -30px rgb(0 0 0 / 0.6);
+  overflow: hidden;
+}
+
+.window[open] {
+  animation: window-in 0.36s var(--ease-out);
+}
+
+.window::backdrop {
+  background: rgb(0 0 0 / 0.42);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  animation: backdrop-in 0.3s ease;
+}
+
+@keyframes window-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.window-form {
+  display: flex;
+  flex-direction: column;
+  max-height: min(790px, calc(100dvh - 24px));
+}
+
+.window-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 16px 12px 22px;
+}
+
+.window-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-h2);
+  line-height: 1.2;
+}
+
+.window-head .icon-btn:hover {
+  background: var(--well);
+}
+
+/* Fields on the left scroll; the preview on the right stays put. */
+.window-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+}
+
+.window-fields {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  min-height: 0;
+  padding: 4px 22px 22px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.window-side {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 22px 22px 20px;
+  border-left: 1px solid var(--line);
+}
+
+.window-side .label {
+  margin: 0;
+  font-size: var(--text-ui);
+  font-weight: 600;
+}
+
+.tile.is-preview {
+  min-height: 310px;
+  pointer-events: none;
+}
+
+.window-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--line);
+}
+
+/* ---------- Fields used only in the window ---------- */
+
+.photo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.photo-pick {
+  cursor: pointer;
+}
+
+.photo-pick:focus-within {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.swatches {
+  display: flex;
+  gap: 9px;
+  margin-left: auto;
+}
+
+.swatch-pick {
+  cursor: pointer;
+}
+
+.swatch-pick span:first-of-type {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--t-top), var(--t-end));
+  transition: box-shadow 0.2s ease;
+}
+
+.swatch-pick input:checked + span {
+  box-shadow:
+    0 0 0 2px var(--panel-solid),
+    0 0 0 4px var(--accent);
+}
+
+.swatch-pick input:focus-visible + span {
+  outline: 2px solid var(--focus);
+  outline-offset: 5px;
+}
+
+/* Folded by default: most services follow the shop and never open this. */
+.rules {
+  padding: 0 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-control);
+}
+
+.rules summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  font-size: var(--text-ui);
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+
+.rules summary::-webkit-details-marker {
+  display: none;
+}
+
+.rules summary::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  margin: 0 4px 3px auto;
+  border-right: 1.75px solid currentColor;
+  border-bottom: 1.75px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.25s var(--ease-out);
+}
+
+.rules[open] summary::after {
+  margin-bottom: -3px;
+  transform: rotate(225deg);
+}
+
+.rules-hint {
+  margin: 0 0 12px;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.rules .field-pair {
+  padding-bottom: 14px;
+}
+
+/* ---------- Narrower pages ---------- */
+
+@container page (max-width: 820px) {
+  .shop {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .shop-basket {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+}
+
+@container page (max-width: 640px) {
+  .tiles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tile.is-hero {
+    min-height: 340px;
+  }
+
+  .tile-art,
+  .is-hero .tile-art {
+    width: min(56%, 250px);
+  }
+}
+
+/* The window is outside the page container, so it follows the screen itself. */
+@media (max-width: 760px) {
+  .window-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .window-side {
+    display: none;
+  }
+
+  .field-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .swatches {
+    margin-left: 0;
+  }
+
+  /* Three buttons fit one row once Delete is only its icon; it gets its words
+     back when it asks to be pressed again. */
+  .btn-danger:not(.is-sure) span {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .window {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--panel-solid);
+  }
+}
+
+/* ---------- The menu as a table ---------- */
+
+.menu-table {
+  padding: 4px 0 0;
+  overflow: hidden;
+}
+
+.menu-table .dt {
+  min-width: 820px;
+}
+
+.menu-table .dt th:nth-last-child(1),
+.menu-table .dt td:nth-last-child(1) {
+  text-align: right;
+}
+
+/* The service's own colour or photo, small. */
+.thumb {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border: 1px solid color-mix(in srgb, var(--t-ink) 12%, transparent);
+  border-radius: var(--r-block);
+  background: linear-gradient(180deg, var(--t-top), var(--t-end)) center / cover no-repeat;
+}
+
+.menu-table .row-open {
+  text-align: left;
+}
+
+.menu-table tbody tr {
+  cursor: pointer;
+}
+
+.menu-table .row-open:hover strong {
+  text-decoration: underline;
+}
+
+.menu-table tr.is-hidden td:not(:last-child) {
+  opacity: 0.5;
+}
+
+.cell-move {
+  white-space: nowrap;
+}
+
+.cell-move .icon-btn {
+  display: inline-grid;
+}
+
+.menu-table td.num {
+  white-space: nowrap;
+}
+
+.cell-move .icon-btn:hover {
+  background: var(--line);
+}
+
+.cell-move .icon-btn:disabled {
+  opacity: 0.3;
+}
+
+.table-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 52px;
+  border-top: 1px solid var(--line);
+  font-weight: 600;
+  color: var(--muted);
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.table-add:hover {
+  background: var(--well);
+  color: var(--ink);
+}
+
+.table-add .icon {
+  width: 16px;
+  height: 16px;
+}

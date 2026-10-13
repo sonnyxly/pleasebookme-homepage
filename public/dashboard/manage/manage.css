@@ -1,0 +1,553 @@
+/* The customer's page for one booking. It shares the widget's look: a white
+   card, the shop's accent, and the same month and time pickers. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--paper);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  line-height: 1.5;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wrap {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  min-height: 100dvh;
+  padding: 28px 16px 40px;
+  align-content: start;
+}
+
+/* ---------- The card ---------- */
+
+.card {
+  --a: var(--burgundy);
+  --a-ink: var(--silver);
+  --card: white;
+  --card-ink: var(--black);
+  --card-muted: color-mix(in srgb, var(--black) 64%, white);
+  --card-line: rgb(26 26 26 / 0.14);
+  --card-well: rgb(26 26 26 / 0.05);
+  display: flex;
+  flex-direction: column;
+  width: min(440px, 100%);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-frame);
+  background: var(--card);
+  color: var(--card-ink);
+  box-shadow: 0 30px 60px -38px rgb(26 26 26 / 0.45);
+  overflow: hidden;
+}
+
+:root[data-theme="dark"] .card {
+  --a: var(--glacier);
+  --a-ink: var(--black);
+  --card: #21262d;
+  --card-ink: var(--silver);
+  --card-muted: color-mix(in srgb, var(--silver) 66%, #21262d);
+  --card-line: rgb(247 247 247 / 0.16);
+  --card-well: rgb(247 247 247 / 0.07);
+}
+
+.shop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--card-line);
+}
+
+.logo {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--r-control);
+  background: var(--a);
+  color: var(--a-ink);
+}
+
+.shop-text {
+  flex: 1;
+  display: grid;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.shop-text strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-h3);
+}
+
+.shop-text span {
+  font-size: var(--text-small);
+  color: var(--card-muted);
+}
+
+.lang {
+  flex: none;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--card-line);
+  border-radius: var(--r-pill);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+.body {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+}
+
+.body.is-centre {
+  justify-items: center;
+  padding: 44px 24px;
+  text-align: center;
+}
+
+.body.is-centre p {
+  margin: 0;
+  max-width: 28ch;
+  font-size: var(--text-lead);
+}
+
+.status {
+  justify-self: start;
+  margin: 0;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+.st-confirmed {
+  background: var(--glacier);
+  color: var(--black);
+}
+
+.st-pending {
+  background: var(--burgundy);
+  color: var(--silver);
+}
+
+.st-cancelled,
+.st-past {
+  box-shadow: inset 0 0 0 1px var(--card-line);
+  color: var(--card-muted);
+}
+
+.body h1,
+.body h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.body h1 {
+  font-size: var(--text-display);
+  letter-spacing: -0.01em;
+}
+
+.body h1.is-struck {
+  color: var(--card-muted);
+  text-decoration: line-through;
+}
+
+.body h2 {
+  font-size: var(--text-h2);
+}
+
+.facts {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.facts div {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: 10px;
+  font-size: var(--text-body);
+}
+
+.facts dt {
+  color: var(--card-muted);
+}
+
+.facts dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.facts dd span {
+  font-weight: 400;
+  color: var(--card-muted);
+}
+
+/* The receipt: each service on its own line, then one total. */
+.bill {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-body);
+}
+
+.bill th {
+  padding: 7px 0;
+  font-weight: 500;
+  text-align: left;
+}
+
+.bill td {
+  padding: 7px 0 7px 12px;
+  color: var(--card-muted);
+  white-space: nowrap;
+}
+
+.bill td.num {
+  text-align: right;
+  color: var(--card-ink);
+}
+
+.bill tbody tr + tr th,
+.bill tbody tr + tr td {
+  border-top: 1px solid var(--card-line);
+}
+
+.bill tfoot th,
+.bill tfoot td {
+  border-top: 1.5px solid var(--card-ink);
+  font-weight: 600;
+  color: var(--card-ink);
+}
+
+.foot {
+  display: grid;
+  gap: 10px;
+  padding: 16px 20px 20px;
+  border-top: 1px solid var(--card-line);
+}
+
+.note {
+  margin: 0;
+  font-size: var(--text-ui);
+  color: var(--card-muted);
+}
+
+.note.is-strong {
+  font-size: var(--text-body);
+  color: var(--card-ink);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 16px;
+  border-radius: var(--r-control);
+  background: var(--a);
+  color: var(--a-ink);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    transform 0.25s var(--ease-out),
+    opacity 0.18s ease;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.btn.is-quiet {
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--card-line);
+  color: var(--card-ink);
+}
+
+.btn.is-danger {
+  background: var(--signal);
+  color: white;
+}
+
+.body .btn {
+  flex: none;
+}
+
+/* ---------- A month to pick a day from, and the times of that day ---------- */
+
+.month {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.month strong {
+  flex: 1;
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.month button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-block);
+}
+
+.month button:hover {
+  background: var(--card-well);
+}
+
+.month button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.cal {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.cal b {
+  padding: 2px 0 4px;
+  font-size: var(--text-micro);
+  font-weight: 500;
+  text-align: center;
+  color: var(--card-muted);
+}
+
+/* A shaded square can be booked; a bare number cannot. */
+.date {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--r-block);
+  background: var(--card-well);
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.date:disabled {
+  background: none;
+  font-weight: 400;
+  color: var(--card-muted);
+  opacity: 0.55;
+  cursor: default;
+}
+
+.date.is-on {
+  background: var(--a);
+  color: var(--a-ink);
+}
+
+.date.is-today::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  transform: translateX(-50%);
+}
+
+.slots {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.slot {
+  height: 42px;
+  border: 1px solid var(--card-line);
+  border-radius: var(--r-block);
+  font-weight: 500;
+}
+
+.slot.is-on {
+  border-color: var(--a);
+  background: var(--a);
+  color: var(--a-ink);
+}
+
+/* The old time and the new one, side by side. */
+.swap {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.swap div {
+  padding: 12px 14px;
+  border-radius: var(--r-control);
+  background: var(--card-well);
+}
+
+.swap dt {
+  font-size: var(--text-small);
+  color: var(--card-muted);
+}
+
+.swap dd {
+  margin: 2px 0 0;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.swap .is-old dd {
+  font-weight: 400;
+  color: var(--card-muted);
+  text-decoration: line-through;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  font-size: var(--text-ui);
+  font-weight: 600;
+}
+
+.field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--card-line);
+  border-radius: var(--r-control);
+  background: var(--card-well);
+  font: inherit;
+  font-weight: 400;
+  color: inherit;
+  resize: vertical;
+}
+
+.done {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--a);
+  color: var(--a-ink);
+}
+
+.done .icon {
+  width: 26px;
+  height: 26px;
+}
+
+.powered {
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* ---------- Mockup only: the switch between states ---------- */
+
+.mock {
+  width: min(440px, 100%);
+  margin-top: 18px;
+  padding: 10px 14px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-control);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.mock summary {
+  cursor: pointer;
+}
+
+.mock-picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.mock-picks button {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font-size: var(--text-small);
+  color: var(--ink);
+}
+
+.mock-picks button[aria-pressed="true"] {
+  border-color: transparent;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+@media (max-width: 420px) {
+  .slots {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+}
