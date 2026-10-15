@@ -28,7 +28,7 @@
 .setup-brand .wordmark {
   font-family: var(--font-wordmark);
   font-size: var(--text-h3);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
 }
 
 .setup {

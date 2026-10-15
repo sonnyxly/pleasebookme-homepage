@@ -255,14 +255,14 @@ button {
   height: 34px;
 }
 
-/* The wordmark is the text style in the Figma Branding file: "PleaseBookMe"
-   in Josefin Slab Regular, tracked in by 2%. */
+/* The wordmark is the headline on pleasebookme.app: "PleaseBookMe" in Libron
+   Regular, tracked in by 1.5%, the same as the landing page's .display. */
 .wordmark {
   font-family: var(--font-wordmark);
   font-weight: 400;
   font-size: var(--text-h2);
   line-height: 1.1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
   white-space: nowrap;
 }
 
