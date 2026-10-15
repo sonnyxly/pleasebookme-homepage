@@ -1,4 +1,4 @@
-/* Tài nguyên: three counts, the filters, the table, and the two forms. */
+/* Tài nguyên: a line of counts, the filters, the table, and the two forms. */
 
 /* The layout answers to the room the page really has, which changes when the
    sidebar opens or closes, so the breakpoints below are container queries. */
@@ -56,59 +56,72 @@
   color: var(--muted);
 }
 
-/* ---------- Three counts ---------- */
+/* ---------- Counts by status ---------- */
+/* One quiet line under the title. Each status is a button that filters the
+   table, so the numbers are there to use, not to look at. */
 
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.stat {
-  display: grid;
-  gap: 2px;
-  padding: 16px 20px 18px;
-  border-radius: var(--r-panel);
-}
-
-.stat-label {
+.summary {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 4px 16px;
+  margin: -4px 4px 12px;
   font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+.summary button {
+  padding: 2px 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.summary button:hover {
+  color: var(--ink);
+}
+
+.summary button[aria-pressed="true"] {
+  color: var(--ink);
   font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
-.stat strong {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: var(--text-figure);
-  line-height: 1.1;
-}
+/* ---------- A resource's status: a dot and a word ---------- */
 
-.stat-sub {
-  font-size: var(--text-ui);
-  color: var(--muted);
-}
-
-/* The count the server cannot work out yet: there, but plainly not ready. */
-.stat.is-reserved {
-  border: 1px dashed var(--line-strong);
-  color: var(--muted);
-}
-
-.tag {
+.state {
   display: inline-flex;
   align-items: center;
-  height: 22px;
-  padding: 0 8px;
-  border-radius: var(--r-chip);
-  background: var(--well);
-  font-size: var(--text-small);
-  font-weight: 500;
+  gap: 8px;
   white-space: nowrap;
+}
+
+.state i {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.state.is-active i {
+  background: var(--accent);
+}
+
+.state.is-maintenance i {
+  background: var(--code-3);
+}
+
+.state.is-inactive i {
+  box-shadow: inset 0 0 0 1.5px var(--muted);
+}
+
+.state.is-retired i {
+  box-shadow: inset 0 0 0 1.5px var(--line-strong);
+}
+
+td > .state.is-retired {
+  color: var(--muted);
 }
 
 /* ---------- Filters ---------- */
@@ -176,11 +189,6 @@
   width: 16px;
   height: 16px;
   color: var(--muted);
-}
-
-.rs-maintenance {
-  background: color-mix(in srgb, var(--code-3) 60%, transparent);
-  color: var(--ink);
 }
 
 .pager {
@@ -358,22 +366,6 @@
 /* ---------- Narrower rooms ---------- */
 
 @container page (max-width: 760px) {
-  .stats {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .stat {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    column-gap: 14px;
-  }
-
-  .stat strong {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-    font-size: var(--text-display);
-  }
-
   .filters select.input {
     flex: 1 1 150px;
   }

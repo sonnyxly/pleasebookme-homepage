@@ -22,13 +22,12 @@
       "page.title": "Tài nguyên",
       "page.lede": "Chi nhánh, nhân viên, chỗ ngồi và những thứ khác mà dịch vụ của tiệm cần đến.",
       new: "Thêm tài nguyên",
-      "stat.total": "Tổng số tài nguyên",
-      "stat.total.sub": ({ n }) => `${n} đã ngừng dùng`,
-      "stat.active": "Đang hoạt động",
-      "stat.active.sub": ({ m, i }) => `${m} đang bảo trì, ${i} tạm nghỉ`,
-      "stat.use": "Mức sử dụng",
-      "stat.use.sub": "Cần dữ liệu lịch hẹn",
-      soon: "Sắp có",
+      "sum.total": ({ n }) => `${n} tài nguyên:`,
+      "sum.ACTIVE": ({ n }) => `${n} đang hoạt động`,
+      "sum.MAINTENANCE": ({ n }) => `${n} bảo trì`,
+      "sum.INACTIVE": ({ n }) => `${n} tạm nghỉ`,
+      "sum.RETIRED": ({ n }) => `${n} ngừng dùng`,
+      "sum.label": "Số tài nguyên theo trạng thái. Bấm để lọc.",
       "search.ph": "Tìm theo tên hoặc mã ngắn",
       "search.label": "Tìm tài nguyên theo tên hoặc mã ngắn",
       "filter.type": "Lọc theo loại",
@@ -106,13 +105,12 @@
       "page.title": "Resources",
       "page.lede": "The branches, staff, seats and other things your services need.",
       new: "Add resource",
-      "stat.total": "Total resources",
-      "stat.total.sub": ({ n }) => `${n} retired`,
-      "stat.active": "Active",
-      "stat.active.sub": ({ m, i }) => `${m} in maintenance, ${i} inactive`,
-      "stat.use": "Utilisation",
-      "stat.use.sub": "Needs booking data",
-      soon: "Coming soon",
+      "sum.total": ({ n }) => `${n} ${n === 1 ? "resource" : "resources"}:`,
+      "sum.ACTIVE": ({ n }) => `${n} active`,
+      "sum.MAINTENANCE": ({ n }) => `${n} in maintenance`,
+      "sum.INACTIVE": ({ n }) => `${n} inactive`,
+      "sum.RETIRED": ({ n }) => `${n} retired`,
+      "sum.label": "Resources by status. Press one to filter.",
       "search.ph": "Search by name or slug",
       "search.label": "Search resources by name or slug",
       "filter.type": "Filter by type",
@@ -190,7 +188,7 @@
   const { RESOURCES, RESOURCE_TYPES, SERVICES, SERVICE_ORDER } = PBM_SAMPLE;
 
   const STATUSES = ["ACTIVE", "INACTIVE", "MAINTENANCE", "RETIRED"];
-  const STATUS_CLASS = { ACTIVE: "st-accepted", INACTIVE: "st-awaiting_host", MAINTENANCE: "rs-maintenance", RETIRED: "st-cancelled" };
+  const STATE_CLASS = { ACTIVE: "is-active", INACTIVE: "is-inactive", MAINTENANCE: "is-maintenance", RETIRED: "is-retired" };
   const TYPE_ICONS = ["pin", "users", "seat", "box", "scissors", "clock", "tag"];
   const PAGE_SIZE = 20; // the app's page size
   const SLUG_SHAPE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -210,7 +208,7 @@
       .replace(/^-+|-+$/g, "");
   const typeOf = (id) => RESOURCE_TYPES.find((type) => type.id === id);
   const typeName = (type) => type[PBM.lang] || type.vi;
-  const badge = (status) => `<span class="badge ${STATUS_CLASS[status]}">${t("st." + status)}</span>`;
+  const stateOf = (status) => `<span class="state ${STATE_CLASS[status]}"><i aria-hidden="true"></i>${t("st." + status)}</span>`;
 
   // ---------- State ----------
 
@@ -252,24 +250,18 @@
     );
   }
 
-  function statsHTML() {
+  // One line of counts under the title. Each status in it is a shortcut to the
+  // status filter; pressing it again clears the filter.
+  function summaryHTML() {
     const count = (status) => RESOURCES.filter((r) => r.status === status).length;
-    return `
-      <div class="panel stat">
-        <span class="stat-label">${t("stat.total")}</span>
-        <strong class="num">${RESOURCES.length}</strong>
-        <span class="stat-sub">${t("stat.total.sub", { n: count("RETIRED") })}</span>
-      </div>
-      <div class="panel stat">
-        <span class="stat-label">${t("stat.active")}</span>
-        <strong class="num">${count("ACTIVE")}</strong>
-        <span class="stat-sub">${t("stat.active.sub", { m: count("MAINTENANCE"), i: count("INACTIVE") })}</span>
-      </div>
-      <div class="stat is-reserved" aria-disabled="true">
-        <span class="stat-label">${t("stat.use")}<span class="tag">${t("soon")}</span></span>
-        <strong class="num">–</strong>
-        <span class="stat-sub">${t("stat.use.sub")}</span>
-      </div>`;
+    const parts = STATUSES.filter(count).map(
+      (status) =>
+        `<button type="button" class="state ${STATE_CLASS[status]}" data-status="${status}" aria-pressed="${state.status === status}"><i aria-hidden="true"></i>${t(
+          "sum." + status,
+          { n: count(status) }
+        )}</button>`
+    );
+    return `<p class="summary" id="summary" aria-label="${t("sum.label")}"><span>${t("sum.total", { n: RESOURCES.length })}</span>${parts.join("")}</p>`;
   }
 
   function servicesCell(r) {
@@ -289,11 +281,11 @@
   function rowHTML(r) {
     const type = typeOf(r.type);
     return `<tr>
+        <td>${stateOf(r.status)}</td>
         <td><span class="dt-name"><i class="code-dot code-${r.code}"></i><span><strong>${esc(r.name)}</strong><small>${esc(r.slug)}</small></span></span></td>
         <td><span class="type">${icon(type.icon || "box")}${esc(typeName(type))}</span></td>
         <td>${linkCell(r)}</td>
         <td class="num">${r.capacity ?? `<span class="dt-quiet">–</span>`}</td>
-        <td>${badge(r.status)}</td>
         <td>${servicesCell(r)}</td>
       </tr>`;
   }
@@ -316,8 +308,8 @@
         <div class="dt-wrap">
           <table class="dt">
             <thead><tr>
-              <th>${t("col.resource")}</th><th>${t("col.type")}</th><th>${t("col.link")}</th>
-              <th>${t("col.capacity")}</th><th>${t("col.status")}</th><th>${t("col.services")}</th>
+              <th>${t("col.status")}</th><th>${t("col.resource")}</th><th>${t("col.type")}</th>
+              <th>${t("col.link")}</th><th>${t("col.capacity")}</th><th>${t("col.services")}</th>
             </tr></thead>
             <tbody>${rows.map(rowHTML).join("")}</tbody>
           </table>
@@ -341,7 +333,7 @@
         <a class="btn btn-primary" href="#new">${icon("plus")}${t("new")}</a>
         <p>${t("page.lede")}</p>
       </header>
-      <div class="stats">${statsHTML()}</div>
+      ${summaryHTML()}
       <form class="panel filters" id="filters" role="search">
         <label class="filter-search">
           ${icon("search")}
@@ -365,6 +357,7 @@
   // Typing in the search box redraws the table only, so the box keeps its cursor.
   function refreshResults() {
     $("results").innerHTML = tableHTML();
+    $("summary").outerHTML = summaryHTML();
     $("clear").hidden = !filtering();
   }
 
@@ -646,6 +639,14 @@
       Object.assign(state, { q: "", type: "", status: "", page: 0 });
       renderList();
       return $("q").focus();
+    }
+    const pick = event.target.closest("[data-status]");
+    if (pick) {
+      state.status = state.status === pick.dataset.status ? "" : pick.dataset.status;
+      state.page = 0;
+      $("f-status").value = state.status;
+      refreshResults();
+      return $("summary").querySelector(`[data-status="${pick.dataset.status}"]`).focus();
     }
     const step = event.target.closest("[data-page]");
     if (step) {

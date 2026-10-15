@@ -495,6 +495,24 @@
     });
   }
 
+  // Charts, tiles and calendar bookings grow in from nothing (a bar starts at
+  // zero height). A page opened without being drawn, such as a background tab,
+  // a hidden preview or a screenshot tool, never starts its clock, so they would
+  // wait at nothing and the page would look empty. If no frame has been drawn a
+  // moment after loading, every animation jumps to its end.
+  addEventListener("load", () => {
+    setTimeout(() => {
+      if (document.timeline.currentTime) return;
+      document.getAnimations().forEach((animation) => {
+        try {
+          animation.finish();
+        } catch {
+          /* an endless animation cannot finish; it has no empty start to hide */
+        }
+      });
+    }, 1200);
+  });
+
   window.PBM = {
     t,
     icon,
