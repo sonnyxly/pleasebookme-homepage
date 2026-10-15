@@ -1,281 +1,255 @@
-/* Tổng quan: today's work at the top, then five numbers for one period and
-   the four charts behind them. The bookings are the sample shop in
-   assets/sample.js; nothing is sent anywhere.
+/* Tổng quan: four counts and one table. Each count is a list; picking it shows
+   that list in the table, and picking a booking opens it in a side panel
+   without leaving the page. Only simple counts live here, so the page opens
+   fast. The charts and the heavier numbers are on Phân tích.
 
-   How each number is worked out. A period is whole days and ends yesterday,
-   so it is always compared with a period of the same length before it.
-     Lịch hẹn          every booking whose appointment falls in the period
-     Độ kín lịch       booked hours ÷ working hours. A cancelled booking
-                       frees its slot, so it is left out
-     Huỷ và vắng mặt   (cancelled + no-shows) ÷ every booking
-     Khách mới         customers whose first visit falls in the period
-     Khách quen        customers in the period who had visited before
-     Giờ cao điểm      bookings counted by weekday and starting hour; the
-                       busiest two hours in a row are called out */
+   The four lists (only the branches on show are counted):
+     Hôm nay          today's bookings that still hold their slot, by time,
+                      with a line where "now" is
+     Chờ xác nhận     bookings from today on that wait for a yes or no
+     Sắp tới          the 10 nearest from now, by start time. The count is
+                      everything in the next 7 days
+     Chưa cập nhật    accepted bookings whose time has passed and that nobody
+                      has marked as done or no-show, newest first */
 (function () {
   "use strict";
 
   const { t, icon, toast } = PBM;
-  const { TODAY, NOW, OPEN, CLOSE, SHIFT_HOURS, STAFF, SERVICES, BOOKINGS, CUSTOMERS } = PBM_SAMPLE;
-  const HOURS = (CLOSE - OPEN) / 60;
+  const { TODAY, NOW, STAFF, SERVICES, BOOKINGS, BRANCHES, WIDGETS } = PBM_SAMPLE;
 
   const plural = (n, one, many) => (n === 1 ? one : many);
+  const LISTS = ["today", "pending", "next", "unmarked"];
+  const NEXT_ROWS = 10;
+  const NEXT_DAYS = 7;
 
   PBM.addStrings({
     vi: {
       "doc.title": "Tổng quan | pleasebookme",
       "page.title": "Tổng quan",
-      "today.title": "Hôm nay",
-      "today.unit": "lịch hẹn",
-      "today.split": ({ done, left }) => `${done} đã xong, ${left} còn lại`,
-      "today.unmarked": ({ n }) => `${n} lịch đã qua cần cập nhật`,
-      "lg.waiting": "Chưa cập nhật",
-      "today.open": "Mở lịch hẹn",
-      "strip.label": ({ n }) => `Lịch hôm nay theo từng nhân viên, ${n} lịch hẹn. Mở trang Lịch hẹn.`,
-      "wait.title": "Chờ bạn xác nhận",
-      "wait.empty": "Không còn lịch nào chờ bạn.",
-      "wait.more": ({ n }) => `Xem cả ${n} lịch đang chờ`,
-      "next.title": "Sắp tới",
-      "next.empty": "Hôm nay không còn lịch nào.",
+      "lists.label": "Danh sách lịch hẹn",
+      "c.today": "Hôm nay",
+      "c.pending": "Chờ xác nhận",
+      "c.next": "Sắp tới",
+      "c.unmarked": "Chưa cập nhật",
+      "c.today.sub": ({ done, left }) => `${done} đã xong, ${left} còn lại`,
+      "c.pending.sub": ({ when }) => `Sớm nhất: ${when}`,
+      "c.pending.none": "Không còn lịch nào chờ",
+      "c.next.sub": "Trong 7 ngày tới",
+      "c.unmarked.sub": "Khách đã đến hay không đến?",
+      "c.unmarked.none": "Mọi lịch đã qua đều được ghi lại",
+      "l.today": ({ date }) => `Lịch hôm nay, ${date}`,
+      "l.pending": "Khách đặt và đang chờ bạn trả lời. Lịch chỉ giữ chỗ khi bạn xác nhận.",
+      "l.next": "10 lịch gần nhất, theo giờ bắt đầu.",
+      "l.unmarked": "Lịch nằm ở đây cho tới khi bạn ghi lại khách đã đến hay không đến.",
+      "e.today": "Hôm nay chưa có lịch nào. Gửi link đặt lịch để khách tự chọn giờ.",
+      "e.pending": "Không còn lịch nào chờ bạn.",
+      "e.next": "Chưa có lịch nào sắp tới.",
+      "e.unmarked": "Mọi lịch đã qua đều được ghi lại.",
+      "foot.next": ({ n }) => `Xem cả ${n} lịch trong 7 ngày tới`,
+      "foot.open": "Mở Lịch hẹn",
+      now: ({ time }) => `Bây giờ, ${time}`,
+      "earlier.show": ({ n }) => `${n} lịch đã xong trước giờ này`,
+      "earlier.hide": "Ẩn các lịch đã xong",
+      "col.when": "Giờ",
+      "col.customer": "Khách",
+      "col.service": "Dịch vụ",
+      "col.staff": "Người làm",
+      "col.status": "Trạng thái",
+      "col.actions": "Việc cần làm",
+      yesterday: "Hôm qua",
+      todayWord: "Hôm nay",
+      tomorrow: "Ngày mai",
+      minutes: ({ n }) => `${n} phút`,
+      "st.PENDING": "Chờ xác nhận",
+      "st.ACCEPTED": "Đã xác nhận",
+      "st.AWAITING_HOST": "Chờ tiệm phản hồi",
+      "st.REJECTED": "Đã từ chối",
+      "st.CANCELLED": "Đã huỷ",
+      "out.done": "Đã diễn ra",
+      "out.noShow": "Vắng mặt",
+      "out.wait": "Cần cập nhật",
       "act.accept": "Xác nhận",
       "act.reject": "Từ chối",
+      "act.done": "Đã đến",
+      "act.noshow": "Không đến",
+      "act.done.long": "Khách đã đến",
+      "act.noshow.long": "Khách không đến",
+      "act.unmark": "Ghi lại",
+      "act.move": "Đổi giờ",
+      "act.cancel": "Huỷ lịch",
+      "act.close": "Đóng",
+      "act.prev": "Lịch phía trên",
+      "act.next": "Lịch phía dưới",
+      "sheet.open": "Mở trong Lịch hẹn",
+      "sheet.when": "Thời gian",
+      "sheet.service": "Dịch vụ",
+      "sheet.staff": "Người làm",
+      "sheet.branch": "Chi nhánh",
+      "sheet.price": "Giá",
+      "sheet.widget": "Đặt qua",
+      "sheet.phone": "Điện thoại",
+      "sheet.code": "Mã lịch hẹn",
+      "source.hand": "Tiệm tự thêm",
       "toast.accept": "Đã xác nhận lịch của {name}",
       "toast.reject": "Đã từ chối lịch của {name}",
-      "numbers.title": "Số liệu của tiệm",
-      "period.label": "Khoảng thời gian",
-      "period.7": "7 ngày qua",
-      "period.28": "4 tuần qua",
-      "prev.7": "7 ngày trước đó",
-      "prev.28": "4 tuần trước đó",
-      "period.range": ({ from, to, prev }) => `Từ ${from} đến ${to}, so với ${prev}.`,
-      "m.bookings": "Lịch hẹn",
-      "m.util": "Độ kín lịch",
-      "m.lost": "Huỷ và vắng mặt",
-      "m.customers": "Khách mới và khách quen",
-      "m.peak": "Giờ cao điểm",
-      "sub.bookings": ({ n }) => `${n} lịch đã diễn ra`,
-      "sub.util": ({ b, a }) => `${b} trên ${a} giờ làm việc`,
-      "sub.lost": ({ c, s }) => `${c} huỷ, ${s} vắng mặt`,
-      "sub.customers": ({ p }) => `${p}% khách là khách quen`,
-      "sub.peak": ({ from, to, n }) => `${from} – ${to}, ${n} lịch hẹn`,
-      "unit.new": "khách mới",
-      "d.up": "Tăng {v}",
-      "d.down": "Giảm {v}",
-      "d.same": "Không đổi",
-      "d.points": ({ n }) => `${n} điểm`,
-      "p.bookings": "Lịch hẹn theo ngày",
-      "lg.done": "Đã diễn ra",
-      "lg.noshow": "Vắng mặt",
-      "lg.cancelled": "Đã huỷ",
-      "lg.prev": "Cùng ngày kỳ trước",
-      "p.customers": "Khách mới và khách quen",
-      "c.new": "Khách mới",
-      "c.back": "Khách quen",
-      "c.total": "khách",
-      "c.prev": ({ prev, n }) => `${prev}: ${n} khách mới.`,
-      "p.heat": "Giờ cao điểm",
-      "heat.sub": "Số lịch hẹn theo thứ và giờ bắt đầu",
-      "heat.hour": ({ h }) => `${h}h`,
-      "heat.few": "Ít",
-      "heat.many": "Nhiều",
-      "heat.peak": ({ day, from, to }) => `Đông nhất: ${day}, ${from} – ${to}`,
-      "p.lost": "Huỷ và vắng mặt",
-      "lost.prev": ({ prev, p }) => `${prev}: ${p}% không diễn ra.`,
-      "deep.lead": "Xem sâu hơn:",
-      "deep.bookings": "theo nhân viên, theo dịch vụ, qua nhiều tháng.",
-      "deep.customers": "khách lâu chưa quay lại, nhịp quay lại, giá trị của mỗi khách.",
-      "deep.heat": "độ kín của từng nhân viên, nhu cầu theo dịch vụ, gợi ý lấp giờ trống.",
-      "deep.lost": "khách nào hay huỷ, huỷ sát giờ ra sao, hiệu quả của tin nhắc lịch.",
-      soon: "Sắp có",
-      "tip.day": ({ date, n, c, s }) => {
-        let text = `${date}: ${n} lịch hẹn`;
-        if (c) text += `, ${c} huỷ`;
-        if (s) text += `, ${s} vắng mặt`;
-        return text;
-      },
-      "tip.cell": ({ day, from, to, n }) => `${day}, ${from} – ${to}: ${n} lịch hẹn`,
-      "aria.bookings": ({ n, day, max }) =>
-        `Biểu đồ cột theo ngày. ${n} lịch hẹn trong kỳ, nhiều nhất là ${day} với ${max} lịch.`,
-      "aria.customers": ({ fresh, back }) => `${fresh} khách mới và ${back} khách quen.`,
-      "aria.heat": ({ day, from, to }) => `Bảng theo thứ và giờ. Đông nhất là ${day}, từ ${from} đến ${to}.`,
-      "aria.lost": ({ done, c, s }) => `${done} lịch đã diễn ra, ${c} lịch huỷ, ${s} lịch khách vắng mặt.`,
+      "toast.cancel": "Đã huỷ lịch của {name}",
+      "toast.done": "Đã ghi: {name} đã đến",
+      "toast.noshow": "Đã ghi: {name} không đến",
+      "toast.unmark": "Lịch của {name} chờ ghi lại",
+      deeper: "Số liệu theo tuần, giờ cao điểm, khách mới và khách quen nằm ở",
+      "deeper.link": "Phân tích",
       note: "Số liệu mẫu. Đây là bản thiết kế, chưa nối với hệ thống.",
     },
     en: {
       "doc.title": "Dashboard | pleasebookme",
       "page.title": "Dashboard",
-      "today.title": "Today",
-      "today.unit": "bookings",
-      "today.split": ({ done, left }) => `${done} done, ${left} to go`,
-      "today.unmarked": ({ n }) => `${n} past ${n === 1 ? "booking" : "bookings"} to mark`,
-      "lg.waiting": "Not marked yet",
-      "today.open": "Open bookings",
-      "strip.label": ({ n }) => `Today by staff member, ${n} ${plural(n, "booking", "bookings")}. Open Bookings.`,
-      "wait.title": "Waiting for you",
-      "wait.empty": "Nothing is waiting for you.",
-      "wait.more": ({ n }) => `See all ${n} waiting`,
-      "next.title": "Next up",
-      "next.empty": "No more bookings today.",
+      "lists.label": "Booking lists",
+      "c.today": "Today",
+      "c.pending": "Waiting for you",
+      "c.next": "Coming up",
+      "c.unmarked": "Not marked yet",
+      "c.today.sub": ({ done, left }) => `${done} done, ${left} to go`,
+      "c.pending.sub": ({ when }) => `Earliest: ${when}`,
+      "c.pending.none": "Nothing is waiting",
+      "c.next.sub": "In the next 7 days",
+      "c.unmarked.sub": "Did the customer come?",
+      "c.unmarked.none": "Every past booking is marked",
+      "l.today": ({ date }) => `Today, ${date}`,
+      "l.pending": "Booked by customers and waiting for your answer. A booking holds its slot once you confirm it.",
+      "l.next": "The 10 nearest bookings, by start time.",
+      "l.unmarked": "A booking stays here until you mark whether the customer came.",
+      "e.today": "No bookings today yet. Share your booking link so customers can pick a time.",
+      "e.pending": "Nothing is waiting for you.",
+      "e.next": "No bookings coming up.",
+      "e.unmarked": "Every past booking is marked.",
+      "foot.next": ({ n }) => `See all ${n} in the next 7 days`,
+      "foot.open": "Open Bookings",
+      now: ({ time }) => `Now, ${time}`,
+      "earlier.show": ({ n }) => `${n} ${plural(n, "booking", "bookings")} already finished`,
+      "earlier.hide": "Hide finished bookings",
+      "col.when": "Time",
+      "col.customer": "Customer",
+      "col.service": "Service",
+      "col.staff": "With",
+      "col.status": "Status",
+      "col.actions": "To do",
+      yesterday: "Yesterday",
+      todayWord: "Today",
+      tomorrow: "Tomorrow",
+      minutes: ({ n }) => `${n} min`,
+      "st.PENDING": "Pending",
+      "st.ACCEPTED": "Confirmed",
+      "st.AWAITING_HOST": "Awaiting host",
+      "st.REJECTED": "Rejected",
+      "st.CANCELLED": "Cancelled",
+      "out.done": "Took place",
+      "out.noShow": "No-show",
+      "out.wait": "To mark",
       "act.accept": "Confirm",
       "act.reject": "Reject",
+      "act.done": "Came",
+      "act.noshow": "No-show",
+      "act.done.long": "Customer came",
+      "act.noshow.long": "Customer did not come",
+      "act.unmark": "Mark again",
+      "act.move": "Change time",
+      "act.cancel": "Cancel booking",
+      "act.close": "Close",
+      "act.prev": "Booking above",
+      "act.next": "Booking below",
+      "sheet.open": "Open in Bookings",
+      "sheet.when": "When",
+      "sheet.service": "Service",
+      "sheet.staff": "With",
+      "sheet.branch": "Branch",
+      "sheet.price": "Price",
+      "sheet.widget": "Booked through",
+      "sheet.phone": "Phone",
+      "sheet.code": "Booking code",
+      "source.hand": "Added by the shop",
       "toast.accept": "Confirmed {name}'s booking",
       "toast.reject": "Rejected {name}'s booking",
-      "numbers.title": "Shop numbers",
-      "period.label": "Period",
-      "period.7": "Last 7 days",
-      "period.28": "Last 4 weeks",
-      "prev.7": "the 7 days before",
-      "prev.28": "the 4 weeks before",
-      "period.range": ({ from, to, prev }) => `${from} to ${to}, compared with ${prev}.`,
-      "m.bookings": "Bookings",
-      "m.util": "Utilisation",
-      "m.lost": "Cancelled or no-show",
-      "m.customers": "New and returning",
-      "m.peak": "Busiest times",
-      "sub.bookings": ({ n }) => `${n} took place`,
-      "sub.util": ({ b, a }) => `${b} of ${a} working hours`,
-      "sub.lost": ({ c, s }) => `${c} cancelled, ${s} ${plural(s, "no-show", "no-shows")}`,
-      "sub.customers": ({ p }) => `${p}% were returning`,
-      "sub.peak": ({ from, to, n }) => `${from} – ${to}, ${n} ${plural(n, "booking", "bookings")}`,
-      "unit.new": "new customers",
-      "d.up": "Up {v}",
-      "d.down": "Down {v}",
-      "d.same": "No change",
-      "d.points": ({ n }) => `${n} ${plural(n, "point", "points")}`,
-      "p.bookings": "Bookings by day",
-      "lg.done": "Took place",
-      "lg.noshow": "No-show",
-      "lg.cancelled": "Cancelled",
-      "lg.prev": "Same day, period before",
-      "p.customers": "New and returning customers",
-      "c.new": "New",
-      "c.back": "Returning",
-      "c.total": "customers",
-      "c.prev": ({ prev, n }) => `${prev}: ${n} new ${plural(n, "customer", "customers")}.`,
-      "p.heat": "Busiest times",
-      "heat.sub": "Bookings by weekday and starting hour",
-      "heat.hour": ({ h }) => `${h}`,
-      "heat.few": "Few",
-      "heat.many": "Many",
-      "heat.peak": ({ day, from, to }) => `Busiest: ${day}, ${from} – ${to}`,
-      "p.lost": "Cancellations and no-shows",
-      "lost.prev": ({ prev, p }) => `${prev}: ${p}% did not take place.`,
-      "deep.lead": "Go deeper:",
-      "deep.bookings": "by staff member, by service, over months.",
-      "deep.customers": "customers who have not been back, visit rhythm, value of each customer.",
-      "deep.heat": "utilisation per staff member, demand by service, ideas for filling quiet hours.",
-      "deep.lost": "who cancels most, how late, and whether reminders help.",
-      soon: "Coming soon",
-      "tip.day": ({ date, n, c, s }) => {
-        let text = `${date}: ${n} ${plural(n, "booking", "bookings")}`;
-        if (c) text += `, ${c} cancelled`;
-        if (s) text += `, ${s} ${plural(s, "no-show", "no-shows")}`;
-        return text;
-      },
-      "tip.cell": ({ day, from, to, n }) => `${day}, ${from} – ${to}: ${n} ${plural(n, "booking", "bookings")}`,
-      "aria.bookings": ({ n, day, max }) =>
-        `Bar chart by day. ${n} bookings in the period; the most were on ${day}, with ${max}.`,
-      "aria.customers": ({ fresh, back }) => `${fresh} new and ${back} returning customers.`,
-      "aria.heat": ({ day, from, to }) => `Grid by weekday and hour. The busiest time is ${day}, ${from} to ${to}.`,
-      "aria.lost": ({ done, c, s }) => `${done} took place, ${c} cancelled, ${s} no-shows.`,
+      "toast.cancel": "Cancelled {name}'s booking",
+      "toast.done": "Marked: {name} came",
+      "toast.noshow": "Marked: {name} did not come",
+      "toast.unmark": "{name}'s booking is waiting to be marked",
+      deeper: "Weekly numbers, busiest times, and new and returning customers are in",
+      "deeper.link": "Analytics",
       note: "Sample numbers. This is a design mockup, not connected to the system.",
     },
   });
 
   // ---------- State and helpers ----------
 
-  const state = { period: 7 };
+  // earlier: whether today's finished bookings are shown or folded into one row.
+  const state = { list: "today", open: null, earlier: false };
   try {
-    if (localStorage.getItem("pbm-period") === "28") state.period = 28;
+    const saved = localStorage.getItem("pbm-home-list");
+    if (LISTS.includes(saved)) state.list = saved;
   } catch {
-    /* no storage: the page just opens on 7 days */
+    /* no storage: the page opens on today */
   }
 
   const $ = (id) => document.getElementById(id);
   const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
   const dateOf = (day) => addDays(TODAY, day);
-  const MONDAY = addDays(TODAY, -((TODAY.getDay() + 6) % 7));
   const clock = (m) => String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
   const fmt = (opts, d) => new Intl.DateTimeFormat(PBM.locale, opts).format(d);
   const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   const longDate = (d) => cap(fmt({ weekday: "long", day: "numeric", month: "long" }, d));
-  const dayMonth = (d) => `${d.getDate()}/${d.getMonth() + 1}`;
-  const weekdayName = (i, width) => cap(fmt({ weekday: width }, addDays(MONDAY, i))); // 0 is Monday
-  const pct = (share) => Math.round(share * 100);
-  const svcName = (b) => SERVICES[b.svc][PBM.lang];
-  const staffName = (id) => STAFF.find((s) => s.id === id).name;
-  // Everything on the page counts only the branches on show.
-  const inScope = (b) => PBM.branches.has(b.branch);
-  const staffShown = () => STAFF.filter((s) => PBM.branches.has(s.branch));
-  const isLive = (b) => b.status !== "CANCELLED" && b.status !== "REJECTED";
+  const money = (n) => new Intl.NumberFormat(PBM.locale, { style: "currency", currency: "VND" }).format(n);
+  const byId = (id) => BOOKINGS.find((b) => b.id === Number(id));
   const byStart = (a, b) => a.day - b.day || a.start - b.start || a.staff - b.staff;
-  const still = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const staffOf = (id) => STAFF.find((s) => s.id === id);
+  const branchOf = (id) => BRANCHES.find((b) => b.id === id);
+  const sourceOf = (b) => WIDGETS.find((w) => w.id === b.widget) || { name: t("source.hand") };
+  const inScope = (b) => PBM.branches.has(b.branch);
+  const severalBranches = () => BRANCHES.length > 1 && PBM.branches.chosen.length !== 1;
+  const isLive = (b) => b.status !== "CANCELLED" && b.status !== "REJECTED";
+  const isPast = (b) => b.day < 0 || (b.day === 0 && b.end <= NOW);
+  const isAhead = (b) => b.day > 0 || (b.day === 0 && b.start >= NOW);
+  // After its time an accepted booking is "done", "noShow", or still waiting
+  // ("wait") for someone to say which. Nothing counts as done by itself.
+  const outcomeOf = (b) => (b.status === "ACCEPTED" && isPast(b) ? b.outcome || "wait" : null);
 
-  // ---------- The numbers ----------
+  // "Hôm nay", "Ngày mai", or the weekday and date.
+  function dayWord(day) {
+    if (day === 0) return t("todayWord");
+    if (day === 1) return t("tomorrow");
+    if (day === -1) return t("yesterday");
+    const d = dateOf(day);
+    return `${cap(fmt({ weekday: "short" }, d))}, ${d.getDate()}/${d.getMonth() + 1}`;
+  }
 
-  function measure(from, to) {
-    const items = BOOKINGS.filter((b) => b.day >= from && b.day <= to && inScope(b));
-    const held = items.filter(isLive); // these kept their slot, whether or not the customer came
-    const cancelled = items.length - held.length;
-    const noShow = held.filter((b) => b.noShow).length;
-    // Past, accepted, and not yet marked by the shop: counted as neither done nor no-show.
-    const waiting = held.filter((b) => b.status === "ACCEPTED" && !b.outcome).length;
-    const bookedHours = held.reduce((sum, b) => sum + b.end - b.start, 0) / 60;
-    const workHours = (to - from + 1) * staffShown().length * SHIFT_HOURS;
-
-    const seen = new Set(held.filter((b) => !b.noShow).map((b) => b.cust));
-    const fresh = [...seen].filter((id) => CUSTOMERS[id - 1].first >= from).length;
-
-    const heat = Array.from({ length: 7 }, () => Array(HOURS).fill(0));
-    held.forEach((b) => {
-      heat[(dateOf(b.day).getDay() + 6) % 7][Math.floor((b.start - OPEN) / 60)]++;
-    });
-    let peak = { n: -1 };
-    heat.forEach((row, w) => {
-      for (let h = 0; h < HOURS - 1; h++) {
-        if (row[h] + row[h + 1] > peak.n) peak = { w, h, n: row[h] + row[h + 1] };
-      }
-    });
-
-    const perDay = [];
-    for (let day = from; day <= to; day++) {
-      const all = items.filter((b) => b.day === day);
-      const c = all.filter((b) => !isLive(b)).length;
-      const s = all.filter((b) => isLive(b) && b.noShow).length;
-      perDay.push({ day, total: all.length, cancelled: c, noShow: s, done: all.length - c - s });
-    }
-
+  // Each list, worked out from the bookings. These are the only queries the
+  // page runs, and each one is a plain filter and count.
+  function lists() {
+    const shown = BOOKINGS.filter(inScope);
+    const ahead = shown.filter((b) => isLive(b) && isAhead(b)).sort(byStart);
     return {
-      total: items.length,
-      done: items.length - cancelled - noShow - waiting,
-      cancelled,
-      noShow,
-      waiting,
-      lost: (cancelled + noShow) / items.length,
-      util: bookedHours / workHours,
-      bookedHours,
-      workHours,
-      customers: seen.size,
-      fresh,
-      back: seen.size - fresh,
-      heat,
-      peak,
-      perDay,
+      today: shown.filter((b) => b.day === 0 && isLive(b)).sort(byStart),
+      pending: shown.filter((b) => b.status === "PENDING" && b.day >= 0).sort(byStart),
+      next: ahead.slice(0, NEXT_ROWS),
+      nextCount: ahead.filter((b) => b.day < NEXT_DAYS).length,
+      // Newest first: the booking that has just ended is the one the owner remembers.
+      unmarked: shown.filter((b) => outcomeOf(b) === "wait").sort((a, b) => b.day - a.day || b.start - a.start),
     };
   }
 
-  const span = () => ({ from: -state.period, to: -1, prevFrom: -2 * state.period, prevTo: -state.period - 1 });
-  const prevName = () => t("prev." + state.period);
+  const badge = (b) => {
+    const out = outcomeOf(b);
+    return out
+      ? `<span class="badge out-${out.toLowerCase()}">${t("out." + out)}</span>`
+      : `<span class="badge st-${b.status.toLowerCase()}">${t("st." + b.status)}</span>`;
+  };
 
-  // "Tăng 4" in the direction the owner wants reads as good, the other way as bad.
-  function delta(diff, { points = false, goodWhenUp = true } = {}) {
-    if (!diff) return `<span class="delta">${t("d.same")}</span>`;
-    const up = diff > 0;
-    const amount = points ? t("d.points", { n: Math.abs(diff) }) : Math.abs(diff);
-    return `<span class="delta ${up === goodWhenUp ? "is-good" : "is-bad"}">${icon(up ? "up" : "down")}${t(
-      up ? "d.up" : "d.down",
-      { v: amount }
-    )}</span>`;
+  // The buttons a booking needs from the owner, if any.
+  function rowActions(b) {
+    const button = (act, label, primary) =>
+      `<button class="btn ${primary ? "btn-primary" : "btn-quiet"} btn-small" type="button" data-act="${act}" data-id="${b.id}" aria-label="${t(label)}: ${b.customer}">${t(label)}</button>`;
+    if (b.status === "PENDING") return button("accept", "act.accept", true) + button("reject", "act.reject");
+    if (outcomeOf(b) === "wait") return button("done", "act.done", true) + button("noshow", "act.noshow");
+    return "";
   }
 
   // ---------- Heading ----------
@@ -284,432 +258,314 @@
     $("title").textContent = t("page.title");
     $("date").textContent = longDate(TODAY);
     $("scope").innerHTML = PBM.branches.html();
+    $("counts").setAttribute("aria-label", t("lists.label"));
+    $("deeper").innerHTML = `${t("deeper")} <a href="/dashboard/analytics">${t("deeper.link")}</a>.`;
     $("note").textContent = t("note");
     document.title = t("doc.title");
   }
 
-  // ---------- Today ----------
+  // ---------- The four counts ----------
 
-  function renderToday() {
-    const live = BOOKINGS.filter((b) => b.day === 0 && isLive(b) && inScope(b)).sort(byStart);
-    const done = live.filter((b) => b.end <= NOW).length;
-    const waiting = BOOKINGS.filter((b) => b.status === "PENDING" && b.day >= 0 && inScope(b)).sort(byStart);
-    // Accepted bookings whose time has passed and that nobody has marked as done or no-show.
-    const unmarked = BOOKINGS.filter(
-      (b) => b.status === "ACCEPTED" && !b.outcome && inScope(b) && (b.day < 0 || (b.day === 0 && b.end <= NOW))
-    ).length;
-    const next = live.filter((b) => b.status === "ACCEPTED" && b.start >= NOW).slice(0, 3);
-    const dayLength = CLOSE - OPEN;
-    const place = (m) => ((m - OPEN) / dayLength) * 100;
+  function renderCounts(all) {
+    const done = all.today.filter(isPast).length;
+    const first = all.pending[0];
+    const subs = {
+      today: t("c.today.sub", { done, left: all.today.length - done }),
+      pending: first ? t("c.pending.sub", { when: `${clock(first.start)} ${dayWord(first.day).toLowerCase()}` }) : t("c.pending.none"),
+      next: t("c.next.sub"),
+      unmarked: all.unmarked.length ? t("c.unmarked.sub") : t("c.unmarked.none"),
+    };
+    const counts = { today: all.today.length, pending: all.pending.length, next: all.nextCount, unmarked: all.unmarked.length };
 
-    // The day in miniature: one thin row per staff member, 08:00 to 20:00.
-    const rows = staffShown().map((person) => {
-      const blocks = live
-        .filter((b) => b.staff === person.id)
-        .map(
-          (b) =>
-            `<i class="st-${b.status.toLowerCase()}${b.end <= NOW ? " is-past" : ""}" style="left:${place(b.start)}%;width:${
-              ((b.end - b.start) / dayLength) * 100
-            }%"></i>`
-        )
-        .join("");
-      return `<span class="strip-name">${person.name}</span><span class="strip-track">${blocks}</span>`;
+    $("counts").innerHTML = LISTS.map((key) => {
+      const on = key === state.list;
+      // A list that needs the owner shows it on the count as well.
+      const needs = (key === "pending" || key === "unmarked") && counts[key] > 0;
+      return `<button class="panel count${needs ? " needs-you" : ""}" type="button" role="tab" id="tab-${key}" data-list="${key}"
+          aria-selected="${on}" aria-controls="list" tabindex="${on ? 0 : -1}">
+          <span class="count-label">${t("c." + key)}</span>
+          <span class="count-value num">${counts[key]}</span>
+          <span class="count-sub">${subs[key]}</span>
+        </button>`;
     }).join("");
-    const ticks = [8, 12, 16, 20]
-      .map((h) => `<span class="num" style="left:${place(h * 60)}%">${clock(h * 60)}</span>`)
-      .join("");
-
-    const otherDay = (b) => (b.day === 0 ? "" : `<small>${cap(fmt({ weekday: "short" }, dateOf(b.day)))}</small>`);
-    const line = (b) => `
-          <span class="row-time num">${otherDay(b)}${clock(b.start)}</span>
-          <span class="row-text"><strong>${b.customer}</strong><span>${svcName(b)}, ${staffName(b.staff)}</span></span>`;
-
-    $("today").innerHTML = `
-      <div class="today-main">
-        <h2 id="today-title">${t("today.title")}</h2>
-        <a class="btn btn-quiet btn-small" href="/dashboard/bookings">${icon("calendar")}${t("today.open")}</a>
-        <p class="today-count"><strong class="num">${live.length}</strong><span>${t("today.unit")}</span><span class="today-split">${t(
-          "today.split",
-          { done, left: live.length - done }
-        )}</span></p>
-        ${unmarked ? `<a class="today-mark" href="/dashboard/bookings">${t("today.unmarked", { n: unmarked })}</a>` : ""}
-        <a class="strip" href="/dashboard/bookings" aria-label="${t("strip.label", { n: live.length })}">
-          <span class="strip-rows">${rows}<i class="strip-now" style="--at:${place(NOW) / 100}"></i></span>
-          <span class="strip-axis" aria-hidden="true">${ticks}</span>
-        </a>
-      </div>
-      <div class="today-list">
-        <div class="list-head">
-          <h3>${t("wait.title")}${waiting.length ? ` <span class="pill num">${waiting.length}</span>` : ""}</h3>
-          ${waiting.length > 3 ? `<a class="rows-more" href="/dashboard/bookings">${t("wait.more", { n: waiting.length })}</a>` : ""}
-        </div>
-        ${
-          waiting.length
-            ? `<ul class="rows">${waiting
-                .slice(0, 3)
-                .map(
-                  (b) => `<li>${line(b)}
-          <span class="row-actions">
-            <button class="btn btn-primary btn-small" type="button" data-act="accept" data-id="${b.id}" aria-label="${t("act.accept")}: ${b.customer}">${t("act.accept")}</button>
-            <button class="btn btn-quiet btn-small" type="button" data-act="reject" data-id="${b.id}" aria-label="${t("act.reject")}: ${b.customer}">${t("act.reject")}</button>
-          </span></li>`
-                )
-                .join("")}</ul>`
-            : `<p class="rows-empty">${t("wait.empty")}</p>`
-        }
-      </div>
-      <div class="today-list">
-        <div class="list-head"><h3>${t("next.title")}</h3></div>
-        ${
-          next.length
-            ? `<ul class="rows">${next.map((b) => `<li>${line(b)}</li>`).join("")}</ul>`
-            : `<p class="rows-empty">${t("next.empty")}</p>`
-        }
-      </div>`;
   }
 
-  const NEXT_STATUS = { accept: "ACCEPTED", reject: "REJECTED" };
+  // ---------- The table ----------
 
-  function act(id, action) {
-    const b = BOOKINGS.find((item) => item.id === Number(id));
-    b.status = NEXT_STATUS[action];
-    renderToday();
-    toast(t("toast." + action, { name: b.customer }));
-    // The pressed button is gone; move on to the next booking that is waiting.
-    ($("today").querySelector("[data-act]") || $("today").querySelector(".btn")).focus();
+  function rowHTML(b) {
+    const service = SERVICES[b.svc];
+    const person = staffOf(b.staff);
+    // On today's list the date goes without saying.
+    const when =
+      state.list === "today"
+        ? `<strong class="num">${clock(b.start)}</strong><small class="num">${clock(b.end)}</small>`
+        : `<strong class="num">${clock(b.start)}</strong><small>${dayWord(b.day)}</small>`;
+    const classes = [];
+    if (state.list === "today" && isPast(b)) classes.push("is-past");
+    if (state.open === b.id) classes.push("is-open");
+    return `<tr tabindex="0" data-bk="${b.id}"${classes.length ? ` class="${classes.join(" ")}"` : ""}>
+        <td class="cell-when">${when}</td>
+        <td><span class="dt-name"><span><strong>${b.customer}</strong><small class="num">${b.phone}</small></span></span></td>
+        <td class="col-svc"><span class="dt-name"><span><strong>${service[PBM.lang]}</strong><small>${t("minutes", { n: service.min })}</small></span></span></td>
+        <td><span class="dt-name"><span class="avatar code-fill code-${person.code}" aria-hidden="true">${person.name.charAt(0)}</span><span><strong>${person.name}</strong>${
+          severalBranches() ? `<small>${branchOf(b.branch).name}</small>` : ""
+        }</span></span></td>
+        <td class="col-status">${badge(b)}</td>
+        <td class="cell-actions">${b.status === "PENDING" || state.list === "unmarked" ? rowActions(b) : ""}</td>
+      </tr>`;
   }
 
-  // ---------- Period ----------
+  // The line that says where "now" falls among today's bookings.
+  const nowRow = () =>
+    `<tr class="now-row" aria-hidden="true"><td colspan="6"><span class="now-line num">${t("now", { time: clock(NOW) })}</span></td></tr>`;
 
-  function renderPeriod() {
-    $("period").innerHTML = `
-      <h2 id="period-title">${t("numbers.title")}</h2>
-      <p id="period-range"></p>
-      <div class="seg" id="periodSeg" role="group" aria-label="${t("period.label")}" style="--n:2;--i:${state.period === 7 ? 0 : 1}">
-        <button type="button" data-period="7" aria-pressed="${state.period === 7}">${t("period.7")}</button>
-        <button type="button" data-period="28" aria-pressed="${state.period === 28}">${t("period.28")}</button>
-      </div>`;
-  }
+  function renderList(all) {
+    const items = all[state.list];
+    const lede = {
+      today: t("l.today", { date: longDate(TODAY) }),
+      pending: t("l.pending"),
+      next: t("l.next"),
+      unmarked: t("l.unmarked"),
+    }[state.list];
 
-  // ---------- Cards ----------
-
-  const number = (key, n) => `<span class="num" data-num="${key}" data-to="${n}">${n}</span>`;
-
-  function cardsHTML(now, before) {
-    const card = ({ key, panel, value, sub, extra = "", foot = "" }) => `
-      <a class="panel card" href="#${panel}" data-panel="${panel}" data-metric="${key}">
-        <span class="card-label">${t("m." + key)}</span>
-        <span class="card-value">${value}</span>
-        ${extra}
-        <span class="card-sub">${sub}</span>
-        ${foot}
-      </a>`;
-    const { peak } = now;
-
-    return [
-      card({
-        key: "bookings",
-        panel: "p-bookings",
-        value: number("bookings", now.total),
-        sub: t("sub.bookings", { n: now.done }),
-        foot: delta(now.total - before.total),
-      }),
-      card({
-        key: "util",
-        panel: "p-heat",
-        value: number("util", pct(now.util)) + '<span class="sign">%</span>',
-        extra: `<span class="meter" aria-hidden="true"><i style="width:${pct(now.util)}%"></i></span>`,
-        sub: t("sub.util", { b: Math.round(now.bookedHours), a: now.workHours }),
-        foot: delta(pct(now.util) - pct(before.util), { points: true }),
-      }),
-      card({
-        key: "lost",
-        panel: "p-lost",
-        value: number("lost", pct(now.lost)) + '<span class="sign">%</span>',
-        sub: t("sub.lost", { c: now.cancelled, s: now.noShow }),
-        foot: delta(pct(now.lost) - pct(before.lost), { points: true, goodWhenUp: false }),
-      }),
-      card({
-        key: "customers",
-        panel: "p-customers",
-        value: number("fresh", now.fresh) + ` <small>${t("unit.new")}</small>`,
-        sub: t("sub.customers", { p: pct(now.back / now.customers) }),
-        foot: delta(now.fresh - before.fresh),
-      }),
-      card({
-        key: "peak",
-        panel: "p-heat",
-        value: `<span class="card-word">${weekdayName(peak.w, "long")}</span>`,
-        sub: t("sub.peak", { from: clock(OPEN + peak.h * 60), to: clock(OPEN + (peak.h + 2) * 60), n: peak.n }),
-      }),
-    ].join("");
-  }
-
-  // The numbers run from what was on screen to the new value.
-  const onScreen = {};
-  function countUp(animate) {
-    document.querySelectorAll("[data-num]").forEach((el) => {
-      const to = Number(el.dataset.to);
-      const from = onScreen[el.dataset.num];
-      onScreen[el.dataset.num] = to;
-      // No earlier value means the page has just opened: show the number as it is.
-      if (!animate || still() || from === undefined || from === to) return;
-      const started = performance.now();
-      const step = (time) => {
-        const k = Math.min(1, (time - started) / 650);
-        el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)));
-        if (k < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-    });
-  }
-
-  // ---------- Charts ----------
-
-  const chart = ({ id, title, aside = "", body, deep }) => `
-      <section class="panel chart" id="${id}" aria-labelledby="${id}-title">
-        <header class="chart-head">
-          <h3 id="${id}-title">${title}</h3>
-          ${aside}
-        </header>
-        <div class="chart-body">${body}</div>
-        <p class="deeper" data-plan="paid">${icon("chart")}<span><b>${t("deep.lead")}</b> ${deep}</span><span class="soon">${t("soon")}</span></p>
-      </section>`;
-
-  function bookingsChart(now, before) {
-    const days = now.perDay;
-    const top = Math.max(...days.map((d) => d.total), ...before.perDay.map((d) => d.total));
-    const step = top > 24 ? 10 : 5;
-    const max = Math.ceil((top + 1) / step) * step;
-    const few = days.length <= 7;
-    const best = days.reduce((a, b) => (b.total > a.total ? b : a));
-
-    const lines = [];
-    for (let v = 0; v <= max; v += step) {
-      lines.push(`<span class="gridline" style="bottom:${(v / max) * 100}%"><i class="num">${v}</i></span>`);
+    let body = items.map(rowHTML);
+    if (state.list === "today" && items.length) {
+      // The bookings that have finished fold into one row, so "now" and what
+      // comes next open at the top. The ones still to mark have their own list.
+      const finished = items.filter(isPast).length;
+      const fold = finished > 1 && !state.earlier;
+      const at = items.findIndex((b) => b.start >= NOW);
+      body = [];
+      items.forEach((b, i) => {
+        if (i === at) body.push(nowRow());
+        if (!(fold && isPast(b))) body.push(rowHTML(b));
+      });
+      if (at < 0) body.push(nowRow());
+      if (finished > 1) {
+        body.unshift(`<tr class="earlier-row"><td colspan="6"><button type="button" data-earlier aria-expanded="${state.earlier}">${icon(
+          "chevron"
+        )}${state.earlier ? t("earlier.hide") : t("earlier.show", { n: finished })}</button></td></tr>`);
+      }
     }
 
-    const cols = days
-      .map((d, i) => {
-        const date = dateOf(d.day);
-        const weekday = cap(fmt({ weekday: "short" }, date));
-        const label = few
-          ? `<span class="bar-label"><b>${weekday}</b><span class="num">${dayMonth(date)}</span></span>`
-          : date.getDay() === 1
-            ? `<span class="bar-label"><span class="num">${dayMonth(date)}</span></span>`
-            : "";
-        const tip = t("tip.day", { date: longDate(date), n: d.total, c: d.cancelled, s: d.noShow });
-        return `<div class="bar-col" style="--i:${i}" data-tip="${tip}">
-            <span class="bar-prev" style="height:${(before.perDay[i].total / max) * 100}%"></span>
-            <div class="bar-stack" style="height:${(d.total / max) * 100}%">
-              <i class="part-done" style="flex:${d.done}"></i>
-              <i class="part-noshow" style="flex:${d.noShow}"></i>
-              <i class="part-cancelled" style="flex:${d.cancelled}"></i>
-            </div>
-            ${label}
-          </div>`;
-      })
-      .join("");
+    const foot =
+      state.list === "next" && all.nextCount > items.length
+        ? `<a href="/dashboard/bookings">${t("foot.next", { n: all.nextCount })}</a>`
+        : `<a href="/dashboard/bookings">${t("foot.open")}</a>`;
 
-    return chart({
-      id: "p-bookings",
-      title: t("p.bookings"),
-      aside: `<ul class="legend">
-          <li><i class="swatch part-done"></i>${t("lg.done")}</li>
-          <li><i class="swatch part-noshow"></i>${t("lg.noshow")}</li>
-          <li><i class="swatch part-cancelled"></i>${t("lg.cancelled")}</li>
-          <li><i class="swatch part-rest"></i>${t("lg.prev")}</li>
-        </ul>`,
-      body: `<div class="plot${few ? " is-few" : ""}" role="img" aria-label="${t("aria.bookings", {
-        n: now.total,
-        day: longDate(dateOf(best.day)),
-        max: best.total,
-      })}">
-          ${lines.join("")}
-          <div class="bars" style="--n:${days.length}">${cols}</div>
-        </div>`,
-      deep: t("deep.bookings"),
-    });
+    $("list").setAttribute("aria-labelledby", "tab-" + state.list);
+    $("list").innerHTML = `
+      <header class="list-head">
+        <h2>${t("c." + state.list)}</h2>
+        <p>${lede}</p>
+      </header>
+      ${
+        items.length
+          ? `<div class="dt-wrap"><table class="dt">
+              <thead><tr>
+                <th scope="col">${t("col.when")}</th>
+                <th scope="col">${t("col.customer")}</th>
+                <th scope="col" class="col-svc">${t("col.service")}</th>
+                <th scope="col">${t("col.staff")}</th>
+                <th scope="col" class="col-status">${t("col.status")}</th>
+                <th scope="col" class="cell-actions"><span class="visually-hidden">${t("col.actions")}</span></th>
+              </tr></thead>
+              <tbody>${body.join("")}</tbody>
+            </table></div>`
+          : `<p class="list-empty">${t("e." + state.list)}</p>`
+      }
+      <footer class="list-foot">${foot}</footer>`;
   }
 
-  function customersChart(now, before) {
-    const ring = 2 * Math.PI * 46;
-    const share = now.fresh / now.customers;
-    return chart({
-      id: "p-customers",
-      title: t("p.customers"),
-      body: `<div class="split">
-          <div class="donut" role="img" aria-label="${t("aria.customers", { fresh: now.fresh, back: now.back })}">
-            <svg viewBox="0 0 120 120" aria-hidden="true">
-              <circle class="ring-back" cx="60" cy="60" r="46" />
-              <circle class="ring-new" cx="60" cy="60" r="46" style="--v:${(share * ring).toFixed(1)};--c:${ring.toFixed(1)}" />
-            </svg>
-            <span class="donut-mid"><strong class="num">${now.customers}</strong><span>${t("c.total")}</span></span>
-          </div>
-          <dl class="tally">
-            <div><dt><i class="swatch part-done"></i>${t("c.new")}</dt><dd class="num">${now.fresh}<span>${pct(share)}%</span></dd></div>
-            <div><dt><i class="swatch part-rest"></i>${t("c.back")}</dt><dd class="num">${now.back}<span>${100 - pct(share)}%</span></dd></div>
-          </dl>
+  // ---------- The side panel ----------
+
+  let lastFocus = null;
+
+  function renderSheet() {
+    const sheet = $("sheet");
+    const b = state.open && byId(state.open);
+    if (!b || !inScope(b)) {
+      state.open = null;
+      sheet.hidden = true;
+      return;
+    }
+    const service = SERVICES[b.svc];
+    const items = lists()[state.list];
+    const index = items.findIndex((item) => item.id === b.id);
+
+    // What can be done to a booking depends on where it is in its life.
+    const out = outcomeOf(b);
+    let actions = "";
+    if (b.status === "PENDING") {
+      actions = `<button class="btn btn-primary" type="button" data-act="accept" data-id="${b.id}">${icon("check")}${t("act.accept")}</button>
+           <button class="btn btn-quiet" type="button" data-act="reject" data-id="${b.id}">${t("act.reject")}</button>`;
+    } else if (out === "wait") {
+      actions = `<button class="btn btn-primary" type="button" data-act="done" data-id="${b.id}">${icon("check")}${t("act.done.long")}</button>
+           <button class="btn btn-quiet" type="button" data-act="noshow" data-id="${b.id}">${t("act.noshow.long")}</button>`;
+    } else if (out) {
+      actions = `<button class="btn btn-quiet" type="button" data-act="unmark" data-id="${b.id}">${t("act.unmark")}</button>`;
+    } else if (b.status === "ACCEPTED") {
+      actions = `<a class="btn btn-primary" href="/dashboard/bookings#move-${b.id}">${t("act.move")}</a>
+           <button class="btn btn-quiet" type="button" data-act="cancel" data-id="${b.id}">${t("act.cancel")}</button>`;
+    }
+
+    // Up and down walk the list the panel was opened from, as in Notion.
+    const step = (dir, label, glyph) => {
+      const off = index < 0 || !items[index + dir];
+      return `<button class="icon-btn" type="button" data-step="${dir}" aria-label="${t(label)}" title="${t(label)}"${off ? " disabled" : ""}>${icon(glyph)}</button>`;
+    };
+
+    sheet.innerHTML = `
+      <header class="sheet-head">
+        <div>
+          ${badge(b)}
+          <h2 id="sheet-name">${b.customer}</h2>
         </div>
-        <p class="chart-note">${cap(t("c.prev", { prev: prevName(), n: before.fresh }))}</p>`,
-      deep: t("deep.customers"),
-    });
-  }
-
-  function heatChart(now) {
-    const { heat, peak } = now;
-    const top = Math.max(1, ...heat.flat());
-    const hourOf = (h) => clock(OPEN + h * 60);
-
-    const head = Array.from({ length: HOURS }, (_, h) => `<span class="heat-hour num">${t("heat.hour", { h: OPEN / 60 + h })}</span>`);
-    const rows = heat
-      .map((row, w) => {
-        const cells = row
-          .map((n, h) => {
-            const v = n / top;
-            const classes = ["cell", "num"];
-            if (v > 0.55) classes.push("is-strong");
-            if (w === peak.w && (h === peak.h || h === peak.h + 1)) classes.push(h === peak.h ? "is-peak is-peak-start" : "is-peak is-peak-end");
-            const tip = t("tip.cell", { day: weekdayName(w, "long"), from: hourOf(h), to: hourOf(h + 1), n });
-            return `<span class="${classes.join(" ")}" style="--v:${v.toFixed(2)};--i:${w + h}" data-tip="${tip}">${n || ""}</span>`;
-          })
-          .join("");
-        return `<span class="heat-day">${weekdayName(w, "short")}</span>${cells}`;
-      })
-      .join("");
-
-    return chart({
-      id: "p-heat",
-      title: t("p.heat"),
-      aside: `<p class="chart-sub">${t("heat.sub")}</p>`,
-      body: `<div class="heat" role="img" style="--cols:${HOURS}" aria-label="${t("aria.heat", {
-        day: weekdayName(peak.w, "long"),
-        from: hourOf(peak.h),
-        to: hourOf(peak.h + 2),
-      })}">
-          <span></span>${head.join("")}
-          ${rows}
+        <div class="sheet-tools">
+          ${step(-1, "act.prev", "up")}
+          ${step(1, "act.next", "down")}
+          <button class="icon-btn" type="button" data-close aria-label="${t("act.close")}" title="${t("act.close")}">${icon("x")}</button>
         </div>
-        <div class="heat-foot">
-          <span class="heat-peak">${t("heat.peak", { day: weekdayName(peak.w, "long"), from: hourOf(peak.h), to: hourOf(peak.h + 2) })}</span>
-          <span class="heat-scale" aria-hidden="true">${t("heat.few")}<i style="--v:0.08"></i><i style="--v:0.35"></i><i style="--v:0.65"></i><i style="--v:1"></i>${t("heat.many")}</span>
-        </div>`,
-      deep: t("deep.heat"),
-    });
+      </header>
+      <dl class="facts">
+        <div><dt>${t("sheet.when")}</dt><dd>${longDate(dateOf(b.day))}<br /><span class="num">${clock(b.start)} – ${clock(b.end)}</span></dd></div>
+        <div><dt>${t("sheet.service")}</dt><dd>${service[PBM.lang]}<br /><span>${t("minutes", { n: service.min })}</span></dd></div>
+        <div><dt>${t("sheet.staff")}</dt><dd>${staffOf(b.staff).name}</dd></div>
+        ${BRANCHES.length > 1 ? `<div><dt>${t("sheet.branch")}</dt><dd>${branchOf(b.branch).name}</dd></div>` : ""}
+        <div><dt>${t("sheet.price")}</dt><dd class="num">${money(service.price)}</dd></div>
+        <div><dt>${t("sheet.widget")}</dt><dd>${sourceOf(b).name}</dd></div>
+        <div><dt>${t("sheet.phone")}</dt><dd class="num"><a href="tel:${b.phone.replace(/\s/g, "")}">${b.phone}</a></dd></div>
+        <div><dt>${t("sheet.code")}</dt><dd class="num">${b.uid}</dd></div>
+      </dl>
+      <a class="sheet-link" href="/dashboard/bookings#bk-${b.id}">${icon("calendar")}${t("sheet.open")}</a>
+      ${actions ? `<footer class="sheet-actions">${actions}</footer>` : ""}`;
+    sheet.hidden = false;
   }
 
-  function lostChart(now, before) {
-    const share = (n) => pct(n / now.total);
-    const row = (cls, label, n) =>
-      `<div><dt><i class="swatch ${cls}"></i>${label}</dt><dd class="num">${n}<span>${share(n)}%</span></dd></div>`;
-    return chart({
-      id: "p-lost",
-      title: t("p.lost"),
-      body: `<div class="portion" role="img" aria-label="${t("aria.lost", { done: now.done, c: now.cancelled, s: now.noShow })}">
-          <i class="part-done" style="flex:${now.done}"></i>
-          <i class="part-noshow" style="flex:${now.noShow}"></i>
-          <i class="part-cancelled" style="flex:${now.cancelled}"></i>
-          ${now.waiting ? `<i class="part-waiting" style="flex:${now.waiting}"></i>` : ""}
-        </div>
-        <dl class="tally">
-          ${row("part-done", t("lg.done"), now.done)}
-          ${row("part-noshow", t("lg.noshow"), now.noShow)}
-          ${row("part-cancelled", t("lg.cancelled"), now.cancelled)}
-          ${now.waiting ? row("part-waiting", t("lg.waiting"), now.waiting) : ""}
-        </dl>
-        <p class="chart-note">${cap(t("lost.prev", { prev: prevName(), p: pct(before.lost) }))}</p>`,
-      deep: t("deep.lost"),
-    });
+  // Focus the first of these the panel has: an answer to give, else the close button.
+  const focusInSheet = (...selectors) =>
+    selectors.map((sel) => $("sheet").querySelector(sel)).find(Boolean)?.focus();
+
+  function openSheet(id, ...focus) {
+    if (!state.open) lastFocus = document.activeElement;
+    state.open = Number(id);
+    renderAll();
+    focusInSheet(...(focus.length ? focus : ["[data-close]"]));
+    // Keep the picked row in view when the panel walks the list.
+    $("list").querySelector("tr.is-open")?.scrollIntoView({ block: "nearest" });
   }
 
-  function renderNumbers(animate) {
-    const { from, to, prevFrom, prevTo } = span();
-    const now = measure(from, to);
-    const before = measure(prevFrom, prevTo);
+  function closeSheet() {
+    if (!state.open) return;
+    const id = state.open;
+    state.open = null;
+    renderAll();
+    const row = $("list").querySelector(`tr[data-bk="${id}"]`);
+    (row || (lastFocus && document.contains(lastFocus) ? lastFocus : null))?.focus();
+  }
 
-    $("period-range").textContent = t("period.range", {
-      from: dayMonth(dateOf(from)),
-      to: dayMonth(dateOf(to)),
-      prev: prevName(),
-    });
-    const cards = $("cards");
-    const charts = $("charts");
-    // A redraw for a new language or theme should not replay the drawing-in.
-    cards.classList.toggle("is-still", !animate);
-    charts.classList.toggle("is-still", !animate);
-    cards.innerHTML = cardsHTML(now, before);
-    charts.innerHTML = bookingsChart(now, before) + customersChart(now, before) + heatChart(now) + lostChart(now, before);
-    countUp(animate);
+  // ---------- Updates ----------
+
+  function renderAll() {
+    const all = lists();
+    renderCounts(all);
+    renderList(all);
+    renderSheet();
+  }
+
+  function pick(list, focus) {
+    if (list === state.list) return;
+    state.list = list;
+    try {
+      localStorage.setItem("pbm-home-list", list);
+    } catch {
+      /* no storage */
+    }
+    renderAll();
+    if (focus) $("tab-" + list).focus();
+  }
+
+  const NEXT_STATUS = { accept: "ACCEPTED", reject: "REJECTED", cancel: "CANCELLED" };
+
+  function act(id, action) {
+    const b = byId(id);
+    const before = lists()[state.list];
+    const at = before.findIndex((item) => item.id === b.id);
+
+    if (action === "done" || action === "noshow") {
+      b.outcome = action === "done" ? "done" : "noShow";
+      b.noShow = action === "noshow";
+    } else if (action === "unmark") {
+      b.outcome = null;
+      b.noShow = false;
+    } else b.status = NEXT_STATUS[action];
+    toast(t("toast." + action, { name: b.customer }));
+
+    // Answered from the panel and gone from the list: the panel moves on to the
+    // booking that took its place, so a queue can be cleared without the mouse.
+    const after = lists()[state.list];
+    if (state.open === b.id && at >= 0 && !after.some((item) => item.id === b.id) && after.length) {
+      return openSheet(after[Math.min(at, after.length - 1)].id, "[data-act]", "[data-close]");
+    }
+    renderAll();
+    if (state.open === b.id) focusInSheet("[data-act]", "[data-close]");
+    else ($("list").querySelector("[data-act]") || $("tab-" + state.list)).focus();
   }
 
   // ---------- Events ----------
 
-  $("period").addEventListener("click", (event) => {
-    const btn = event.target.closest("[data-period]");
-    if (!btn || Number(btn.dataset.period) === state.period) return;
-    state.period = Number(btn.dataset.period);
-    try {
-      localStorage.setItem("pbm-period", String(state.period));
-    } catch {
-      /* no storage */
-    }
-    // Move the thumb in place, so the slide is not cut off by a redraw.
-    $("periodSeg").style.setProperty("--i", state.period === 7 ? 0 : 1);
-    $("periodSeg")
-      .querySelectorAll("button")
-      .forEach((b) => b.setAttribute("aria-pressed", String(Number(b.dataset.period) === state.period)));
-    renderNumbers(true);
+  $("counts").addEventListener("click", (event) => {
+    const tab = event.target.closest("[data-list]");
+    if (tab) pick(tab.dataset.list);
   });
 
-  $("today").addEventListener("click", (event) => {
+  // Arrow keys move between the four counts, as in any set of tabs.
+  $("counts").addEventListener("keydown", (event) => {
+    const moves = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+    if (!(event.key in moves)) return;
+    event.preventDefault();
+    const i = LISTS.indexOf(state.list);
+    pick(LISTS[(i + moves[event.key] + LISTS.length) % LISTS.length], true);
+  });
+
+  document.addEventListener("click", (event) => {
     const action = event.target.closest("[data-act]");
-    if (action) act(action.dataset.id, action.dataset.act);
-  });
-
-  // Pointing at a card lights the chart it summarises.
-  function link(event, on) {
-    const card = event.target.closest?.(".card");
-    if (card) $(card.dataset.panel)?.classList.toggle("is-linked", on);
-  }
-  $("cards").addEventListener("mouseover", (event) => link(event, true));
-  $("cards").addEventListener("mouseout", (event) => link(event, false));
-  $("cards").addEventListener("focusin", (event) => link(event, true));
-  $("cards").addEventListener("focusout", (event) => link(event, false));
-
-  // One floating label for every bar and cell.
-  const tip = $("tip");
-  function pointTip(event) {
-    const target = event.target.closest?.("[data-tip]");
-    if (!target) {
-      tip.hidden = true;
+    if (action) return act(action.dataset.id, action.dataset.act);
+    if (event.target.closest("[data-close]")) return closeSheet();
+    if (event.target.closest("[data-earlier]")) {
+      state.earlier = !state.earlier;
+      renderAll();
+      return $("list").querySelector("[data-earlier]").focus();
+    }
+    const step = event.target.closest("[data-step]");
+    if (step) {
+      const items = lists()[state.list];
+      const index = items.findIndex((item) => item.id === state.open);
+      const next = items[index + Number(step.dataset.step)];
+      if (next) openSheet(next.id, `[data-step="${step.dataset.step}"]:not(:disabled)`, "[data-close]");
       return;
     }
-    tip.textContent = target.dataset.tip;
-    tip.hidden = false;
-    const half = tip.offsetWidth / 2 + 8;
-    tip.style.left = Math.min(innerWidth - half, Math.max(half, event.clientX)) + "px";
-    tip.style.top = event.clientY + "px";
-  }
-  document.addEventListener("pointermove", pointTip);
-  document.addEventListener("pointerdown", pointTip);
-  document.addEventListener("scroll", () => (tip.hidden = true), { passive: true });
+    const row = event.target.closest("tr[data-bk]");
+    if (row) openSheet(row.dataset.bk);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") return closeSheet();
+    const row = event.target.closest?.("tr[data-bk]");
+    if (row && event.target === row && (event.key === "Enter" || event.key === " ")) {
+      event.preventDefault();
+      openSheet(row.dataset.bk);
+    }
+  });
 
   PBM.onChange(() => {
     renderHead();
-    renderToday();
-    renderPeriod();
-    renderNumbers(false);
+    renderAll();
   });
 
-  // A different set of branches is a different set of numbers: count them up again.
-  PBM.branches.onChange(() => {
-    renderToday();
-    renderNumbers(true);
-  });
+  PBM.branches.onChange(renderAll);
 
   PBM.mount("dashboard");
   renderHead();
-  renderToday();
-  renderPeriod();
-  renderNumbers(true);
+  renderAll();
 })();

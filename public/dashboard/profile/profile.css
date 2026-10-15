@@ -107,7 +107,7 @@
 /* How the top of the booking page looks with what is typed. */
 .seen {
   position: sticky;
-  top: calc(var(--bar-h) + var(--gap) * 2 + 14px);
+  top: calc(var(--edge) + var(--bar-h) + var(--gap) + 14px);
 }
 
 .seen-card {

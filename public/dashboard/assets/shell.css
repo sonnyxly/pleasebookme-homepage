@@ -121,8 +121,8 @@ button {
 
 /* ---------- Glass ---------- */
 /* The top bar and the sidebar are one piece of glass shaped like an L: the bar
-   runs the full width, the sidebar hangs from its left end, and the corner
-   where the two meet is rounded inward. .frame draws that piece. The bar and
+   runs the full width of the window, the sidebar runs its full height down the
+   left, and the corner where the two meet is rounded inward. .frame draws that piece. The bar and
    the sidebar themselves only hold the controls that sit on it. */
 
 .chrome {
@@ -136,7 +136,7 @@ button {
      r: the inner corner. */
   --B: var(--bar-h);
   --S: var(--leg);
-  --R: var(--r-frame);
+  --R: var(--r-edge);
   --r: var(--r-fillet);
   /* The outline of the L, clockwise from the top-left corner. */
   --frame-out:
@@ -172,7 +172,7 @@ button {
     close;
 
   position: fixed;
-  inset: var(--gap);
+  inset: var(--edge);
   z-index: 29;
   pointer-events: none;
   background:
@@ -216,9 +216,9 @@ button {
 /* ---------- Sidebar ---------- */
 
 .sidebar {
-  top: calc(var(--gap) + var(--bar-h));
-  bottom: var(--gap);
-  left: var(--gap);
+  top: calc(var(--edge) + var(--bar-h));
+  bottom: var(--edge);
+  left: var(--edge);
   z-index: 35;
   width: var(--leg);
   display: flex;
@@ -423,9 +423,9 @@ a.account-text:hover strong {
 /* ---------- Top bar ---------- */
 
 .topbar {
-  top: var(--gap);
-  left: var(--gap);
-  right: var(--gap);
+  top: var(--edge);
+  left: var(--edge);
+  right: var(--edge);
   height: var(--bar-h);
   display: flex;
   align-items: center;
@@ -1126,6 +1126,121 @@ select.input-small {
   color: var(--muted);
 }
 
+/* ---------- A booking's side panel ---------- */
+/* Opens beside the page when a booking is picked, on Tổng quan and Lịch hẹn.
+   The page stays usable behind it, so another booking can be picked straight
+   away, as in Notion's side peek. */
+
+.sheet {
+  position: fixed;
+  z-index: 40;
+  top: calc(var(--edge) + var(--bar-h) + var(--gap));
+  right: var(--gap);
+  bottom: var(--gap);
+  width: min(var(--sheet-w), calc(100vw - var(--gap) * 2));
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border-radius: var(--r-sidebar);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--panel-solid) 80%, transparent), color-mix(in srgb, var(--panel-solid) 60%, transparent));
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  backdrop-filter: blur(30px) saturate(160%);
+  box-shadow:
+    inset 0 1px 0 var(--panel-shine),
+    0 30px 70px -30px rgb(0 0 0 / 0.55);
+  animation: sheet-in 0.42s var(--ease-out);
+}
+
+.sheet[hidden] {
+  display: none;
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateX(28px) scale(0.98);
+  }
+}
+
+.sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.sheet-head h2 {
+  margin: 10px 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-display);
+  line-height: 1.2;
+}
+
+.sheet-head .icon-btn {
+  border: 1px solid var(--line-strong);
+}
+
+.sheet-head .icon-btn:hover {
+  background: var(--well);
+}
+
+.facts {
+  flex: 1;
+  margin: 18px 0 0;
+  overflow-y: auto;
+}
+
+.facts div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.facts dt {
+  color: var(--muted);
+}
+
+.facts dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.facts dd span {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.sheet-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.sheet-actions .btn {
+  flex: 1;
+  height: 42px;
+}
+
+/* After its time a booking is done, a no-show, or waiting to be marked. */
+.out-done {
+  background: var(--well);
+  color: var(--ink);
+}
+
+.out-noshow {
+  background: color-mix(in srgb, var(--signal) 14%, transparent);
+  color: var(--signal);
+}
+
+.out-wait {
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+
 /* ---------- A window for a short form ---------- */
 
 .dialog {
@@ -1214,7 +1329,7 @@ select.input-small {
 .menu {
   position: fixed;
   z-index: 45;
-  top: calc(var(--gap) + var(--bar-h) + 8px);
+  top: calc(var(--edge) + var(--bar-h) + 8px);
   right: var(--gap);
   min-width: 220px;
   padding: 6px;
@@ -1284,7 +1399,7 @@ select.input-small {
 .page {
   position: relative;
   z-index: 1;
-  padding: calc(var(--bar-h) + var(--gap) * 2 + 14px) 14px 14px calc(var(--side) + var(--gap) * 2 + 14px);
+  padding: calc(var(--edge) + var(--bar-h) + var(--gap) + 14px) calc(var(--gap) + 14px) 14px calc(var(--edge) + var(--side) + var(--gap) + 14px);
   transition: padding-left 0.36s var(--ease-out);
 }
 
@@ -1297,10 +1412,10 @@ select.input-small {
 
 @supports not (clip-path: shape(from 0 0, line to 1px 1px, close)) {
   .frame {
-    inset: var(--gap) var(--gap) auto;
+    inset: var(--edge) var(--edge) auto;
     height: var(--bar-h);
     border: 1px solid var(--chrome-edge);
-    border-radius: var(--r-bar);
+    border-radius: var(--r-edge);
     clip-path: none;
   }
 
@@ -1309,10 +1424,10 @@ select.input-small {
   }
 
   .sidebar {
-    top: calc(var(--gap) * 2 + var(--bar-h));
+    top: calc(var(--edge) * 2 + var(--bar-h));
     padding-top: 8px;
     border: 1px solid var(--chrome-edge);
-    border-radius: var(--r-sidebar);
+    border-radius: var(--r-edge);
     background: linear-gradient(168deg, var(--chrome-a), var(--chrome-b));
     -webkit-backdrop-filter: blur(16px) saturate(170%);
     backdrop-filter: blur(16px) saturate(170%);
@@ -1324,10 +1439,10 @@ select.input-small {
 @media (max-width: 1000px) {
   /* The glass shrinks to the bar alone, and the drawer gets glass of its own. */
   .frame {
-    inset: var(--gap) var(--gap) auto;
+    inset: var(--edge) var(--edge) auto;
     height: var(--bar-h);
     border: 1px solid var(--chrome-edge);
-    border-radius: var(--r-bar);
+    border-radius: var(--r-edge);
     box-shadow: inset 0 1px 0 var(--chrome-shine);
     clip-path: none;
   }
@@ -1337,16 +1452,16 @@ select.input-small {
   }
 
   .sidebar {
-    top: var(--gap);
+    top: var(--edge);
     z-index: 50;
     width: var(--sidebar-w);
     padding: 8px;
     border: 1px solid var(--chrome-edge);
-    border-radius: var(--r-sidebar);
+    border-radius: var(--r-edge);
     background: linear-gradient(168deg, var(--chrome-a), var(--chrome-b));
     -webkit-backdrop-filter: blur(16px) saturate(170%);
     backdrop-filter: blur(16px) saturate(170%);
-    transform: translateX(calc(-100% - var(--gap) * 2));
+    transform: translateX(calc(-100% - var(--edge) * 2));
     transition: transform 0.4s var(--ease-out);
   }
 
@@ -1444,7 +1559,10 @@ select.input-small {
     background: var(--chrome-solid);
   }
 
-  .panel {
+  .panel,
+  .sheet {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     background: var(--panel-solid);
   }
 }

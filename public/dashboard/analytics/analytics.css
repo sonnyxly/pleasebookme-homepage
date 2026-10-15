@@ -1,0 +1,770 @@
+/* Phân tích: the period heading, five cards and the four charts behind them.
+   Moved here from Tổng quan, which now keeps only simple counts. */
+
+/* Charts are drawn in the theme's own tone: burgundy on paper, glacier on black. */
+:root,
+:root[data-theme="light"] {
+  --tone: var(--burgundy-rgb);
+}
+
+:root[data-theme="dark"] {
+  --tone: var(--glacier-rgb);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* The layout answers to the room the page really has, which changes when the
+   sidebar opens or closes, so the breakpoints below are container queries. */
+.page {
+  container: page / inline-size;
+}
+
+/* ---------- Heading ---------- */
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 20px;
+  margin: 0 4px 12px;
+}
+
+.head h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-title);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+.head p {
+  margin: 0;
+  font-size: var(--text-body);
+  color: var(--muted);
+}
+
+.head-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+}
+
+/* ---------- Section headings ---------- */
+
+.period h2,
+.chart-head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+/* ---------- Period ---------- */
+
+.period {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  margin: 20px 4px 10px;
+}
+
+.period h2 {
+  font-size: var(--text-h2);
+}
+
+.period p {
+  flex: 1;
+  min-width: 220px;
+  margin: 0;
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+/* ---------- Cards ---------- */
+/* Each card is the two-second answer; it links to the chart that explains it. */
+
+/* The cards share their five rows (label, number, meter, detail, change), so
+   a label that wraps in one card moves the number down in all of them and the
+   row still reads straight across. The grid has no row gap, because a gap
+   between shared rows would open up inside every card. */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0 12px;
+}
+
+.card {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 5;
+  row-gap: 0;
+  padding: 13px 16px 12px;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.3s var(--ease-out);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.card-label {
+  grid-row: 1;
+  font-size: var(--text-ui);
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.card-value {
+  grid-row: 2;
+  font-family: var(--font-display);
+  font-size: var(--text-figure);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.card-value .sign {
+  font-size: 0.62em;
+}
+
+.card-value small {
+  margin-left: 2px;
+  font-family: var(--font-ui);
+  font-size: var(--text-ui);
+  letter-spacing: 0;
+  color: var(--muted);
+}
+
+/* A weekday name where the other cards have a number. */
+.card-word {
+  display: block;
+  font-size: var(--text-display);
+  line-height: 48px; /* the height of a number, so the rows stay level */
+}
+
+.card-sub {
+  grid-row: 4;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.meter {
+  grid-row: 3;
+  display: block;
+  height: 5px;
+  margin: 1px 0 6px;
+  border-radius: var(--r-tick);
+  background: rgb(var(--tone) / 0.16);
+  overflow: hidden;
+}
+
+.meter i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  animation: fill 0.9s var(--ease-out) backwards;
+}
+
+@keyframes fill {
+  from {
+    width: 0;
+  }
+}
+
+/* Colour is kept for the changes that need attention; good news stays ink. */
+.delta {
+  grid-row: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding-top: 8px;
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.delta .icon {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.2;
+}
+
+.delta.is-good {
+  color: var(--ink);
+}
+
+.delta.is-bad {
+  color: var(--signal);
+}
+
+/* ---------- Charts ---------- */
+
+.charts {
+  display: grid;
+  grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 15px 18px 12px;
+  scroll-margin-top: calc(var(--edge) + var(--bar-h) + var(--gap) + 12px);
+  transition: box-shadow 0.25s ease;
+}
+
+/* Lit while its card is pointed at. */
+.chart.is-linked {
+  box-shadow:
+    inset 0 1px 0 var(--panel-shine),
+    0 0 0 2px var(--accent),
+    0 22px 44px -34px var(--panel-drop);
+}
+
+.chart-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin-bottom: 12px;
+}
+
+.chart-head h3 {
+  font-size: var(--text-h3);
+}
+
+.chart-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-sub,
+.chart-note {
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.chart-note {
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.swatch {
+  flex: none;
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: var(--r-tick);
+}
+
+/* The parts a chart is made of. Cancelled is an outline, as on the calendar. */
+.part-done {
+  background: var(--accent);
+}
+
+.part-noshow {
+  background: var(--signal);
+}
+
+.part-cancelled {
+  background: repeating-linear-gradient(135deg, var(--line-strong) 0 1.5px, transparent 1.5px 5px);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.part-rest {
+  background: rgb(var(--tone) / 0.2);
+}
+
+/* The "go deeper" row marks where the fuller, paid view will open. */
+.deeper {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 14px 0 0;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line-strong);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.deeper .icon {
+  width: 15px;
+  height: 15px;
+}
+
+.deeper > span:first-of-type {
+  flex: 1;
+  min-width: 0;
+}
+
+.deeper b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.soon {
+  flex: none;
+  padding: 2px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font-size: var(--text-micro);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- Bookings by day ---------- */
+
+.plot {
+  position: relative;
+  flex: 1;
+  min-height: 180px;
+  margin: 6px 0 26px 26px; /* room for the scale on the left and the dates below */
+}
+
+.plot.is-few {
+  margin-bottom: 42px;
+}
+
+.gridline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px solid var(--line);
+}
+
+.gridline i {
+  position: absolute;
+  top: 0;
+  right: 100%;
+  margin-right: 8px;
+  transform: translateY(-50%);
+  font-style: normal;
+  font-size: var(--text-micro);
+  color: var(--muted);
+}
+
+.bars {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+  gap: 3px;
+}
+
+.is-few .bars {
+  gap: 12px;
+}
+
+.bar-col {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 100%;
+  border-radius: 8px 8px 0 0;
+  transition: background-color 0.18s ease;
+}
+
+.bar-col:hover {
+  background: var(--well);
+}
+
+.bar-stack {
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  width: min(64%, 44px);
+  min-height: 2px;
+  border-radius: 7px 7px 2px 2px;
+  overflow: hidden;
+  transform-origin: bottom;
+  animation: rise 0.7s var(--ease-out) backwards;
+  animation-delay: calc(var(--i) * 22ms);
+}
+
+/* The same day in the period before: a pale, wider bar behind. */
+.bar-prev {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: min(100%, 64px);
+  border-radius: 8px 8px 2px 2px;
+  background: rgb(var(--tone) / 0.14);
+  transform: translateX(-50%);
+}
+
+.bar-label {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 7px;
+  transform: translateX(-50%);
+  font-size: var(--text-micro);
+  line-height: 1.3;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.bar-label b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+@keyframes rise {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+/* ---------- New and returning customers ---------- */
+
+.split {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: center;
+  gap: 10px 20px;
+}
+
+.donut {
+  position: relative;
+  flex: none;
+  width: 136px;
+  height: 136px;
+}
+
+.donut svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.donut circle {
+  fill: none;
+  stroke-width: 14;
+}
+
+.ring-back {
+  stroke: rgb(var(--tone) / 0.2);
+}
+
+.ring-new {
+  stroke: var(--accent);
+  stroke-dasharray: calc(var(--v) * 1px) calc(var(--c) * 1px);
+  animation: draw 1s var(--ease-out) 0.15s backwards;
+}
+
+@keyframes draw {
+  from {
+    stroke-dasharray: 0 calc(var(--c) * 1px);
+  }
+}
+
+.donut-mid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  line-height: 1.15;
+}
+
+.donut-mid strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-display);
+}
+
+.donut-mid span {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.tally {
+  flex: 1;
+  min-width: 150px;
+  margin: 0;
+}
+
+.tally div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+}
+
+.tally div + div {
+  border-top: 1px solid var(--line);
+}
+
+.tally dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tally dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.tally dd span {
+  display: inline-block;
+  min-width: 40px;
+  margin-left: 8px;
+  font-weight: 400;
+  color: var(--muted);
+  text-align: right;
+}
+
+/* ---------- Busiest times ---------- */
+/* Weekdays down, hours across: the calendar pressed flat. A deeper tone means
+   more bookings started in that hour. */
+
+.heat {
+  display: grid;
+  grid-template-columns: 38px repeat(var(--cols), minmax(0, 1fr));
+  align-items: center;
+  gap: 4px;
+}
+
+.heat-hour {
+  font-size: var(--text-micro);
+  color: var(--muted);
+  text-align: center;
+}
+
+.heat-day {
+  font-size: var(--text-small);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.cell {
+  display: grid;
+  place-items: center;
+  height: 27px;
+  border-radius: var(--r-chip);
+  background: rgb(var(--tone) / calc(0.06 + var(--v) * 0.9));
+  font-size: var(--text-micro);
+  font-weight: 500;
+  color: var(--ink);
+  animation: bloom 0.5s var(--ease-out) backwards;
+  animation-delay: calc(var(--i) * 26ms);
+}
+
+.cell.is-strong {
+  color: var(--accent-ink);
+}
+
+/* The busiest two hours in a row share one outline. */
+.cell.is-peak {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+}
+
+@keyframes bloom {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+.heat-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 16px;
+  margin-top: 12px;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.heat-peak {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.heat-scale {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.heat-scale i {
+  width: 16px;
+  height: 10px;
+  border-radius: var(--r-tick);
+  background: rgb(var(--tone) / calc(0.06 + var(--v) * 0.9));
+}
+
+.heat-scale i:first-of-type {
+  margin-left: 4px;
+}
+
+.heat-scale i:last-of-type {
+  margin-right: 4px;
+}
+
+/* ---------- Cancellations and no-shows ---------- */
+
+.portion {
+  display: flex;
+  gap: 2px;
+  height: 22px;
+  margin-bottom: 8px;
+  border-radius: var(--r-chip);
+  overflow: hidden;
+  animation: reveal 0.9s var(--ease-out) backwards;
+}
+
+.portion i {
+  min-width: 4px;
+  border-radius: var(--r-tick);
+}
+
+@keyframes reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+/* A redraw for a new language or theme does not replay the drawing-in. */
+.is-still * {
+  animation: none !important;
+}
+
+/* ---------- Floating label and footnote ---------- */
+
+.tip {
+  position: fixed;
+  z-index: 70;
+  max-width: min(320px, calc(100vw - 16px));
+  padding: 7px 11px;
+  border-radius: var(--r-block);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: var(--text-small);
+  font-weight: 500;
+  line-height: 1.35;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 14px));
+}
+
+.tip[hidden] {
+  display: none;
+}
+
+.note {
+  margin: 14px 4px 4px;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* ---------- Narrower pages ---------- */
+
+@container page (max-width: 1040px) {
+  /* Three cards, then two. */
+  .cards {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .card {
+    grid-column: span 2;
+  }
+
+  .card:nth-child(n + 4) {
+    grid-column: span 3;
+    margin-top: 12px;
+  }
+}
+
+@container page (max-width: 860px) {
+  .charts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@container page (max-width: 640px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .card,
+  .card:nth-child(n + 4) {
+    grid-column: auto;
+  }
+
+  .card:nth-child(3) {
+    margin-top: 12px;
+  }
+
+  .card:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .card-value {
+    font-size: var(--text-display);
+  }
+
+  .heat {
+    grid-template-columns: 30px repeat(var(--cols), minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  .cell {
+    height: 24px;
+    border-radius: var(--r-tick);
+    font-size: var(--text-micro);
+  }
+
+  .heat-hour {
+    font-size: var(--text-micro);
+  }
+}
+
+/* ---------- Past bookings nobody has marked yet ---------- */
+
+.part-waiting {
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}

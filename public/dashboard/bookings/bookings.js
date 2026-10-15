@@ -1322,10 +1322,20 @@
   document.fonts?.ready.then(fitHours);
 
   // "Tạo nhanh → Lịch hẹn mới" arrives with #new: open the window straight away.
+  // Tổng quan sends #bk-12 to open booking 12, and #move-12 to change its time.
   const openIfAsked = () => {
-    if (location.hash !== "#new") return;
+    const asked = /^#(bk|move)-(\d+)$/.exec(location.hash);
+    if (location.hash !== "#new" && !asked) return;
     history.replaceState(null, "", location.pathname);
-    openForm({});
+    if (!asked) return openForm({});
+    const b = byId(asked[2]);
+    if (!b) return;
+    // Go to the booking's day first, so it is on the calendar behind the panel.
+    state.date = addDays(TODAY, b.day);
+    syncToolbar();
+    renderAll();
+    if (asked[1] === "bk") return openSheet(b.id);
+    openForm({ id: b.id, customer: b.customer, phone: b.phone, svc: b.svc, staff: String(b.staff), day: b.day, start: b.start });
   };
   addEventListener("hashchange", openIfAsked);
   openIfAsked();

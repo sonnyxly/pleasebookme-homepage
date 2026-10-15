@@ -236,7 +236,7 @@
 
 .ed-tabs {
   position: sticky;
-  top: calc(var(--bar-h) + var(--gap) * 2 + 14px);
+  top: calc(var(--edge) + var(--bar-h) + var(--gap) + 14px);
   display: grid;
   gap: 2px;
   padding: 8px;
@@ -558,7 +558,7 @@
 
 .ed-side {
   position: sticky;
-  top: calc(var(--bar-h) + var(--gap) * 2 + 14px);
+  top: calc(var(--edge) + var(--bar-h) + var(--gap) + 14px);
   display: grid;
   gap: 10px;
 }

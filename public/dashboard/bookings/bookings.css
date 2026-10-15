@@ -740,102 +740,6 @@
   color: var(--muted);
 }
 
-/* ---------- Booking sheet ---------- */
-
-.sheet {
-  position: fixed;
-  z-index: 40;
-  top: var(--gap);
-  right: var(--gap);
-  bottom: var(--gap);
-  width: min(380px, calc(100vw - var(--gap) * 2));
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  border-radius: var(--r-sidebar);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--panel-solid) 80%, transparent), color-mix(in srgb, var(--panel-solid) 60%, transparent));
-  -webkit-backdrop-filter: blur(30px) saturate(160%);
-  backdrop-filter: blur(30px) saturate(160%);
-  box-shadow:
-    inset 0 1px 0 var(--panel-shine),
-    0 30px 70px -30px rgb(0 0 0 / 0.55);
-  animation: sheet-in 0.42s var(--ease-out);
-}
-
-.sheet[hidden] {
-  display: none;
-}
-
-@keyframes sheet-in {
-  from {
-    opacity: 0;
-    transform: translateX(28px) scale(0.98);
-  }
-}
-
-.sheet-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.sheet-head h2 {
-  margin: 10px 0 0;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: var(--text-display);
-  line-height: 1.2;
-}
-
-.sheet-head .icon-btn {
-  border: 1px solid var(--line-strong);
-}
-
-.sheet-head .icon-btn:hover {
-  background: var(--well);
-}
-
-.facts {
-  flex: 1;
-  margin: 18px 0 0;
-  overflow-y: auto;
-}
-
-.facts div {
-  display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: 12px;
-  padding: 12px 0;
-  border-top: 1px solid var(--line);
-}
-
-.facts dt {
-  color: var(--muted);
-}
-
-.facts dd {
-  margin: 0;
-  font-weight: 500;
-}
-
-.facts dd span {
-  font-weight: 400;
-  color: var(--muted);
-}
-
-.sheet-actions {
-  display: flex;
-  gap: 8px;
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
-}
-
-.sheet-actions .btn {
-  flex: 1;
-  height: 42px;
-}
-
 /* ---------- View transitions ---------- */
 
 ::view-transition-group(*) {
@@ -885,7 +789,6 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .sheet,
   .cal-head {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -938,21 +841,6 @@
 }
 
 /* ---------- After the time: done, no-show, waiting to be marked ---------- */
-
-.out-done {
-  background: var(--well);
-  color: var(--ink);
-}
-
-.out-noshow {
-  background: color-mix(in srgb, var(--signal) 14%, transparent);
-  color: var(--signal);
-}
-
-.out-wait {
-  color: var(--ink);
-  box-shadow: inset 0 0 0 1.5px var(--ink);
-}
 
 .block.is-done {
   opacity: 0.6;

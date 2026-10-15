@@ -49,20 +49,18 @@
         </div>
       </header>
 
-      <!-- Today: what needs the owner now. Not affected by the period switch. -->
-      <section class="panel today" id="today" aria-labelledby="today-title"></section>
+      <!-- Four counts. Each picks the list the table below shows. -->
+      <section class="counts" id="counts" role="tablist" aria-label="Danh sách lịch hẹn"></section>
 
-      <!-- The numbers: five cards for one period, and the four charts behind them. -->
-      <section class="numbers" aria-labelledby="period-title">
-        <header class="period" id="period"></header>
-        <div class="cards" id="cards"></div>
-        <div class="charts" id="charts"></div>
-      </section>
+      <!-- The picked list. A row opens the booking in the side panel. -->
+      <section class="panel list" id="list" role="tabpanel"></section>
 
+      <p class="deeper-link" id="deeper"></p>
       <p class="note" id="note"></p>
     </main>
 
-    <div class="tip" id="tip" hidden></div>
+    <!-- One booking, beside the page, as in Notion's side peek. -->
+    <aside class="sheet panel" id="sheet" role="dialog" aria-labelledby="sheet-name" hidden></aside>
 
     <script src="/dashboard/assets/shell.js"></script>
     <script src="/dashboard/assets/sample.js"></script>

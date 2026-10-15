@@ -55,13 +55,17 @@
   --text-figure: 40px; /* the big number on a card */
   --text-title: clamp(26px, 2.5vw, 36px); /* the page title */
 
-  /* Shape: sidebar and bar radii are the Figma shell's (27 / 25). */
+  /* Shape. --r-sidebar (the Figma shell's 27) now rounds the booking sheet. */
   --sidebar-w: 260px;
+  --sheet-w: 380px; /* a booking's side panel */
   --bar-h: 54px;
   --gap: 10px;
+  /* The glass runs to the window edges. Set --edge to 10px and --r-edge to
+     26px to float it again, with rounded outer corners. */
+  --edge: 0px;
+  --r-edge: 0px;
   --r-sidebar: 27px;
-  --r-bar: 25px;
-  --r-frame: 26px; /* outer corners of the glass L */
+  --r-frame: 26px; /* windows and the widget card */
   --r-fillet: 18px; /* the inner corner, where the bar meets the sidebar */
   /* Corners, small to large. Circles use 50% and are not listed. */
   --r-tick: 3px; /* bars, tracks, tiny marks */
@@ -70,7 +74,6 @@
   --r-control: 12px; /* fields, buttons, options */
   --r-card: 18px; /* a box inside a panel, menus */
   --r-panel: 22px; /* panels */
-  /* --r-frame (26px, above) is also the corner of windows and the widget card. */
   --r-pill: 999px; /* fully round ends */
 
   /* Two ways of moving. The spring is for something sliding into a place the

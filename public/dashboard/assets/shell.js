@@ -210,11 +210,11 @@
     { id: "services", icon: "scissors", href: "/dashboard/services" },
     { id: "resources", icon: "users", href: "/dashboard/resources" },
     { id: "widgets", icon: "widget", href: "/dashboard/widgets" },
+    { id: "analytics", icon: "chart", href: "/dashboard/analytics" },
     { id: "integrations", icon: "plug" },
   ];
   // On the server but not built into a page yet.
   const SOON = [
-    { id: "analytics", icon: "chart" },
     { id: "notifications", icon: "bell" },
     { id: "settings", icon: "sliders" },
   ];

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- A design mockup with sample data: keep it out of search results. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/dashboard/assets/brand/pleasebookme-mark-small.svg" />
+    <title>Phân tích | pleasebookme</title>
+    <script>
+      // Set the theme before the first paint: the saved choice, else the device setting.
+      (function () {
+        var saved;
+        try {
+          saved = localStorage.getItem("pbm-theme");
+        } catch (e) {}
+        if (saved !== "light" && saved !== "dark") {
+          saved = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = saved;
+        try {
+          if (localStorage.getItem("pbm-sidebar") === "collapsed") {
+            document.documentElement.dataset.sidebar = "collapsed";
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/dashboard/assets/tokens.css" />
+    <link rel="stylesheet" href="/dashboard/assets/shell.css" />
+    <link rel="stylesheet" href="/dashboard/analytics/analytics.css" />
+  </head>
+  <body>
+    <aside id="sidebar" class="chrome sidebar"></aside>
+    <header id="topbar" class="chrome topbar"></header>
+
+    <main class="page">
+      <header class="head">
+        <h1 id="title"></h1>
+        <!-- The date, and which branches the page counts (when the shop has more than one). -->
+        <div class="head-tools">
+          <p id="date"></p>
+          <div id="scope"></div>
+        </div>
+      </header>
+
+      <!-- The numbers: five cards for one period, and the four charts behind them. -->
+      <section class="numbers" aria-labelledby="period-title">
+        <header class="period" id="period"></header>
+        <div class="cards" id="cards"></div>
+        <div class="charts" id="charts"></div>
+      </section>
+
+      <p class="note" id="note"></p>
+    </main>
+
+    <div class="tip" id="tip" hidden></div>
+
+    <script src="/dashboard/assets/shell.js"></script>
+    <script src="/dashboard/assets/sample.js"></script>
+    <script src="/dashboard/analytics/analytics.js"></script>
+  </body>
+</html>
