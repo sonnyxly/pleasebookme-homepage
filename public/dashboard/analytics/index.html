@@ -33,7 +33,10 @@
     />
     <link rel="stylesheet" href="/dashboard/assets/tokens.css" />
     <link rel="stylesheet" href="/dashboard/assets/shell.css" />
-    <link rel="stylesheet" href="/dashboard/analytics/analytics.css" />
+    <!-- Not analytics.css / analytics.js like the other pages: ad and tracker
+         blockers (EasyPrivacy has the rule /analytics/analytics.js) stop a file
+         by that name, and without its script this page stays blank. -->
+    <link rel="stylesheet" href="/dashboard/analytics/numbers.css" />
   </head>
   <body>
     <aside id="sidebar" class="chrome sidebar"></aside>
@@ -63,6 +66,6 @@
 
     <script src="/dashboard/assets/shell.js"></script>
     <script src="/dashboard/assets/sample.js"></script>
-    <script src="/dashboard/analytics/analytics.js"></script>
+    <script src="/dashboard/analytics/numbers.js"></script>
   </body>
 </html>
