@@ -18,6 +18,8 @@
           saved = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         }
         document.documentElement.dataset.theme = saved;
+        // ?window=<widget id> is the widget alone, as it opens in a window of its own.
+        if (/[?&]window=/.test(location.search)) document.documentElement.dataset.window = "";
         try {
           if (localStorage.getItem("pbm-sidebar") === "collapsed") {
             document.documentElement.dataset.sidebar = "collapsed";
@@ -39,8 +41,10 @@
     <aside id="sidebar" class="chrome sidebar"></aside>
     <header id="topbar" class="chrome topbar"></header>
 
-    <!-- Two views share this page: the list of widgets, and the editor for one
-         (the editor's address ends in #<widget id>). -->
+    <!-- Three views share this page: the list of widgets, the editor for one
+         (the editor's address ends in #<widget id>), and that widget alone in
+         a window of its own (the address ends in ?window=<widget id>; the
+         sidebar and top bar are not drawn). -->
     <main class="page" id="view"></main>
 
     <script src="/dashboard/assets/shell.js"></script>

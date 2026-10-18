@@ -429,6 +429,10 @@
   fill: var(--accent);
 }
 
+.diagram .d-dot {
+  fill: var(--paper);
+}
+
 .place-body {
   display: grid;
   gap: 14px;
@@ -1249,4 +1253,66 @@
 
 .pv[data-theme="dark"] .pv-manage {
   color: inherit;
+}
+
+/* ---------- The widget in a window of its own ---------- */
+/* The page for ?window=<widget id>: no sidebar, no top bar, only the widget as
+   a customer meets it, on the ground colour. A narrow window (a phone-sized
+   one) is filled edge to edge; a wide one centres the widget. */
+
+.side-window {
+  margin-left: auto;
+}
+
+html[data-window] .chrome,
+html[data-window] .frame,
+html[data-window] .scrim {
+  display: none;
+}
+
+html[data-window] body {
+  background: var(--surface);
+}
+
+html[data-window] .page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-height: 100vh;
+  padding: 12px;
+  transition: none;
+}
+
+html[data-window] .win-note {
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+html[data-window] .pv {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 480px;
+}
+
+@media (max-width: 480px) {
+  html[data-window] .page {
+    gap: 0;
+    padding: 0;
+  }
+
+  html[data-window] .win-note {
+    padding: 6px 12px;
+  }
+
+  html[data-window] .pv {
+    max-width: none;
+    border-width: 1px 0 0;
+    border-radius: 0;
+  }
+
+  html[data-window] #pv-live {
+    margin: 10px 0;
+  }
 }

@@ -457,8 +457,11 @@
   // One branch's history. `team` is its staff; `specialist` is the one who gets
   // most of the long services. Cầu Giấy was generated before the lists of who
   // does what existed, so it keeps `anyone` to stay exactly as it was.
-  function history({ branch, team, specialist, open, load, anyone }) {
-    for (let day = -HISTORY_DAYS; day < 0; day++) {
+  // `from` and `to` are the days it covers, and `older` is set for the extra
+  // weeks added at the end (see below): those pick their customers only from
+  // people who already existed on that day.
+  function history({ branch, team, specialist, open, load, anyone, from = -HISTORY_DAYS, to = -1, older = false }) {
+    for (let day = from; day <= to; day++) {
       const weekday = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate() + day).getDay();
       const hours = (weekday === 0 || weekday === 6 ? WEEKEND_HOURS : WEEKDAY_HOURS).slice((open - OPEN) / 60);
       // The shop has been getting a little busier, so older weeks carry fewer bookings.
@@ -494,8 +497,8 @@
         const roll = rand();
         const cancelled = roll < 0.085;
         // A cancelled booking frees its slot, and its customer is never a first visit.
-        const customer =
-          !cancelled && rand() < 0.13 ? addCustomer(day) : CUSTOMERS[Math.floor(rand() * CUSTOMERS.length)];
+        const known = older ? CUSTOMERS.filter((c) => c.first <= day) : CUSTOMERS;
+        const customer = !cancelled && rand() < 0.13 ? addCustomer(day) : known[Math.floor(rand() * known.length)];
         const booking = {
           day,
           start,
@@ -552,6 +555,17 @@
     .slice(0, 2)
     .forEach((b) => (b.outcome = null));
 
+  // Nine more weeks behind the first nine, so Phân tích can set one month
+  // against the month before it (September against August needs August whole).
+  // Added last and with their own random numbers, so no booking, customer or
+  // number above changes.
+  const OLDER_DAYS = 63;
+  const OLDEST_DAY = -HISTORY_DAYS - OLDER_DAYS;
+  rand = seeded(7301);
+  history({ branch: "b1", team: [1, 2, 3], specialist: 2, open: OPEN, load: 1, anyone: true, from: OLDEST_DAY, to: -HISTORY_DAYS - 1, older: true });
+  rand = seeded(7302);
+  history({ branch: "b2", team: [4, 5], specialist: 1, open: 9 * 60, load: 0.6, from: OLDEST_DAY, to: -HISTORY_DAYS - 1, older: true });
+
   // Time the shop, or one person, is closed. `who` is "all" (every person at
   // `branch`) or a staff id. `from` and `to` are minutes, or null for whole days.
   const CLOSURES = [
@@ -570,6 +584,7 @@
     CLOSE,
     SHIFT_HOURS,
     HISTORY_DAYS,
+    OLDEST_DAY,
     SHOP,
     STAFF,
     SERVICES,

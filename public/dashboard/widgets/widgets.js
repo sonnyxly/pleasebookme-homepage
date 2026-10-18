@@ -111,6 +111,18 @@
       "w.inline.desc": "Widget hiện ngay trong một trang của website, giữa các nội dung khác.",
       "w.popup.title": "Nút bật trên trang web",
       "w.popup.desc": "Một nút nổi ở góc trang. Bấm vào thì widget mở ra phía trên trang.",
+      "w.win.title": "Cửa sổ riêng",
+      "w.win.desc":
+        "Widget mở thành một cửa sổ nhỏ, tách khỏi trang đang xem. Hợp cho máy tính bảng ở quầy hoặc một nút trên website.",
+      "w.win.view": "Xem cửa sổ",
+      "w.win.size": "Kích thước cửa sổ",
+      "w.win.phone": "Điện thoại",
+      "w.win.desk": "Máy tính",
+      "w.win.hint": "Cửa sổ mở bằng bản bạn đang sửa, kể cả khi chưa lưu, và đổi theo từng thay đổi.",
+      "win.blocked": "Trình duyệt đã chặn cửa sổ mới. Cho phép cửa sổ bật lên cho trang này rồi bấm lại.",
+      "win.title": ({ name }) => `${name} | cửa sổ xem thử`,
+      "win.note.draft": "Xem thử, theo bản đang sửa trong trình chỉnh sửa",
+      "win.note.saved": "Xem thử, bản mẫu đã lưu",
       "w.site": "Website được gắn widget",
       "w.site.hint": "Chỉ địa chỉ này được hiện widget, để mã không bị dùng ở nơi khác.",
       "w.button": "Chữ trên nút",
@@ -162,6 +174,7 @@
       "price.example": ({ name, old, now }) => `${name}: ${old} còn ${now}.`,
       preview: "Xem trước",
       "preview.note": "Bấm thử như một khách hàng.",
+      "preview.window": "Mở cửa sổ riêng",
       "preview.live": "Xem thử khi đang chạy",
       min: ({ n }) => `${n} phút`,
       hours: ({ n }) => `${n} giờ`,
@@ -256,6 +269,18 @@
       "w.inline.desc": "The widget shows right in a page of the website, among its other content.",
       "w.popup.title": "Pop-up button on a web page",
       "w.popup.desc": "A button floating in the corner. Pressing it opens the widget over the page.",
+      "w.win.title": "Its own window",
+      "w.win.desc":
+        "The widget opens in a small window of its own, apart from the page it was pressed on. Good for a tablet at the counter or a button on a website.",
+      "w.win.view": "View window",
+      "w.win.size": "Window size",
+      "w.win.phone": "Phone",
+      "w.win.desk": "Computer",
+      "w.win.hint": "The window opens with the version you are editing, saved or not, and follows every change.",
+      "win.blocked": "The browser blocked the new window. Allow pop-ups for this page and press again.",
+      "win.title": ({ name }) => `${name} | preview window`,
+      "win.note.draft": "Preview, following the version being edited",
+      "win.note.saved": "Preview, the saved sample version",
       "w.site": "Website the widget sits on",
       "w.site.hint": "Only this address may show the widget, so the code cannot be used elsewhere.",
       "w.button": "Button text",
@@ -307,6 +332,7 @@
       "price.example": ({ name, old, now }) => `${name}: ${old} becomes ${now}.`,
       preview: "Preview",
       "preview.note": "Click through it as a customer would.",
+      "preview.window": "Open in its own window",
       "preview.live": "Preview it as running",
       min: ({ n }) => `${n} min`,
       hours: ({ n }) => `${n} ${plural(n, "hour", "hours")}`,
@@ -430,6 +456,7 @@
     tab: "scope",
     sureToDelete: false,
     pv: null, // where the preview's pretend customer has got to
+    openedAs: null, // the id the editor was opened with ("new" stays "new" after the first save)
   };
   // The order is the customer's: a date, then (if the shop has them) a branch,
   // the services, a time that fits them, and only then, if they wish, a person.
@@ -726,13 +753,24 @@
       '<rect x="8" y="6" width="80" height="6" rx="3"/><rect x="8" y="17" width="34" height="26" rx="4" class="d-on"/><rect x="47" y="17" width="41" height="11" rx="3"/><rect x="47" y="32" width="41" height="11" rx="3"/>',
     popup:
       '<rect x="8" y="6" width="38" height="16" rx="3"/><rect x="50" y="6" width="38" height="16" rx="3"/><rect x="8" y="27" width="38" height="16" rx="3"/><rect x="58" y="33" width="30" height="10" rx="5" class="d-on"/>',
+    // A page behind, and a small window of its own in front of it.
+    window:
+      '<rect x="8" y="6" width="56" height="30" rx="3"/><rect x="38" y="13" width="50" height="30" rx="4" class="d-on"/><rect x="43" y="19" width="22" height="3" rx="1.5" class="d-dot"/>',
   };
   const diagram = (name) => `<svg class="diagram" viewBox="0 0 96 49" aria-hidden="true">${DIAGRAM[name]}</svg>`;
+
+  // The window is opened from a plain link, so it needs no script from us.
+  const WINDOW_SIZE = { phone: [420, 800], desk: [780, 860] }; // width and height of the window, in pixels
+  const windowSize = (w) => (w.appear.windowSize === "desk" ? "desk" : "phone");
 
   const codeFor = (w, mode) =>
     mode === "inline"
       ? `<div id="pleasebookme-widget"></div>\n<script src="https://pleasebookme.app/widget.js" data-widget="${keyOf(w)}"></script>`
-      : `<script src="https://pleasebookme.app/widget.js" data-widget="${keyOf(w)}" data-button="${w.appear.button}"></script>`;
+      : mode === "window"
+        ? `<a href="https://${linkOf(w)}" target="pbm-widget" onclick="window.open(this.href,'pbm-widget','popup,width=${
+            WINDOW_SIZE[windowSize(w)][0]
+          },height=${WINDOW_SIZE[windowSize(w)][1]}');return false">${w.appear.button || "Đặt lịch"}</a>`
+        : `<script src="https://pleasebookme.app/widget.js" data-widget="${keyOf(w)}" data-button="${w.appear.button}"></script>`;
 
   function tabWhere(w) {
     const key = keyOf(w);
@@ -782,6 +820,24 @@
           ${w.appear.inline ? "" : site}${snippet("popup")}</div>`
             : ""
         }
+      </section>
+
+      <section class="place is-on">
+        <div class="place-head">${diagram("window")}<div><h3>${t("w.win.title")}</h3><p>${t("w.win.desc")}</p></div>
+          <button class="btn btn-primary btn-small" type="button" data-window>${icon("external")}<span>${t("w.win.view")}</span></button></div>
+        <div class="place-body">
+          <div class="group-row"><span class="label">${t("w.win.size")}</span>${seg(
+            "appear.windowSize",
+            [
+              ["phone", t("w.win.phone")],
+              ["desk", t("w.win.desk")],
+            ],
+            windowSize(w),
+            t("w.win.size")
+          )}</div>
+          <p class="hint">${t("w.win.hint")}</p>
+          ${snippet("window")}
+        </div>
       </section>
 
       <details class="adv">
@@ -1248,7 +1304,8 @@
         </nav>
         <section class="panel ed-form" id="tab"></section>
         <aside class="ed-side">
-          <div class="side-head"><h2>${t("preview")}</h2><span>${t("preview.note")}</span></div>
+          <div class="side-head"><h2>${t("preview")}</h2><span>${t("preview.note")}</span>
+            <button class="btn btn-quiet btn-small side-window" type="button" data-window>${icon("external")}<span>${t("preview.window")}</span></button></div>
           <div class="pv" id="pv"></div>
           <button class="btn btn-quiet btn-small" type="button" id="pv-live" data-pv-live hidden>${t("preview.live")}</button>
           <div class="panel path" id="path"></div>
@@ -1276,6 +1333,7 @@
     state.tab = "scope";
     state.sureToDelete = false;
     state.pv = freshPreview();
+    state.openedAs = state.draft.id;
     history.replaceState(null, "", "#" + state.draft.id);
     renderEditor();
     scrollTo(0, 0);
@@ -1302,6 +1360,7 @@
       w.id = w.path || "widget-" + (WIDGETS.length + 1);
       WIDGETS.push(clone(w));
       history.replaceState(null, "", "#" + w.id);
+      publish();
       renderEditor();
       return toast(t("added", { name: w.name }));
     }
@@ -1316,6 +1375,71 @@
     if (redrawTab) keepFocus(renderTab);
     renderPath();
     renderPreview();
+    publish();
+  }
+
+  // ---------- The widget in a window of its own ----------
+
+  // The editor leaves the widget it is showing in localStorage. The window is
+  // another page of the same site: it reads that, and redraws when it changes.
+  // So the window follows the draft, saved or not. Nothing leaves the browser.
+  const WINDOW_KEY = "pbm-widget-window";
+  const WINDOW_MAX_AGE = 12 * 60 * 60 * 1000; // an old draft is not what the owner is looking at now
+
+  function publish() {
+    if (!state.draft) return;
+    try {
+      localStorage.setItem(
+        WINDOW_KEY,
+        JSON.stringify({ id: state.draft.id, was: state.openedAs, draft: state.draft, at: Date.now() })
+      );
+    } catch {
+      /* storage can be blocked; the window then shows the saved sample */
+    }
+  }
+
+  // The draft the editor left for this widget, if it is recent.
+  function published(id) {
+    try {
+      const left = JSON.parse(localStorage.getItem(WINDOW_KEY));
+      if (left && (left.id === id || left.was === id) && Date.now() - left.at < WINDOW_MAX_AGE) return left.draft;
+    } catch {
+      /* nothing readable there: fall back to the sample */
+    }
+    return null;
+  }
+
+  // One window per size, so each opens at the size it was asked for.
+  function openWindow() {
+    const w = state.draft;
+    publish();
+    const size = windowSize(w);
+    const [width, height] = WINDOW_SIZE[size];
+    const win = window.open(`${location.pathname}?window=${encodeURIComponent(w.id)}`, "pbm-widget-" + size, `popup,width=${width},height=${height}`);
+    if (!win) return toast(t("win.blocked"));
+    win.focus();
+  }
+
+  // The window itself: only the widget, as a customer meets it.
+  function showWindow(id) {
+    document.documentElement.lang = PBM.lang;
+    $("sidebar")?.remove();
+    $("topbar")?.remove();
+    $("view").innerHTML = `<p class="win-note" id="win-note"></p>
+      <div class="pv" id="pv"></div>
+      <button class="btn btn-quiet btn-small" type="button" id="pv-live" data-pv-live hidden>${t("preview.live")}</button>`;
+    state.pv = freshPreview();
+    const refresh = () => {
+      const left = published(id);
+      state.draft = left || clone(WIDGETS.find((w) => w.id === id) || WIDGETS[0]);
+      $("win-note").textContent = t(left ? "win.note.draft" : "win.note.saved");
+      document.title = t("win.title", { name: state.draft.name || t("name.placeholder") });
+      keepFocus(renderPreview);
+    };
+    refresh();
+    addEventListener("storage", (event) => {
+      if (event.key === WINDOW_KEY) refresh();
+    });
   }
 
   // ---------- Events ----------
@@ -1324,7 +1448,7 @@
 
   view.addEventListener("click", (event) => {
     const el = event.target.closest(
-      "[data-edit],[data-new],[data-copy],[data-back],[data-save],[data-delete],[data-tab],[data-pick],[data-all],[data-copy-link],[data-copy-code]," +
+      "[data-edit],[data-new],[data-copy],[data-back],[data-save],[data-delete],[data-tab],[data-pick],[data-all],[data-copy-link],[data-copy-code],[data-window]," +
         "[data-pv-date],[data-pv-month],[data-pv-branch],[data-pv-slot],[data-pv-next],[data-pv-back],[data-pv-lang],[data-pv-live],[data-pv-restart]"
     );
     if (!el) return;
@@ -1343,6 +1467,7 @@
     if (!w) return;
     if ("back" in d) return closeEditor();
     if ("save" in d) return save();
+    if ("window" in d) return openWindow();
     if ("delete" in d) {
       if (!state.sureToDelete) {
         state.sureToDelete = true;
@@ -1438,15 +1563,25 @@
     else if (el.tagName === "SELECT" && value !== "" && !Number.isNaN(Number(value))) value = Number(value);
     setPath(state.draft, path, value);
     changed(false);
-    // The two things on the page that quote a typed value.
+    // The things on the page that quote a typed value.
     if (path === "price.value") $("price-example").textContent = priceExample(state.draft);
-    if (path === "appear.button") $("code-popup").textContent = codeFor(state.draft, "popup");
+    if (path === "appear.button") {
+      $("code-popup").textContent = codeFor(state.draft, "popup");
+      $("code-window").textContent = codeFor(state.draft, "window");
+    }
   });
 
-  PBM.onChange(() => (state.draft ? keepFocus(renderEditor) : renderList()));
+  // ?window=<id> draws the widget alone; there is no dashboard around it to redraw.
+  const inWindow = new URLSearchParams(location.search).get("window");
+  PBM.onChange(() => {
+    if (inWindow === null) state.draft ? keepFocus(renderEditor) : renderList();
+  });
 
-  PBM.mount("widgets");
-  const asked = decodeURIComponent(location.hash.slice(1));
-  if (WIDGETS.some((w) => w.id === asked)) openEditor(asked);
-  else renderList();
+  if (inWindow !== null) showWindow(inWindow);
+  else {
+    PBM.mount("widgets");
+    const asked = decodeURIComponent(location.hash.slice(1));
+    if (WIDGETS.some((w) => w.id === asked)) openEditor(asked);
+    else renderList();
+  }
 })();

@@ -88,6 +88,25 @@
   color: var(--muted);
 }
 
+/* The two choices that set what the whole page counts, and the two on the
+   bookings chart: a plain label and a small dropdown. */
+.pickers,
+.chart-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+}
+
+.pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--text-ui);
+  font-weight: 500;
+  color: var(--muted);
+}
+
 /* ---------- Cards ---------- */
 /* Each card is the two-second answer; it links to the chart that explains it. */
 
@@ -123,6 +142,29 @@
   color: var(--muted);
 }
 
+/* The small "i" in a card's corner: point at it for what the card counts. It
+   sits in the corner so a long name never wraps it onto a line of its own. */
+.card {
+  position: relative;
+}
+
+.card-label {
+  padding-right: 22px;
+}
+
+.card-what {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  cursor: help;
+}
+
+.card-what .icon {
+  width: 14px;
+  height: 14px;
+}
+
 .card-value {
   grid-row: 2;
   font-family: var(--font-display);
@@ -153,6 +195,7 @@
 .card-sub {
   grid-row: 4;
   font-size: var(--text-small);
+  line-height: 1.4;
   color: var(--muted);
 }
 
@@ -183,18 +226,21 @@
 /* Colour is kept for the changes that need attention; good news stays ink. */
 .delta {
   grid-row: 5;
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  align-items: flex-start;
   gap: 4px;
   padding-top: 8px;
   font-size: var(--text-small);
   font-weight: 600;
+  line-height: 1.35;
   color: var(--muted);
 }
 
 .delta .icon {
+  flex: none;
   width: 14px;
   height: 14px;
+  margin-top: 2px;
   stroke-width: 2.2;
 }
 
@@ -258,6 +304,95 @@
 .chart-note {
   margin-top: auto;
   padding-top: 10px;
+}
+
+/* One plain sentence under a chart's name: what each bar or ring is. */
+.chart-head:has(+ .chart-lede) {
+  margin-bottom: 4px;
+}
+
+.chart-lede {
+  margin-bottom: 12px;
+}
+
+/* ---------- The two periods side by side ---------- */
+
+.compare {
+  margin-top: 12px;
+  padding: 15px 18px 12px;
+}
+
+.compare .chart-head {
+  margin-bottom: 6px;
+}
+
+.compare .chart-head h3 {
+  font-size: var(--text-h3);
+}
+
+.cmp-wrap {
+  overflow-x: auto;
+}
+
+.cmp {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  text-align: right;
+  font-size: var(--text-body);
+}
+
+.cmp th,
+.cmp td {
+  padding: 9px 10px;
+}
+
+.cmp thead th {
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.cmp tbody th {
+  padding-left: 0;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.cmp tbody th small {
+  display: block;
+  font-size: var(--text-small);
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.cmp tbody tr + tr > * {
+  border-top: 1px solid var(--line);
+}
+
+.cmp td.is-then {
+  color: var(--muted);
+}
+
+.cmp .is-change td {
+  font-weight: 600;
+}
+
+.cmp .is-change td span {
+  margin-left: 4px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.cmp td.is-bad,
+.cmp td.is-bad span {
+  color: var(--signal);
+}
+
+.cmp td.is-flat {
+  color: var(--muted);
 }
 
 .legend {
@@ -346,7 +481,7 @@
   position: relative;
   flex: 1;
   min-height: 180px;
-  margin: 6px 0 26px 26px; /* room for the scale on the left and the dates below */
+  margin: 16px 0 26px 26px; /* room for the scale on the left and the dates below, and the legend above */
 }
 
 .plot.is-few {
