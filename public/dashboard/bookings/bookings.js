@@ -462,7 +462,7 @@
         <span>${t("todo")}</span><span class="pill num" id="pendingCount"></span>
       </button>
       <button class="btn btn-quiet btn-small" type="button" data-block>${t("block")}</button>
-      <button class="btn btn-primary btn-small" type="button" data-add>${icon("plus")}${t("add")}</button>`;
+      <button class="btn btn-quiet btn-small" type="button" data-add>${icon("plus")}${t("add")}</button>`;
     $("board").classList.toggle("rail-open", state.rail);
   }
 

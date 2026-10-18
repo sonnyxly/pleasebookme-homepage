@@ -53,38 +53,36 @@
 
 /* ---------- The four counts ---------- */
 /* Each is one plain count, cheap to work out, and doubles as the tab for its
-   list. The picked one wears the same ring a linked chart does on Phân tích. */
+   list. They read as one strip of tabs, not four cards: the picked one is
+   underlined in ink. */
 
 .counts {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
   margin-bottom: 12px;
+  border-bottom: 1px solid var(--line-strong);
 }
 
 .count {
   display: grid;
   align-content: start;
-  gap: 2px;
-  padding: 13px 16px 14px;
+  gap: 1px;
+  margin-bottom: -1px;
+  padding: 8px 16px 12px 4px;
+  border-bottom: 2px solid transparent;
   font: inherit;
   text-align: left;
   color: inherit;
   cursor: pointer;
-  transition:
-    box-shadow 0.25s ease,
-    transform 0.3s var(--ease-out);
+  transition: border-color 0.2s ease;
 }
 
 .count:hover {
-  transform: translateY(-2px);
+  border-bottom-color: var(--line-strong);
 }
 
 .count[aria-selected="true"] {
-  box-shadow:
-    inset 0 1px 0 var(--panel-shine),
-    0 0 0 2px var(--accent),
-    0 22px 44px -34px var(--panel-drop);
+  border-bottom-color: var(--ink);
 }
 
 .count-label {
@@ -108,8 +106,8 @@
 
 .count-value {
   font-family: var(--font-display);
-  font-size: var(--text-figure);
-  line-height: 1.15;
+  font-size: var(--text-h2);
+  line-height: 1.2;
   letter-spacing: -0.01em;
 }
 
@@ -153,8 +151,7 @@
 }
 
 .list .dt tbody tr.is-open {
-  background: var(--well);
-  box-shadow: inset 3px 0 0 var(--accent);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
 }
 
 /* Today's bookings that have ended step back behind the ones still to come. */
@@ -316,8 +313,8 @@
 /* ---------- Narrower pages ---------- */
 
 @container page (max-width: 860px) {
-  .counts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .count-sub {
+    display: none;
   }
 
   .col-svc {
@@ -330,8 +327,12 @@
     display: none;
   }
 
+  .count {
+    padding-right: 6px;
+  }
+
   .count-value {
-    font-size: var(--text-display);
+    font-size: var(--text-lead);
   }
 
   .list .dt th,

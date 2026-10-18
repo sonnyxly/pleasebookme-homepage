@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- A design mockup with sample data: keep it out of search results. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/dashboard/assets/brand/pleasebookme-mark-small.svg" />
+    <title>Cài đặt | pleasebookme</title>
+    <script>
+      // Set the theme before the first paint: the saved choice, else the device setting.
+      (function () {
+        var saved;
+        try {
+          saved = localStorage.getItem("pbm-theme");
+        } catch (e) {}
+        if (saved !== "light" && saved !== "dark") {
+          saved = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = saved;
+        try {
+          if (localStorage.getItem("pbm-sidebar") === "collapsed") {
+            document.documentElement.dataset.sidebar = "collapsed";
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/dashboard/assets/tokens.css" />
+    <link rel="stylesheet" href="/dashboard/assets/shell.css" />
+    <link rel="stylesheet" href="/dashboard/settings/settings.css" />
+  </head>
+  <body>
+    <aside id="sidebar" class="chrome sidebar"></aside>
+    <header id="topbar" class="chrome topbar"></header>
+
+    <!-- The settings index, laid out as Cal.com does: groups of plain links, each
+         an icon, a name and one line. A link goes to a page the design already
+         has, or says the page is not drawn yet. -->
+    <main class="page" id="view"></main>
+
+    <script src="/dashboard/assets/shell.js"></script>
+    <script src="/dashboard/settings/settings.js"></script>
+  </body>
+</html>

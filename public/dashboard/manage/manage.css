@@ -74,7 +74,7 @@ button {
   border-radius: var(--r-frame);
   background: var(--card);
   color: var(--card-ink);
-  box-shadow: 0 30px 60px -38px rgb(26 26 26 / 0.45);
+  border: 1px solid var(--line-strong);
   overflow: hidden;
 }
 

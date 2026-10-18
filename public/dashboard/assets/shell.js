@@ -185,6 +185,14 @@
     panel: '<rect x="3" y="4" width="18" height="16" rx="3.5"/><path d="M9 4v16"/>',
     logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
     phone: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/>',
+    // Used by Cài đặt.
+    store: '<path d="M4 9 5.5 4h13L20 9"/><path d="M4 9a2.67 2.67 0 0 0 5.33 0 2.67 2.67 0 0 0 5.34 0A2.67 2.67 0 0 0 20 9"/><path d="M5 12v8h14v-8M10 20v-4h4v4"/>',
+    lock: '<rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+    key: '<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M16 7l3 3"/>',
+    shield: '<path d="M12 3 4 6v6c0 4.5 3.2 8 8 9 4.8-1 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/>',
+    card: '<rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19"/>',
+    download: '<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',
+    lifebuoy: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="m5.6 5.6 3.9 3.9M14.5 14.5l3.9 3.9M18.4 5.6l-3.9 3.9M9.5 14.5l-3.9 3.9"/>',
   };
 
   function icon(name) {
@@ -203,21 +211,21 @@
 
   // ---------- Navigation (the sections Trung's app has today) ----------
 
+  // `gap` starts a new group: the day's work, then setting the shop up, then
+  // what to look at afterwards. A little space tells them apart, no labels.
   const NAV = [
     { id: "dashboard", icon: "grid", href: "/dashboard" },
     { id: "bookings", icon: "calendarCheck", href: "/dashboard/bookings" },
-    { id: "availability", icon: "clock", href: "/dashboard/availability" },
+    { id: "availability", icon: "clock", href: "/dashboard/availability", gap: true },
     { id: "services", icon: "scissors", href: "/dashboard/services" },
     { id: "resources", icon: "users", href: "/dashboard/resources" },
     { id: "widgets", icon: "widget", href: "/dashboard/widgets" },
-    { id: "analytics", icon: "chart", href: "/dashboard/analytics" },
+    { id: "analytics", icon: "chart", href: "/dashboard/analytics", gap: true },
     { id: "integrations", icon: "plug" },
+    { id: "settings", icon: "sliders", href: "/dashboard/settings", gap: true },
   ];
   // On the server but not built into a page yet.
-  const SOON = [
-    { id: "notifications", icon: "bell" },
-    { id: "settings", icon: "sliders" },
-  ];
+  const SOON = [{ id: "notifications", icon: "bell" }];
 
   const BOOKING_LINK = "pleasebookme.app/booking/tiem-toc-mau";
   let active = "dashboard";
@@ -226,7 +234,8 @@
     const current = item.id === active ? ' aria-current="page"' : "";
     const href = item.href || "#";
     const pending = item.href ? "" : " data-pending";
-    return `<li><a class="nav-link" href="${href}"${current}${pending}>${icon(item.icon)}<span>${t("nav." + item.id)}</span></a></li>`;
+    const gap = item.gap ? ' class="nav-gap"' : "";
+    return `<li${gap}><a class="nav-link" href="${href}"${current}${pending}>${icon(item.icon)}<span>${t("nav." + item.id)}</span></a></li>`;
   }
 
   function langSwitch(extraClass) {
@@ -244,11 +253,13 @@
       <p class="tagline">${t("tagline")}</p>
       <nav class="nav" aria-label="${t("nav.label")}">
         <ul>${NAV.map(navLink).join("")}</ul>
-        <p class="nav-note">${t("nav.soon")}</p>
-        <ul>${SOON.map(
-          (item) =>
-            `<li><span class="nav-link" aria-disabled="true">${icon(item.icon)}<span>${t("nav." + item.id)}</span></span></li>`
-        ).join("")}</ul>
+        <details class="nav-soon">
+          <summary class="nav-note"><span>${t("nav.soon")}</span>${icon("chevron")}</summary>
+          <ul>${SOON.map(
+            (item) =>
+              `<li><span class="nav-link" aria-disabled="true">${icon(item.icon)}<span>${t("nav." + item.id)}</span></span></li>`
+          ).join("")}</ul>
+        </details>
       </nav>
       <div class="sidebar-foot">
         <button class="share" type="button" data-share>${icon("copy")}<span>${t("share.copy")}</span></button>
@@ -414,20 +425,12 @@
     active = activeId;
     document.documentElement.lang = lang;
 
-    const canvas = document.createElement("div");
-    canvas.className = "canvas";
-    canvas.setAttribute("aria-hidden", "true");
-    // Two quiet layers behind every page: a soft tint for the glass to pick
-    // up, and the brand's grid. Nothing here moves.
-    canvas.innerHTML = '<div class="canvas-glow"></div><div class="canvas-grid"></div>';
-    document.body.prepend(canvas);
-
-    // The one L-shaped piece of glass behind the top bar and the sidebar.
+    // The one L-shaped solid piece behind the top bar and the sidebar.
     const frame = document.createElement("div");
     frame.className = "frame";
     frame.setAttribute("aria-hidden", "true");
     frame.innerHTML = '<i class="frame-edge"></i>';
-    canvas.after(frame);
+    document.body.prepend(frame);
 
     const menu = document.createElement("div");
     menu.id = "quick-menu";

@@ -229,9 +229,8 @@
   background: linear-gradient(180deg, var(--t-top), var(--t-end));
   color: var(--t-ink);
   text-align: center;
-  box-shadow: 0 22px 44px -34px var(--panel-drop);
   overflow: hidden;
-  transition: transform 0.4s var(--ease-out);
+  transition: border-color 0.2s ease;
 }
 
 .tile.is-hero {
@@ -240,7 +239,7 @@
 }
 
 .tile:hover {
-  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--t-ink) 45%, transparent);
 }
 
 /* The owner's photo fills the tile; its top fades into the tile colour so the
@@ -517,13 +516,9 @@
   padding: 0;
   border: 1px solid var(--panel-edge);
   border-radius: var(--r-frame);
-  background: color-mix(in srgb, var(--panel-solid) 92%, transparent);
-  -webkit-backdrop-filter: blur(22px) saturate(150%);
-  backdrop-filter: blur(22px) saturate(150%);
+  background: var(--panel-solid);
   color: var(--ink);
-  box-shadow:
-    inset 0 1px 0 var(--panel-shine),
-    0 40px 90px -30px rgb(0 0 0 / 0.6);
+  box-shadow: 0 24px 60px -24px rgb(0 0 0 / 0.45);
   overflow: hidden;
 }
 
@@ -533,15 +528,13 @@
 
 .window::backdrop {
   background: rgb(0 0 0 / 0.42);
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
   animation: backdrop-in 0.3s ease;
 }
 
 @keyframes window-in {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.96);
+    transform: translateY(8px);
   }
 }
 
@@ -770,14 +763,6 @@
      back when it asks to be pressed again. */
   .btn-danger:not(.is-sure) span {
     display: none;
-  }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .window {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    background: var(--panel-solid);
   }
 }
 

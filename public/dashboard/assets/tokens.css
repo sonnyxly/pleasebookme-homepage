@@ -3,6 +3,9 @@
   Primitives are the fills in the Figma "Branding" file, with Black kept at
   #1A1A1A (Sonny, 2026-10-13). Light pairs with Burgundy, dark pairs with
   Glacier. Role names follow the landing site (paper, ink, muted, line, accent).
+  Flat since 2026-10-17, like the landing site: the page is paper or ink, the
+  chrome and the menus are one step off it (surface), and edges are hairlines.
+  No blur, glow, grid or gradient, and one accent per theme.
 */
 
 @font-face {
@@ -55,32 +58,32 @@
   --text-figure: 40px; /* the big number on a card */
   --text-title: clamp(26px, 2.5vw, 36px); /* the page title */
 
-  /* Shape. --r-sidebar (the Figma shell's 27) now rounds the booking sheet. */
+  /* Shape. The chrome is a solid surface with a hairline, no blur. */
   --sidebar-w: 260px;
   --sheet-w: 380px; /* a booking's side panel */
   --bar-h: 54px;
   --gap: 10px;
-  /* The glass runs to the window edges. Set --edge to 10px and --r-edge to
-     26px to float it again, with rounded outer corners. */
+  /* The chrome runs to the window edges. Set --edge to 10px and --r-edge to
+     16px to float it again, with rounded outer corners. */
   --edge: 0px;
   --r-edge: 0px;
-  --r-sidebar: 27px;
-  --r-frame: 26px; /* windows and the widget card */
-  --r-fillet: 18px; /* the inner corner, where the bar meets the sidebar */
-  /* Corners, small to large. Circles use 50% and are not listed. */
+  --r-sidebar: 16px; /* the booking side panel */
+  --r-frame: 16px; /* windows and the widget card */
+  --r-fillet: 16px; /* the inner corner, where the bar meets the sidebar */
+  /* Corners follow the landing site: 8 for anything you press or type in, 16
+     for anything that holds other things. Circles use 50% and are not listed. */
   --r-tick: 3px; /* bars, tracks, tiny marks */
-  --r-chip: 8px; /* tags, small swatches */
-  --r-block: 10px; /* a booking on the calendar, small buttons */
-  --r-control: 12px; /* fields, buttons, options */
-  --r-card: 18px; /* a box inside a panel, menus */
-  --r-panel: 22px; /* panels */
+  --r-chip: 6px; /* tags, small swatches */
+  --r-block: 8px; /* a booking on the calendar, small buttons */
+  --r-control: 8px; /* fields, buttons, options */
+  --r-card: 16px; /* a box inside a panel, menus */
+  --r-panel: 16px; /* panels */
   --r-pill: 999px; /* fully round ends */
 
-  /* Two ways of moving. The spring is for something sliding into a place the
-     user chose (a switch, the thumb of a segmented control, a picked colour).
-     Everything else, pressing and appearing, uses the plain ease. */
-  --ease-liquid: cubic-bezier(0.3, 1.35, 0.5, 1);
+  /* One way of moving: a plain ease-out with no overshoot. --ease-liquid is
+     kept as a second name so every rule that uses it keeps working. */
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-liquid: var(--ease-out);
 
   /* Booking status, the same in both themes so the colours keep one meaning. */
   --st-confirmed-bg: var(--glacier);
@@ -110,99 +113,70 @@
   --code-8-ink: #f7f7f7;
 }
 
-/* ---------- Light: paper page, burgundy glass ---------- */
+/* ---------- Light: paper page, grey chrome ---------- */
 :root,
 :root[data-theme="light"] {
   color-scheme: light;
 
   --paper: #f7f7f7;
+  --surface: #ececec; /* the chrome, and bands that sit one step off the page */
   --ink: #1a1a1a;
   --muted: #575757;
-  --line: rgb(26 26 26 / 0.1);
-  --line-strong: rgb(26 26 26 / 0.18);
+  --line: rgb(26 26 26 / 0.12);
+  --line-strong: rgb(26 26 26 / 0.2);
   --accent: var(--burgundy);
   --accent-ink: var(--silver);
   --signal: #b3261e;
   --focus: var(--burgundy);
 
-  --chrome-a: rgb(var(--burgundy-rgb) / 0.86);
-  --chrome-b: rgb(var(--burgundy-rgb) / 0.7);
-  --chrome-solid: var(--burgundy);
-  --chrome-ink: #f7f7f7;
-  --chrome-muted: rgb(247 247 247 / 0.8);
-  --chrome-line: rgb(247 247 247 / 0.14);
-  --chrome-edge: rgb(255 255 255 / 0.2);
-  --chrome-shine: rgb(255 255 255 / 0.26);
-  --chrome-sheen: rgb(255 255 255 / 0.08);
-  --chrome-hover: rgb(247 247 247 / 0.1);
-  --chrome-well: rgb(0 0 0 / 0.2);
-  --chrome-active: #f7f7f7;
-  --chrome-active-ink: var(--burgundy);
-  --chrome-drop: rgb(var(--burgundy-rgb) / 0.55);
+  /* Chrome: the top bar and the sidebar. Fields and the picked item on it are
+     paper, so they read as cut into the surface. */
+  --chrome-solid: var(--surface);
+  --chrome-ink: var(--ink);
+  --chrome-muted: var(--muted);
+  --chrome-line: rgb(26 26 26 / 0.14);
+  --chrome-hover: rgb(26 26 26 / 0.06);
+  --chrome-well: var(--paper);
+  --chrome-active: var(--paper);
+  --chrome-active-ink: var(--ink);
 
-  --panel-a: rgb(255 255 255 / 0.56);
-  --panel-b: rgb(255 255 255 / 0.34);
-  --panel-tint-a: rgb(var(--burgundy-rgb) / 0.07);
-  --panel-tint-b: rgb(var(--burgundy-rgb) / 0.15);
-  --panel-solid: #f5eff2;
-  --panel-edge: rgb(26 26 26 / 0.08);
-  --panel-shine: rgb(255 255 255 / 0.95);
-  --panel-drop: rgb(26 26 26 / 0.22);
+  /* Panels, and anything that floats over the page. */
+  --panel-solid: #fcfcfc;
+  --panel-edge: var(--line-strong);
   --well: rgb(26 26 26 / 0.05);
 
   --st-ghost-ink: #6b6b6b;
   --st-pending-edge: transparent;
-
-  --grid: rgb(26 26 26 / 0.045);
-  --flow: rgb(var(--glacier-rgb) / 0.95);
-  --glow-1: rgb(var(--glacier-rgb) / 0.5);
-  --glow-2: rgb(var(--burgundy-rgb) / 0.14);
 }
 
-/* ---------- Dark: black page, glacier glass ---------- */
+/* ---------- Dark: ink page, grey chrome ---------- */
 :root[data-theme="dark"] {
   color-scheme: dark;
 
   --paper: #1a1a1a;
+  --surface: #252525;
   --ink: #f7f7f7;
   --muted: #a6a6a6;
-  --line: rgb(247 247 247 / 0.1);
+  --line: rgb(247 247 247 / 0.12);
   --line-strong: rgb(247 247 247 / 0.2);
   --accent: var(--glacier);
   --accent-ink: var(--black);
   --signal: #ff8a5c;
   --focus: var(--glacier);
 
-  --chrome-a: rgb(var(--glacier-rgb) / 0.2);
-  --chrome-b: rgb(var(--glacier-rgb) / 0.07);
-  --chrome-solid: #3f4a5a;
+  --chrome-solid: var(--surface);
   --chrome-ink: #f7f7f7;
-  --chrome-muted: rgb(247 247 247 / 0.7);
-  --chrome-line: rgb(247 247 247 / 0.13);
-  --chrome-edge: rgb(255 255 255 / 0.16);
-  --chrome-shine: rgb(255 255 255 / 0.22);
-  --chrome-sheen: rgb(255 255 255 / 0.05);
-  --chrome-hover: rgb(247 247 247 / 0.1);
-  --chrome-well: rgb(0 0 0 / 0.24);
-  --chrome-active: rgb(var(--glacier-rgb) / 0.8);
-  --chrome-active-ink: var(--black);
-  --chrome-drop: rgb(0 0 0 / 0.7);
+  --chrome-muted: #a6a6a6;
+  --chrome-line: rgb(247 247 247 / 0.14);
+  --chrome-hover: rgb(247 247 247 / 0.07);
+  --chrome-well: var(--paper);
+  --chrome-active: rgb(247 247 247 / 0.12);
+  --chrome-active-ink: #f7f7f7;
 
-  --panel-a: rgb(247 247 247 / 0.04);
-  --panel-b: rgb(247 247 247 / 0.02);
-  --panel-tint-a: rgb(var(--glacier-rgb) / 0.13);
-  --panel-tint-b: rgb(var(--glacier-rgb) / 0.05);
-  --panel-solid: #21262d;
-  --panel-edge: rgb(255 255 255 / 0.1);
-  --panel-shine: rgb(255 255 255 / 0.1);
-  --panel-drop: rgb(0 0 0 / 0.6);
+  --panel-solid: #202020;
+  --panel-edge: var(--line-strong);
   --well: rgb(247 247 247 / 0.06);
 
   --st-ghost-ink: #9a9a9a;
   --st-pending-edge: rgb(255 255 255 / 0.2);
-
-  --grid: rgb(247 247 247 / 0.045);
-  --flow: rgb(var(--glacier-rgb) / 0.5);
-  --glow-1: rgb(var(--glacier-rgb) / 0.2);
-  --glow-2: rgb(var(--burgundy-rgb) / 0.6);
 }

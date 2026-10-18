@@ -657,7 +657,6 @@
   border-radius: var(--r-frame);
   background: var(--pv-bg);
   color: var(--pv-ink);
-  box-shadow: 0 30px 60px -38px var(--panel-drop);
   overflow: hidden;
 }
 

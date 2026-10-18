@@ -281,7 +281,7 @@
       const on = key === state.list;
       // A list that needs the owner shows it on the count as well.
       const needs = (key === "pending" || key === "unmarked") && counts[key] > 0;
-      return `<button class="panel count${needs ? " needs-you" : ""}" type="button" role="tab" id="tab-${key}" data-list="${key}"
+      return `<button class="count${needs ? " needs-you" : ""}" type="button" role="tab" id="tab-${key}" data-list="${key}"
           aria-selected="${on}" aria-controls="list" tabindex="${on ? 0 : -1}">
           <span class="count-label">${t("c." + key)}</span>
           <span class="count-value num">${counts[key]}</span>
