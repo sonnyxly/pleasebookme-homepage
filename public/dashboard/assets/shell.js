@@ -224,7 +224,7 @@
     { id: "resources", icon: "users", href: "/dashboard/resources" },
     { id: "widgets", icon: "widget", href: "/dashboard/widgets" },
     { id: "analytics", icon: "chart", href: "/dashboard/analytics", gap: true },
-    { id: "integrations", icon: "plug" },
+    { id: "integrations", icon: "plug", href: "/dashboard/integrations" },
     { id: "settings", icon: "sliders", href: "/dashboard/settings", gap: true },
   ];
   // On the server but not built into a page yet.

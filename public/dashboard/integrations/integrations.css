@@ -1,0 +1,534 @@
+/* Tích hợp: one narrow column, as Trung's page and Cal.com's calendar
+   settings are, so it reads the same on a phone. Google Calendar is one panel
+   split by hairlines (account, where bookings go, how they look); what is not
+   built yet sits below in a dashed panel and a short list. */
+
+.page {
+  container: page / inline-size;
+}
+
+.wrap {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+/* ---------- Title ---------- */
+
+.head {
+  margin: 0 var(--space-1) var(--space-1);
+}
+
+.head h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--fw-extrabold);
+  font-size: var(--text-title);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+.head p {
+  margin: var(--space-1) 0 0;
+  color: var(--muted);
+}
+
+/* ---------- Shared pieces ---------- */
+
+.app-tile {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-card);
+}
+
+.app-tile .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.soon-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: 24px;
+  padding: 0 var(--space-2-5);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font-size: var(--text-small);
+  font-weight: var(--fw-medium);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.soon-chip .icon {
+  width: 12px;
+  height: 12px;
+}
+
+.hint {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* ---------- Google Calendar ---------- */
+
+.gcal {
+  overflow: hidden;
+}
+
+.gcal-head {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--space-3-5);
+  padding: var(--space-5);
+}
+
+.gcal-title h2 {
+  margin: var(--space-0-5) 0 0;
+  font-family: var(--font-display);
+  font-weight: var(--fw-extrabold);
+  font-size: var(--text-h3);
+  line-height: 1.25;
+}
+
+.gcal-title p {
+  margin: var(--space-0-5) 0 0;
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+/* "Connected" is a fact, not a booking status, so it is ink in a hairline
+   pill and never Glacier, which means a confirmed booking. */
+.conn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  height: 26px;
+  padding: 0 var(--space-2-5);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font-size: var(--text-small);
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+}
+
+.conn .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.gcal-sec {
+  padding: var(--space-5);
+  border-top: 1px solid var(--line);
+}
+
+.gcal-sec h3 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-body);
+  font-weight: var(--fw-semibold);
+}
+
+/* Not connected: what it does, then the one button. */
+.ticks-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  list-style: none;
+}
+
+.ticks-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2-5);
+}
+
+.ticks-list .icon {
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  color: var(--muted);
+}
+
+/* The account: who is connected, since when, and the way out. */
+.acct {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--line);
+}
+
+.acct-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--well);
+  font-weight: var(--fw-semibold);
+}
+
+.acct-text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+}
+
+.acct-text strong {
+  font-weight: var(--fw-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acct-text span {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.ok {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0 var(--space-5) var(--space-4);
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+.ok .icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Connected, but Calendar was unticked on Google's screen. */
+.callout {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-card);
+  background: var(--well);
+}
+
+.callout > .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.callout p {
+  margin: var(--space-1) 0 var(--space-3);
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+/* Where bookings go: the calendar in use, then the way to make one of their own. */
+.dest-now {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3-5);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-control);
+  background: var(--well);
+}
+
+.dest-now > .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.dest-now span {
+  display: grid;
+  min-width: 0;
+}
+
+.dest-now strong {
+  font-weight: var(--fw-semibold);
+}
+
+.dest-now span span {
+  display: block;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.dest-form {
+  margin-top: var(--space-4);
+}
+
+.dest-row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.dest-row .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.dest-row .btn {
+  height: 40px;
+}
+
+.reserved {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+.reserved > span:first-child {
+  display: grid;
+}
+
+.reserved strong {
+  font-size: var(--text-ui);
+  font-weight: var(--fw-semibold);
+}
+
+.reserved small {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* How a booking looks in Google. A drawing, not Google's own colours: a
+   waiting booking keeps the dashed edge it has on our calendar, a confirmed
+   one is filled, a removed one is struck through. */
+.look {
+  display: grid;
+  gap: var(--space-2-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.look li {
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-ui);
+}
+
+.ev {
+  overflow: hidden;
+  padding: var(--space-1-5) var(--space-2-5);
+  border: 1px solid transparent;
+  border-radius: var(--r-block);
+  font-size: var(--text-small);
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ev-time {
+  font-weight: var(--fw-regular);
+}
+
+.ev-wait {
+  border: 1px dashed var(--line-strong);
+  color: var(--muted);
+}
+
+.ev-ok {
+  background: color-mix(in srgb, var(--ink) 12%, transparent);
+}
+
+.ev-gone {
+  border-color: var(--line);
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.plain {
+  display: grid;
+  gap: var(--space-2-5);
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+.plain li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2-5);
+}
+
+.plain .icon {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+}
+
+.gcal-foot {
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--line);
+}
+
+/* ---------- Not built yet ---------- */
+
+.is-soon {
+  padding: var(--space-5);
+  border-style: dashed;
+}
+
+.soon-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.soon-head h2,
+.later h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--fw-extrabold);
+  font-size: var(--text-h3);
+  line-height: 1.25;
+}
+
+.is-soon > p {
+  margin: var(--space-2) 0 0;
+  color: var(--muted);
+}
+
+.is-soon .hint {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.is-soon .hint .icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.later {
+  margin: var(--space-2) var(--space-1) 0;
+}
+
+.later ul {
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.later li {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3-5);
+}
+
+.later li > span:nth-child(2) {
+  display: grid;
+}
+
+.later strong {
+  font-weight: var(--fw-medium);
+}
+
+.later small {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.note {
+  margin: var(--space-2) var(--space-1) var(--space-1);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.note a {
+  color: inherit;
+}
+
+.note a[aria-current] {
+  font-weight: var(--fw-semibold);
+  color: var(--ink);
+}
+
+/* ---------- A phone ---------- */
+
+@container page (max-width: 520px) {
+  .gcal-head {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
+
+  .gcal-head .app-tile {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* The pill drops under the title instead of squeezing it. */
+  .conn {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .gcal-sec,
+  .is-soon {
+    padding: var(--space-4);
+  }
+
+  .acct {
+    flex-wrap: wrap;
+    padding: var(--space-4);
+  }
+
+  .acct .btn {
+    width: 100%;
+  }
+
+  .ok {
+    padding: 0 var(--space-4) var(--space-4);
+  }
+
+  .btn-wide,
+  .dest-row .btn {
+    width: 100%;
+  }
+
+  .dest-row {
+    flex-direction: column;
+  }
+
+  /* Stacked, `flex: 1` would squeeze the field to nothing; it keeps its
+     own 40px instead. */
+  .dest-row .input {
+    flex: none;
+  }
+
+  .look li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+  }
+
+  .look .ev {
+    justify-self: start;
+    max-width: 100%;
+  }
+
+  .gcal-foot {
+    padding: var(--space-3) var(--space-4);
+  }
+}

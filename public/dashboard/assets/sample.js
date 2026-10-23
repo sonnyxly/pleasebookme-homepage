@@ -566,6 +566,18 @@
   rand = seeded(7302);
   history({ branch: "b2", team: [4, 5], specialist: 1, open: 9 * 60, load: 0.6, from: OLDEST_DAY, to: -HISTORY_DAYS - 1, older: true });
 
+  // ---------- No bookings (Sonny, 23 October) ----------
+  // The mockups are public on pleasebookme.app/dashboard, so they show a shop
+  // that has taken no bookings yet: every list, calendar and chart is in its
+  // empty state. The generators above stay, so a busy day can be drawn again
+  // for design work by setting this to true. The customers go too, because
+  // every customer here comes from a booking.
+  const WITH_BOOKINGS = false;
+  if (!WITH_BOOKINGS) {
+    BOOKINGS.length = 0;
+    CUSTOMERS.length = 0;
+  }
+
   // Time the shop, or one person, is closed. `who` is "all" (every person at
   // `branch`) or a staff id. `from` and `to` are minutes, or null for whole days.
   const CLOSURES = [

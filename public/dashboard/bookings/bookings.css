@@ -23,8 +23,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 10px;
-  margin: 0 4px 12px;
+  gap: var(--space-2) var(--space-2-5);
+  margin: 0 var(--space-1) var(--space-3);
 }
 
 .head::after {
@@ -36,9 +36,9 @@
 
 .head h1 {
   order: 0;
-  margin: 0 10px 0 0;
+  margin: 0 var(--space-2-5) 0 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-title);
   line-height: 1.2;
   letter-spacing: -0.015em;
@@ -74,7 +74,7 @@
 .datenav {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .datenav .icon-btn {
@@ -90,7 +90,7 @@
 .toggle {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   font-size: var(--text-ui);
   color: var(--muted);
   cursor: pointer;
@@ -150,10 +150,10 @@
 .rail {
   display: grid;
   align-content: start;
-  gap: 14px;
+  gap: var(--space-3-5);
   width: 334px;
   height: 100%;
-  padding-left: 14px;
+  padding-left: var(--space-3-5);
   overflow-y: auto;
   scrollbar-width: thin;
 }
@@ -168,14 +168,14 @@
   scrollbar-width: thin;
 }
 
+/* Columns always share the width, as in Google Calendar: a narrower window,
+   or the to-do panel opening, makes every column narrower instead of making
+   the calendar scroll sideways. Names and services cut off with an ellipsis,
+   and each column heading tidies itself when it gets small (below). */
 .cal {
   --gutter: 58px;
-  --col-min: 150px;
+  --col-min: 0px;
   min-width: calc(var(--gutter) + var(--cols) * var(--col-min));
-}
-
-.cal-week {
-  --col-min: 88px;
 }
 
 .cal-head,
@@ -193,12 +193,49 @@
 }
 
 .cal-colhead {
+  container-type: inline-size;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2-5);
   min-width: 0;
-  padding: 11px 12px;
+  /* 12px at the sides, less once a column is narrow (a percentage here is of
+     the column's width), so a 45px day still has room for its date. */
+  padding: var(--space-2-5) min(var(--space-3), 8%);
   border-left: 1px solid var(--line);
+}
+
+.colhead-text strong,
+.colhead-text > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A narrow person's column keeps the name and drops the initial. */
+@container (max-width: 100px) {
+  .cal-colhead .avatar {
+    display: none;
+  }
+}
+
+/* A narrow day's column sets the weekday over the date instead of beside it. */
+@container (max-width: 96px) {
+  .colhead-text.is-date {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-0-5);
+    width: 100%;
+  }
+
+  .colhead-text.is-date span {
+    font-size: var(--text-micro);
+  }
+
+  .colhead-text.is-date strong {
+    min-width: 26px;
+    height: 26px;
+    font-size: var(--text-ui);
+  }
 }
 
 .cal-colhead .avatar {
@@ -214,7 +251,7 @@
 }
 
 .colhead-text strong {
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .colhead-text span {
@@ -225,7 +262,7 @@
 .colhead-text.is-date {
   flex-direction: row;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .colhead-text.is-date strong {
@@ -244,13 +281,13 @@
 
 .cal-colhead.is-today .is-date span {
   color: var(--ink);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .cal-body {
   position: relative;
   height: calc(var(--hours) * var(--hour));
-  margin: 14px 0 18px;
+  margin: var(--space-3-5) 0 var(--space-4);
 }
 
 .cal-times {
@@ -289,7 +326,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 1px;
-  padding: 5px 9px;
+  padding: 5px var(--space-2);
   border-radius: var(--r-block);
   overflow: hidden;
   min-height: 18px;
@@ -311,7 +348,7 @@
 .block-top {
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  gap: var(--space-1-5);
   max-width: 100%;
   min-width: 0;
 }
@@ -327,7 +364,7 @@
 
 .block strong {
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .block-time,
@@ -342,8 +379,8 @@
 .block.is-short {
   flex-direction: row;
   align-items: center;
-  gap: 7px;
-  padding: 0 9px;
+  gap: var(--space-1-5);
+  padding: 0 var(--space-2);
 }
 
 .block.is-short .block-top {
@@ -356,8 +393,8 @@
 }
 
 .block.is-compact {
-  padding-left: 7px;
-  padding-right: 7px;
+  padding-left: var(--space-1-5);
+  padding-right: var(--space-1-5);
 }
 
 .block.is-compact.is-short .block-svc {
@@ -384,7 +421,7 @@
 }
 
 .block.is-narrow.is-short.st-pending {
-  padding-right: 12px;
+  padding-right: var(--space-3);
 }
 
 /* A ring marks "waiting", so the state does not rest on colour alone. */
@@ -400,7 +437,7 @@
 }
 
 .block.is-short.st-pending {
-  padding-right: 20px;
+  padding-right: var(--space-5);
 }
 
 .block.st-cancelled strong,
@@ -436,12 +473,12 @@
   position: absolute;
   top: -10px;
   right: calc(100% + 8px);
-  padding: 1px 6px;
+  padding: 1px var(--space-1-5);
   border-radius: var(--r-chip);
   background: var(--signal);
   color: var(--paper);
   font-size: var(--text-micro);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .now.in-col span {
@@ -453,8 +490,8 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 6px 18px;
-  padding: 10px 18px;
+  gap: var(--space-1-5) var(--space-4);
+  padding: var(--space-2-5) var(--space-4);
   border-top: 1px solid var(--line);
   font-size: var(--text-small);
   color: var(--muted);
@@ -464,13 +501,13 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 18px;
+  gap: var(--space-1-5) var(--space-4);
 }
 
 .legend span {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: var(--space-1-5);
 }
 
 .swatch {
@@ -521,9 +558,9 @@
   display: grid;
   grid-template-columns: 124px minmax(120px, 1.2fr) minmax(130px, 1.2fr) minmax(100px, 0.9fr) 150px 84px;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   min-height: 60px;
-  padding: 0 18px;
+  padding: 0 var(--space-4);
   border-top: 1px solid var(--line);
 }
 
@@ -536,7 +573,7 @@
   border-top: 0;
   border-bottom: 1px solid var(--line);
   font-size: var(--text-small);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   color: var(--muted);
 }
 
@@ -548,12 +585,12 @@
   grid-template-columns: 1fr auto;
   min-height: 40px;
   background: var(--well);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .group-count {
   font-size: var(--text-small);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   color: var(--muted);
 }
 
@@ -578,7 +615,7 @@
 }
 
 .cell-main strong {
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .cell-main span {
@@ -589,7 +626,7 @@
 .cell-staff {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .cell-staff .avatar {
@@ -603,7 +640,7 @@
 .cell-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .cell-actions .icon-btn {
@@ -631,8 +668,8 @@
 .empty {
   display: grid;
   justify-items: start;
-  gap: 14px;
-  padding: 36px 24px;
+  gap: var(--space-3-5);
+  padding: var(--space-9) var(--space-6);
 }
 
 .empty p {
@@ -645,16 +682,16 @@
 /* ---------- Right rail ---------- */
 
 .rail-panel {
-  padding: 16px;
+  padding: var(--space-4);
 }
 
 .rail-panel h2 {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 0 0 10px;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2-5);
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-h3);
   line-height: 1.25;
 }
@@ -674,30 +711,30 @@
 
 .queue li {
   display: grid;
-  gap: 10px;
-  padding: 12px 0;
+  gap: var(--space-2-5);
+  padding: var(--space-3) 0;
   border-top: 1px solid var(--line);
 }
 
 .queue li:first-child {
   border-top: 0;
-  padding-top: 2px;
+  padding-top: var(--space-0-5);
 }
 
 .queue li:last-child {
-  padding-bottom: 2px;
+  padding-bottom: var(--space-0-5);
 }
 
 .queue-main {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 0 10px;
+  gap: 0 var(--space-2-5);
   text-align: left;
   border-radius: var(--r-chip);
 }
 
 .queue-main strong {
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .queue-main span {
@@ -710,13 +747,13 @@
   grid-column: 2;
   grid-row: 1;
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--ink);
 }
 
 .queue-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .upnext li + li {
@@ -726,9 +763,9 @@
 .upnext button {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: var(--space-3);
   width: 100%;
-  padding: 10px 0;
+  padding: var(--space-2-5) 0;
   text-align: left;
   border-radius: var(--r-chip);
 }
@@ -737,6 +774,7 @@
   flex: none;
   width: 52px;
   font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
   font-size: var(--text-h3);
 }
 
@@ -748,7 +786,7 @@
 }
 
 .upnext-text strong {
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .upnext-text span {
@@ -785,7 +823,7 @@
   .board,
   .board.rail-open {
     grid-template-columns: minmax(0, 1fr);
-    row-gap: 14px;
+    row-gap: var(--space-3-5);
   }
 
   .rail-wrap {
@@ -809,9 +847,9 @@
 .colour-by {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: var(--space-1-5);
   font-size: var(--text-ui);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   color: var(--muted);
 }
 
@@ -829,7 +867,7 @@
 .cell-time {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .colhead-text .code-dot {
@@ -870,7 +908,7 @@
 }
 
 .rail-hint {
-  margin: -4px 0 4px;
+  margin: -4px 0 var(--space-1);
   font-size: var(--text-small);
   color: var(--muted);
 }
@@ -883,19 +921,19 @@
   right: 3px;
   display: flex;
   align-items: flex-start;
-  padding: 5px 9px;
+  padding: 5px var(--space-2);
   border: 1px dashed var(--line-strong);
   border-radius: var(--r-block);
   background: repeating-linear-gradient(-45deg, transparent 0 6px, var(--line) 6px 7px);
   font-size: var(--text-small);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   color: var(--muted);
   text-align: left;
   overflow: hidden;
 }
 
 .closed span {
-  padding: 1px 6px;
+  padding: 1px var(--space-1-5);
   border-radius: var(--r-chip);
   background: var(--panel-solid);
 }
@@ -918,7 +956,7 @@
 }
 
 .warn {
-  padding: 11px 14px;
+  padding: var(--space-2-5) var(--space-3-5);
   border: 1px solid color-mix(in srgb, var(--signal) 45%, transparent);
   border-radius: var(--r-control);
   background: color-mix(in srgb, var(--signal) 8%, transparent);
@@ -926,14 +964,191 @@
 }
 
 .warn strong {
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .warn ul {
-  margin: 4px 0 0;
-  padding-left: 18px;
+  margin: var(--space-1) 0 0;
+  padding-left: var(--space-4);
 }
 
 .warn strong + ul {
-  margin-top: 6px;
+  margin-top: var(--space-1-5);
+}
+
+/* ---------- A phone ---------- */
+/* The owner's main screen is a phone (PRODUCT.md). Five barbers side by side
+   do not fit on it, so the day is one person at a time, picked in a strip of
+   pills above the calendar; the week is seven narrow columns that fit the
+   screen, as an overview to tap into; the table stacks each booking into
+   three short lines, like Tổng quan and Tài nguyên. */
+
+.who-strip {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--line);
+  scrollbar-width: none;
+}
+
+.who {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 40px;
+  padding: 0 var(--space-3) 0 var(--space-1);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font-weight: var(--fw-medium);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.who .avatar {
+  width: 30px;
+  height: 30px;
+  background: var(--well);
+  color: var(--ink);
+}
+
+.who-count {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* Picked: an ink ring, as every picker is; never the accent. */
+.who[aria-pressed="true"] {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+/* Someone has a booking waiting for an answer: the calendar's waiting dot. */
+.who-wait {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--st-pending-ink);
+  box-shadow: 0 0 0 3px var(--st-pending-bg);
+}
+
+/* With one person on show, the strip already names them. */
+.cal.is-one .cal-head {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .cal {
+    --gutter: 46px;
+  }
+
+  /* Seven columns that fit the screen, so the week is a glance, not a scroll.
+     (The weekday stacks over the date through the heading's own query.) */
+  .cal-week .cal-colhead {
+    justify-content: center;
+    overflow: hidden;
+    padding: var(--space-2) 0;
+  }
+
+  /* A day is about 43px wide here: a block keeps its time and colour, and the
+     name and service wait for a tap (the side panel has them). */
+  .cal-week .block {
+    overflow: hidden;
+  }
+
+  .cal-week .block strong,
+  .cal-week .block .block-svc {
+    display: none;
+  }
+
+  /* One column, or seven narrow ones: what the colours stand for has little
+     to tell apart, so the choice steps aside and status colours stay. */
+  .colour-by {
+    display: none;
+  }
+
+  .tbl {
+    min-width: 0;
+  }
+
+  .tr.th {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  /* time | customer          status
+     time | service           yes, no
+     time | person, branch */
+  .tr[data-bk] {
+    grid-template-columns: 84px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "time cust status"
+      "time svc acts"
+      "time who acts";
+    align-items: start;
+    gap: var(--space-0-5) var(--space-3);
+    min-height: 0;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .tr[data-bk] > :nth-child(1) {
+    grid-area: time;
+    align-items: flex-start;
+    font-weight: var(--fw-semibold);
+  }
+
+  .tr[data-bk] > :nth-child(2) {
+    grid-area: cust;
+  }
+
+  .tr[data-bk] > :nth-child(3) {
+    grid-area: svc;
+  }
+
+  .tr[data-bk] > :nth-child(4) {
+    grid-area: who;
+  }
+
+  .tr[data-bk] > :nth-child(5) {
+    grid-area: status;
+    justify-self: end;
+  }
+
+  .tr[data-bk] > :nth-child(6) {
+    grid-area: acts;
+    justify-self: end;
+  }
+
+  /* The booking code, the minutes and the avatar are in the side panel. */
+  .tr[data-bk] .cell-main .num,
+  .tr[data-bk] > :nth-child(3) span,
+  .tr[data-bk] .cell-staff .avatar {
+    display: none;
+  }
+
+  .tr[data-bk] > :nth-child(3) strong,
+  .tr[data-bk] .cell-staff strong {
+    font-weight: var(--fw-regular);
+    font-size: var(--text-ui);
+  }
+
+  .tr[data-bk] .cell-staff .cell-main {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0 var(--space-1-5);
+    color: var(--muted);
+  }
+
+  .tr[data-bk] .cell-staff .cell-main span::before {
+    content: "· ";
+  }
+
+  .tr.group {
+    padding: 0 var(--space-4);
+  }
 }

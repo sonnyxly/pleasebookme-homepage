@@ -12,8 +12,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 12px;
-  margin: 0 4px 12px;
+  gap: var(--space-1) var(--space-3);
+  margin: 0 var(--space-1) var(--space-3);
 }
 
 .head h1 {
@@ -21,7 +21,7 @@
   min-width: 0;
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-title);
   line-height: 1.2;
   letter-spacing: -0.015em;
@@ -47,11 +47,11 @@
 
 .head-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .note {
-  margin: 14px 4px 4px;
+  margin: var(--space-3-5) var(--space-1) var(--space-1);
   font-size: var(--text-small);
   color: var(--muted);
 }
@@ -64,14 +64,14 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 16px;
-  margin: -4px 4px 12px;
+  gap: var(--space-1) var(--space-4);
+  margin: -4px var(--space-1) var(--space-3);
   font-size: var(--text-ui);
   color: var(--muted);
 }
 
 .summary button {
-  padding: 2px 0;
+  padding: var(--space-0-5) 0;
   font: inherit;
   color: inherit;
   cursor: pointer;
@@ -83,7 +83,7 @@
 
 .summary button[aria-pressed="true"] {
   color: var(--ink);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   text-decoration: underline;
   text-underline-offset: 4px;
 }
@@ -93,7 +93,7 @@
 .state {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   white-space: nowrap;
 }
 
@@ -130,9 +130,9 @@ td > .state.is-retired {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  padding: 10px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  padding: var(--space-2-5);
   border-radius: var(--r-card);
 }
 
@@ -154,7 +154,7 @@ td > .state.is-retired {
 }
 
 .filter-search .input {
-  padding-left: 36px;
+  padding-left: var(--space-9);
 }
 
 .filters select.input {
@@ -172,6 +172,11 @@ td > .state.is-retired {
   min-width: 860px;
 }
 
+/* The phone's second line (see "Narrower rooms"); the table has its own columns. */
+.dt .c-meta {
+  display: none;
+}
+
 .dt th:nth-child(4),
 .dt td:nth-child(4) {
   text-align: right;
@@ -181,7 +186,7 @@ td > .state.is-retired {
 .link-to {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   white-space: nowrap;
 }
 
@@ -196,8 +201,8 @@ td > .state.is-retired {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px 16px;
-  margin: 12px 4px 0;
+  gap: var(--space-2) var(--space-4);
+  margin: var(--space-3) var(--space-1) 0;
   font-size: var(--text-ui);
   color: var(--muted);
 }
@@ -205,7 +210,7 @@ td > .state.is-retired {
 .pager-nav {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2-5);
 }
 
 .pager .btn:disabled {
@@ -216,8 +221,8 @@ td > .state.is-retired {
 .empty {
   display: grid;
   justify-items: center;
-  gap: 14px;
-  padding: 48px 20px;
+  gap: var(--space-3-5);
+  padding: var(--space-12) var(--space-5);
   border: 1px dashed var(--line-strong);
   border-radius: var(--r-panel);
   text-align: center;
@@ -232,13 +237,13 @@ td > .state.is-retired {
 .empty.is-left {
   justify-items: start;
   max-width: 760px;
-  padding: 24px;
+  padding: var(--space-6);
   text-align: left;
 }
 
 .empty h2 {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-h3);
   color: var(--ink);
 }
@@ -247,27 +252,27 @@ td > .state.is-retired {
 
 .form {
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
   max-width: 760px;
 }
 
 .card {
   display: grid;
-  gap: 14px;
-  padding: 18px 22px 22px;
+  gap: var(--space-3-5);
+  padding: var(--space-4) var(--space-5) var(--space-5);
 }
 
 .card h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-h3);
   line-height: 1.25;
 }
 
 .area {
   height: auto;
-  padding: 10px 12px;
+  padding: var(--space-2-5) var(--space-3);
   resize: vertical;
   line-height: 1.5;
 }
@@ -276,17 +281,17 @@ td > .state.is-retired {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .label-row label {
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .link-btn {
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--accent);
   text-decoration: none;
 }
@@ -300,7 +305,7 @@ td > .state.is-retired {
 .icon-picks {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .swatch {
@@ -378,6 +383,98 @@ td > .state.is-retired {
 
   .head-actions .btn {
     flex: 1;
+  }
+
+}
+
+/* A phone: six columns need 860px, so each resource becomes a row of three
+   lines instead, and nothing scrolls sideways or goes missing.
+     1. the colour dot and name, with its status at the right
+     2. type · what it is linked to · capacity
+     3. the services it is assigned to
+   The headings stay for screen readers; each row still reads in order. */
+@container page (max-width: 640px) {
+  .dt {
+    min-width: 0;
+  }
+
+  .dt thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .dt,
+  .dt tbody {
+    display: block;
+  }
+
+  .dt tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-1) var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-top: 1px solid var(--line);
+  }
+
+  .dt tbody tr:first-child {
+    border-top: 0;
+  }
+
+  .dt td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+
+  .dt .c-type,
+  .dt .c-link,
+  .dt .c-cap {
+    display: none;
+  }
+
+  .dt .c-name {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .dt .c-state {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: var(--text-small);
+  }
+
+  /* Lines two and three start under the name, past the colour dot. */
+  .dt .c-meta,
+  .dt .c-svc {
+    grid-column: 1 / -1;
+    padding-left: var(--space-5);
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  .dt .c-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    grid-row: 2;
+  }
+
+  .dt .c-meta .type .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .dt .c-svc {
+    grid-row: 3;
+  }
+
+  .dt .c-svc::before {
+    content: attr(data-label) ": ";
   }
 }
 

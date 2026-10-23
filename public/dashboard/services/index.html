@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- A design mockup with sample data: keep it out of search results. -->
     <meta name="robots" content="noindex, nofollow" />
-    <link rel="icon" type="image/svg+xml" href="/dashboard/assets/brand/pleasebookme-mark-small.svg" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/dashboard/assets/brand/pleasebookme-mark-small.svg"
+    />
     <title>Dịch vụ | pleasebookme</title>
     <script>
       // Set the theme before the first paint: the saved choice, else the device setting.
@@ -15,7 +19,9 @@
           saved = localStorage.getItem("pbm-theme");
         } catch (e) {}
         if (saved !== "light" && saved !== "dark") {
-          saved = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          saved = matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
         }
         document.documentElement.dataset.theme = saved;
         try {
@@ -28,7 +34,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/dashboard/assets/tokens.css" />
@@ -47,7 +53,11 @@
       </header>
 
       <!-- Set once for the shop; every service follows these unless it has its own rule. -->
-      <section class="panel shop" id="shop" aria-labelledby="shop-title"></section>
+      <section
+        class="panel shop"
+        id="shop"
+        aria-labelledby="shop-title"
+      ></section>
 
       <!-- The menu: one tile per service, in the owner's order. The first is wide. -->
       <div class="tiles" id="tiles"></div>

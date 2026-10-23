@@ -208,7 +208,9 @@
       .replace(/^-+|-+$/g, "");
   const typeOf = (id) => RESOURCE_TYPES.find((type) => type.id === id);
   const typeName = (type) => type[PBM.lang] || type.vi;
-  const stateOf = (status) => `<span class="state ${STATE_CLASS[status]}"><i aria-hidden="true"></i>${t("st." + status)}</span>`;
+  // The word has its own span so a phone can show the dot alone (resources.css).
+  const stateOf = (status) =>
+    `<span class="state ${STATE_CLASS[status]}"><i aria-hidden="true"></i><span class="state-word">${t("st." + status)}</span></span>`;
 
   // ---------- State ----------
 
@@ -280,13 +282,26 @@
 
   function rowHTML(r) {
     const type = typeOf(r.type);
+    const typeHTML = `<span class="type">${icon(type.icon || "box")}${esc(typeName(type))}</span>`;
+    const link = linkCell(r);
+    // On a phone a row is three lines, and type, link and capacity share the
+    // second. That line is a cell of its own that only a phone shows
+    // (resources.css); empty parts are left out rather than shown as dashes.
+    const meta = [
+      typeHTML,
+      link.includes("dt-quiet") ? "" : link,
+      r.capacity != null ? `${t("col.capacity")} <span class="num">${r.capacity}</span>` : "",
+    ]
+      .filter(Boolean)
+      .join('<span class="sep" aria-hidden="true">·</span>');
     return `<tr>
-        <td>${stateOf(r.status)}</td>
-        <td><span class="dt-name"><i class="code-dot code-${r.code}"></i><span><strong>${esc(r.name)}</strong><small>${esc(r.slug)}</small></span></span></td>
-        <td><span class="type">${icon(type.icon || "box")}${esc(typeName(type))}</span></td>
-        <td>${linkCell(r)}</td>
-        <td class="num">${r.capacity ?? `<span class="dt-quiet">–</span>`}</td>
-        <td>${servicesCell(r)}</td>
+        <td class="c-state">${stateOf(r.status)}</td>
+        <td class="c-name"><span class="dt-name"><i class="code-dot code-${r.code}"></i><span><strong>${esc(r.name)}</strong><small>${esc(r.slug)}</small></span></span></td>
+        <td class="c-type">${typeHTML}</td>
+        <td class="c-link">${link}</td>
+        <td class="c-cap num">${r.capacity ?? `<span class="dt-quiet">–</span>`}</td>
+        <td class="c-svc" data-label="${t("col.services")}">${servicesCell(r)}</td>
+        <td class="c-meta">${meta}</td>
       </tr>`;
   }
 

@@ -4,9 +4,10 @@
    Trung's app has one settings page today (Google Calendar, under
    settings/integrations). Every other entry here is a place the design needs,
    so most of them have no page behind them yet: they open the same "not drawn
-   yet" message the sidebar uses. Three entries lead to pages the design
+   yet" message the sidebar uses. Four entries lead to pages the design
    already has: the shop profile, the shop's booking rules (the shared card on
-   Dịch vụ) and the look of the booking page (on Widget đặt lịch). Messages are
+   Dịch vụ), the look of the booking page (on Widget đặt lịch) and Google
+   Calendar (Tích hợp, drawn on 23 October). Messages are
    email only for now, so there is no Zalo or SMS entry. */
 (function () {
   "use strict";
@@ -37,7 +38,7 @@
       "i.notify": "Thông báo",
       "i.notify.d": "Email cho tiệm và cho khách khi có lịch mới, đổi giờ hoặc huỷ.",
       "i.google": "Lịch Google",
-      "i.google.d": "Nối lịch Google để giờ bận của bạn tự chặn lịch đặt.",
+      "i.google.d": "Lịch hẹn tự hiện trong lịch Google của bạn.",
 
       "i.password": "Mật khẩu",
       "i.password.d": "Đổi mật khẩu hoặc cách đăng nhập.",
@@ -76,7 +77,7 @@
       "i.notify": "Notifications",
       "i.notify.d": "Emails to you and your customers when a booking is made, moved or cancelled.",
       "i.google": "Google Calendar",
-      "i.google.d": "Connect Google Calendar so your busy times block bookings.",
+      "i.google.d": "Your bookings show up in your Google Calendar.",
 
       "i.password": "Password",
       "i.password.d": "Change your password or sign-in method.",
@@ -105,7 +106,7 @@
         { id: "rules", icon: "calendarCheck", href: "/dashboard/services" },
         { id: "look", icon: "widget", href: "/dashboard/widgets" },
         { id: "notify", icon: "bell" },
-        { id: "google", icon: "calendar" },
+        { id: "google", icon: "calendar", href: "/dashboard/integrations" },
       ],
     },
     {

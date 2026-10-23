@@ -14,14 +14,14 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 4px 20px;
-  margin: 0 4px 12px;
+  gap: var(--space-1) var(--space-5);
+  margin: 0 var(--space-1) var(--space-3);
 }
 
 .head h1 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-title);
   line-height: 1.2;
   letter-spacing: -0.015em;
@@ -36,7 +36,7 @@
 }
 
 .note {
-  margin: 14px 4px 4px;
+  margin: var(--space-3-5) var(--space-1) var(--space-1);
   font-size: var(--text-small);
   color: var(--muted);
 }
@@ -46,7 +46,7 @@
    offers, where it appears, whether it is running, and how much it is used. */
 
 .list {
-  padding: 4px 0;
+  padding: var(--space-1) 0;
 }
 
 .row {
@@ -54,8 +54,8 @@
   display: grid;
   grid-template-columns: minmax(220px, 1.5fr) minmax(210px, 1.3fr) minmax(150px, 0.9fr) 150px 76px 92px;
   align-items: center;
-  gap: 4px 16px;
-  padding: 13px 18px;
+  gap: var(--space-1) var(--space-4);
+  padding: var(--space-3) var(--space-4);
   transition: background-color 0.18s ease;
 }
 
@@ -68,8 +68,8 @@
 }
 
 .row-head {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: var(--space-2-5);
+  padding-bottom: var(--space-2-5);
   font-size: var(--text-small);
   color: var(--muted);
 }
@@ -78,7 +78,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 2px 8px;
+  gap: var(--space-0-5) var(--space-2);
   min-width: 0;
 }
 
@@ -89,7 +89,7 @@
 }
 
 .row-open strong {
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .row-open::after {
@@ -121,11 +121,11 @@
   display: inline-flex;
   align-items: center;
   height: 22px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-chip);
   background: var(--well);
   font-size: var(--text-small);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   white-space: nowrap;
 }
 
@@ -133,7 +133,7 @@
 .cell-where {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 10px;
+  gap: var(--space-1) var(--space-2-5);
   font-size: var(--text-ui);
 }
 
@@ -142,13 +142,13 @@
   display: inline-block;
   width: 1px;
   height: 11px;
-  margin-right: 10px;
+  margin-right: var(--space-2-5);
   background: var(--line-strong);
   vertical-align: -1px;
 }
 
 .cell-where {
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .cell-week {
@@ -161,7 +161,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 6px;
+  gap: var(--space-1-5);
 }
 
 .cell-actions .icon-btn:hover {
@@ -174,8 +174,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 10px;
-  margin: 0 4px 12px;
+  gap: var(--space-2) var(--space-2-5);
+  margin: 0 var(--space-1) var(--space-3);
 }
 
 .ed-name {
@@ -187,11 +187,12 @@
 /* The widget's name is typed straight into the page heading. */
 .ed-name input {
   width: 100%;
-  padding: 2px 8px;
+  padding: var(--space-0-5) var(--space-2);
   border: 1px solid transparent;
   border-radius: var(--r-block);
   background: none;
   font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
   font-size: clamp(24px, 2.3vw, 32px);
   line-height: 1.25;
   letter-spacing: -0.015em;
@@ -206,18 +207,18 @@
 }
 
 .ed-name .error {
-  padding-left: 9px;
+  padding-left: var(--space-2);
   font-size: var(--text-small);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   color: var(--signal);
 }
 
 .ed-on {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   cursor: pointer;
 }
 
@@ -231,25 +232,25 @@
   display: grid;
   grid-template-columns: 196px minmax(0, 1fr) 372px;
   align-items: start;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .ed-tabs {
   position: sticky;
   top: calc(var(--edge) + var(--bar-h) + var(--gap) + 14px);
   display: grid;
-  gap: 2px;
-  padding: 8px;
+  gap: var(--space-0-5);
+  padding: var(--space-2);
 }
 
 .ed-tabs button {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2-5);
   min-height: 40px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   border-radius: var(--r-control);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   text-align: left;
   white-space: nowrap;
   transition: background-color 0.18s ease;
@@ -262,20 +263,20 @@
 .ed-tabs button[aria-current="true"] {
   background: var(--accent);
   color: var(--accent-ink);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .ed-form {
   display: grid;
-  gap: 16px;
-  padding: 18px 22px 22px;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5) var(--space-5);
 }
 
 .ed-form h2,
 .side-head h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-h2);
   line-height: 1.25;
 }
@@ -290,8 +291,8 @@
 /* A block of related settings. */
 .group {
   display: grid;
-  gap: 10px;
-  padding: 14px 16px 16px;
+  gap: var(--space-2-5);
+  padding: var(--space-3-5) var(--space-4) var(--space-4);
   border: 1px solid var(--line-strong);
   border-radius: var(--r-card);
 }
@@ -300,19 +301,19 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .group-head h3,
 .place-head h3 {
   margin: 0;
   font-size: var(--text-body);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .link-btn {
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--accent);
 }
 
@@ -337,12 +338,12 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px 12px;
+  gap: var(--space-2) var(--space-3);
 }
 
 .group-row .label {
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .field-short {
@@ -358,8 +359,8 @@
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) 68px 118px;
   align-items: center;
-  gap: 12px;
-  padding: 9px 2px;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-0-5);
   cursor: pointer;
 }
 
@@ -376,12 +377,12 @@
 
 .svc-name {
   display: grid;
-  font-weight: 500;
+  font-weight: var(--fw-medium);
 }
 
 .svc-name small {
   font-size: var(--text-small);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   color: var(--signal);
 }
 
@@ -395,7 +396,7 @@
 /* ---------- Where it appears ---------- */
 
 .place {
-  padding: 14px 16px;
+  padding: var(--space-3-5) var(--space-4);
   border: 1px solid var(--line-strong);
   border-radius: var(--r-card);
   transition: border-color 0.2s ease;
@@ -409,11 +410,11 @@
   display: grid;
   grid-template-columns: 96px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 14px;
+  gap: var(--space-3-5);
 }
 
 .place-head p {
-  margin: 2px 0 0;
+  margin: var(--space-0-5) 0 0;
   font-size: var(--text-ui);
   color: var(--muted);
 }
@@ -435,9 +436,9 @@
 
 .place-body {
   display: grid;
-  gap: 14px;
-  margin-top: 14px;
-  padding-top: 14px;
+  gap: var(--space-3-5);
+  margin-top: var(--space-3-5);
+  padding-top: var(--space-3-5);
   border-top: 1px solid var(--line);
 }
 
@@ -449,13 +450,13 @@
 .qr-box {
   display: grid;
   justify-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   margin: 0;
 }
 
 .qr {
   width: 104px;
-  padding: 6px;
+  padding: var(--space-1-5);
   border-radius: var(--r-block);
   background: white;
   fill: var(--black);
@@ -471,7 +472,7 @@
 /* Real code to paste, so it is set in a code face. */
 .code {
   margin: 0;
-  padding: 11px 13px;
+  padding: var(--space-2-5) var(--space-3);
   border-radius: var(--r-control);
   background: var(--well);
   font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
@@ -482,7 +483,7 @@
 
 /* Folded: the keys look after themselves. */
 .adv {
-  padding: 0 14px;
+  padding: 0 var(--space-3-5);
   border: 1px solid var(--line-strong);
   border-radius: var(--r-control);
 }
@@ -492,7 +493,7 @@
   align-items: center;
   min-height: 44px;
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   list-style: none;
   cursor: pointer;
 }
@@ -505,7 +506,7 @@
   content: "";
   width: 8px;
   height: 8px;
-  margin: 0 4px 3px auto;
+  margin: 0 var(--space-1) 3px auto;
   border-right: 1.75px solid currentColor;
   border-bottom: 1.75px solid currentColor;
   transform: rotate(45deg);
@@ -518,18 +519,18 @@
 }
 
 .adv .hint {
-  margin-bottom: 10px;
+  margin-bottom: var(--space-2-5);
 }
 
 .adv .link-row {
-  padding-bottom: 14px;
+  padding-bottom: var(--space-3-5);
 }
 
 /* ---------- Look ---------- */
 
 .dots {
   display: flex;
-  gap: 10px;
+  gap: var(--space-2-5);
 }
 
 .dot {
@@ -564,15 +565,15 @@
   position: sticky;
   top: calc(var(--edge) + var(--bar-h) + var(--gap) + 14px);
   display: grid;
-  gap: 10px;
+  gap: var(--space-2-5);
 }
 
 .side-head {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 2px 10px;
-  margin: 0 4px;
+  gap: var(--space-0-5) var(--space-2-5);
+  margin: 0 var(--space-1);
 }
 
 .side-head h2 {
@@ -586,19 +587,19 @@
 
 /* The questions the customer is asked, in order. */
 .path {
-  padding: 13px 16px 14px;
+  padding: var(--space-3) var(--space-4) var(--space-3-5);
 }
 
 .path h3 {
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .path ol {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-1-5);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -608,13 +609,13 @@
 .path li {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1-5);
   height: 26px;
-  padding: 0 10px 0 4px;
+  padding: 0 var(--space-2-5) 0 var(--space-1);
   border-radius: var(--r-pill);
   background: var(--well);
   font-size: var(--text-small);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   counter-increment: step;
 }
 
@@ -628,17 +629,17 @@
   background: var(--accent);
   color: var(--accent-ink);
   font-size: var(--text-micro);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .path p {
-  margin: 9px 0 0;
+  margin: var(--space-2) 0 0;
   font-size: var(--text-small);
   color: var(--muted);
 }
 
 .path b {
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--ink);
 }
 
@@ -700,8 +701,8 @@
 .pv-head {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 16px 16px 12px;
+  gap: var(--space-2-5);
+  padding: var(--space-4) var(--space-4) var(--space-3);
 }
 
 .pv-logo {
@@ -724,7 +725,7 @@
 
 .pv-shop strong {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-semibold);
   font-size: var(--text-h3);
 }
 
@@ -735,11 +736,11 @@
 
 .pv-lang {
   height: 28px;
-  padding: 0 10px;
+  padding: 0 var(--space-2-5);
   border: 1px solid var(--pv-line);
   border-radius: var(--r-pill);
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .pv-progress {
@@ -760,8 +761,8 @@
   flex: 1;
   display: grid;
   align-content: start;
-  gap: 8px;
-  padding: 14px 16px;
+  gap: var(--space-2);
+  padding: var(--space-3-5) var(--space-4);
 }
 
 .pv-centre {
@@ -783,9 +784,9 @@
 }
 
 .pv-body h4 {
-  margin: 0 0 4px;
+  margin: 0 0 var(--space-1);
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-h3);
   line-height: 1.2;
 }
@@ -800,9 +801,9 @@
 .pv-opt {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2-5);
   width: 100%;
-  padding: 10px 12px;
+  padding: var(--space-2-5) var(--space-3);
   border: 1px solid var(--pv-line);
   border-radius: var(--r-control);
   text-align: left;
@@ -831,7 +832,7 @@
 
 .pv-opt-main strong {
   font-size: var(--text-body);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .pv-opt-main span {
@@ -872,25 +873,25 @@
 
 .pv-price {
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   white-space: nowrap;
 }
 
 .pv-price s {
-  font-weight: 400;
+  font-weight: var(--fw-regular);
   color: var(--pv-muted);
 }
 
 .pv-days {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 6px;
+  gap: var(--space-1-5);
 }
 
 .pv-day {
   display: grid;
   gap: 1px;
-  padding: 7px 0;
+  padding: var(--space-1-5) 0;
   border: 1px solid var(--pv-line);
   border-radius: var(--r-control);
   font-size: var(--text-small);
@@ -898,13 +899,13 @@
 }
 
 .pv-day b {
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .pv-slots {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 6px;
+  gap: var(--space-1-5);
 }
 
 .pv-slot {
@@ -912,7 +913,7 @@
   border: 1px solid var(--pv-line);
   border-radius: var(--r-block);
   font-size: var(--text-ui);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
 }
 
 .pv-day.is-on,
@@ -926,12 +927,12 @@
   display: grid;
   gap: 5px;
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .pv-field input {
   height: 40px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   border: 1px solid var(--pv-line);
   border-radius: var(--r-block);
   background: none;
@@ -939,8 +940,8 @@
 
 .pv-foot {
   display: grid;
-  gap: 10px;
-  padding: 12px 16px 16px;
+  gap: var(--space-2-5);
+  padding: var(--space-3) var(--space-4) var(--space-4);
   border-top: 1px solid var(--pv-line);
 }
 
@@ -953,13 +954,13 @@
 
 .pv-bill th,
 .pv-bill td {
-  padding: 2px 0;
-  font-weight: 400;
+  padding: var(--space-0-5) 0;
+  font-weight: var(--fw-regular);
   text-align: left;
 }
 
 .pv-bill td {
-  padding-left: 10px;
+  padding-left: var(--space-2-5);
   color: var(--pv-muted);
   text-align: right;
   white-space: nowrap;
@@ -978,23 +979,23 @@
 .pv-bill tfoot td {
   padding-top: 5px;
   border-top: 1px solid var(--pv-line);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: inherit;
 }
 
 .pv-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .pv-btn {
   flex: 1;
   height: 44px;
-  padding: 0 16px;
+  padding: 0 var(--space-4);
   border-radius: var(--r-control);
   background: var(--a);
   color: var(--a-ink);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   transition:
     opacity 0.18s ease,
     transform 0.25s var(--ease-out);
@@ -1021,7 +1022,7 @@
   place-items: center;
   width: 52px;
   height: 52px;
-  margin-bottom: 4px;
+  margin-bottom: var(--space-1);
   border-radius: 50%;
   background: var(--a);
   color: var(--a-ink);
@@ -1124,19 +1125,19 @@
 .group-head h3 .icon {
   width: 16px;
   height: 16px;
-  margin-right: 7px;
+  margin-right: var(--space-1-5);
   vertical-align: -3px;
   color: var(--muted);
 }
 
 .layer {
-  margin-top: 6px;
+  margin-top: var(--space-1-5);
 }
 
 .layer h3 {
   margin: 0;
   font-size: var(--text-body);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .layer p {
@@ -1155,14 +1156,14 @@
 .pv-month {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-bottom: 2px;
+  gap: var(--space-1);
+  margin-bottom: var(--space-0-5);
 }
 
 .pv-month strong {
   flex: 1;
   font-size: var(--text-body);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .pv-month button {
@@ -1190,13 +1191,13 @@
 .pv-cal {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .pv-cal b {
-  padding: 2px 0 4px;
+  padding: var(--space-0-5) 0 var(--space-1);
   font-size: var(--text-micro);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   text-align: center;
   color: var(--pv-muted);
 }
@@ -1208,7 +1209,7 @@
   border-radius: var(--r-block);
   background: var(--pv-well);
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   transition:
     background-color 0.18s ease,
     color 0.18s ease;
@@ -1216,7 +1217,7 @@
 
 .pv-date:disabled {
   background: none;
-  font-weight: 400;
+  font-weight: var(--fw-regular);
   color: var(--pv-muted);
   opacity: 0.55;
   cursor: default;
@@ -1246,7 +1247,7 @@
 
 /* After booking: the customer's own link to the booking. */
 .pv-manage {
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--a);
   text-underline-offset: 3px;
 }
@@ -1278,9 +1279,9 @@ html[data-window] .page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2-5);
   min-height: 100vh;
-  padding: 12px;
+  padding: var(--space-3);
   transition: none;
 }
 
@@ -1303,7 +1304,7 @@ html[data-window] .pv {
   }
 
   html[data-window] .win-note {
-    padding: 6px 12px;
+    padding: var(--space-1-5) var(--space-3);
   }
 
   html[data-window] .pv {
@@ -1313,6 +1314,6 @@ html[data-window] .pv {
   }
 
   html[data-window] #pv-live {
-    margin: 10px 0;
+    margin: var(--space-2-5) 0;
   }
 }

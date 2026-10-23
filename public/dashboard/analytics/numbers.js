@@ -76,6 +76,8 @@
       "sub.lost": ({ c, s, n }) => `${c} huỷ và ${s} vắng mặt, trên ${n} lịch hẹn`,
       "sub.customers": ({ back, all }) => `${back} khách quen. Tổng ${all} khách đã đến`,
       "sub.peak": ({ from, to, n }) => `Hai giờ liền đông nhất: ${from} – ${to}, ${n} lịch hẹn`,
+      "peak.none": "Chưa có",
+      "sub.peak.none": "Chưa có lịch hẹn nào trong kỳ để tìm ra giờ đông nhất.",
       "unit.new": "khách mới",
       "u.bookings": "lịch hẹn",
       "u.points": "điểm phần trăm",
@@ -145,6 +147,7 @@
       "heat.few": "Ít",
       "heat.many": "Nhiều",
       "heat.peak": ({ day, from, to }) => `Đông nhất: ${day}, ${from} – ${to}`,
+      "heat.peak.none": "Chưa có lịch hẹn trong kỳ này.",
       "p.lost": "Huỷ và vắng mặt",
       "lost.sub": "Lịch hẹn không diễn ra: khách huỷ hoặc không đến.",
       "lost.prev": ({ prev, p }) => `${prev}: ${p}% không diễn ra.`,
@@ -199,6 +202,8 @@
       "sub.lost": ({ c, s, n }) => `${c} cancelled and ${s} ${plural(s, "no-show", "no-shows")}, out of ${n} bookings`,
       "sub.customers": ({ back, all }) => `${back} returning. ${all} customers came in all`,
       "sub.peak": ({ from, to, n }) => `Busiest two hours: ${from} – ${to}, ${n} ${plural(n, "booking", "bookings")}`,
+      "peak.none": "None yet",
+      "sub.peak.none": "No bookings in this period to find the busiest time from.",
       "unit.new": "new customers",
       "u.bookings": ({ n }) => plural(n, "booking", "bookings"),
       "u.points": ({ n }) => plural(n, "percentage point", "percentage points"),
@@ -265,6 +270,7 @@
       "heat.few": "Few",
       "heat.many": "Many",
       "heat.peak": ({ day, from, to }) => `Busiest: ${day}, ${from} – ${to}`,
+      "heat.peak.none": "No bookings in this period yet.",
       "p.lost": "Cancellations and no-shows",
       "lost.sub": "Bookings that did not take place: the customer cancelled or did not come.",
       "lost.prev": ({ prev, p }) => `${prev}: ${p}% did not take place.`,
@@ -517,11 +523,16 @@
         sub: t("sub.customers", { back: now.back, all: now.customers }),
         foot: delta(now.fresh - before.fresh, before.fresh, { unit: "u.new" }),
       }),
+      // With no bookings there is no busiest time, so the card says so instead
+      // of naming the first hour of the week.
       card({
         key: "peak",
         panel: "p-heat",
-        value: `<span class="card-word">${weekdayName(peak.w, "long")}</span>`,
-        sub: t("sub.peak", { from: clock(OPEN + peak.h * 60), to: clock(OPEN + (peak.h + 2) * 60), n: peak.n }),
+        value: `<span class="card-word">${peak.n > 0 ? weekdayName(peak.w, "long") : t("peak.none")}</span>`,
+        sub:
+          peak.n > 0
+            ? t("sub.peak", { from: clock(OPEN + peak.h * 60), to: clock(OPEN + (peak.h + 2) * 60), n: peak.n })
+            : t("sub.peak.none"),
       }),
     ].join("");
   }
@@ -755,7 +766,7 @@
           </div>
           <dl class="tally">
             <div><dt><i class="swatch part-done"></i>${t("c.new")}</dt><dd class="num">${now.fresh}<span>${pct(share)}%</span></dd></div>
-            <div><dt><i class="swatch part-rest"></i>${t("c.back")}</dt><dd class="num">${now.back}<span>${100 - pct(share)}%</span></dd></div>
+            <div><dt><i class="swatch part-rest"></i>${t("c.back")}</dt><dd class="num">${now.back}<span>${now.customers ? 100 - pct(share) : 0}%</span></dd></div>
           </dl>
         </div>
         <p class="chart-note">${cap(t("c.prev", { prev: prevName(sp), n: before.fresh }))}</p>`,
@@ -776,7 +787,7 @@
             const v = n / top;
             const classes = ["cell", "num"];
             if (v > 0.55) classes.push("is-strong");
-            if (w === peak.w && (h === peak.h || h === peak.h + 1)) classes.push(h === peak.h ? "is-peak is-peak-start" : "is-peak is-peak-end");
+            if (peak.n > 0 && w === peak.w && (h === peak.h || h === peak.h + 1)) classes.push(h === peak.h ? "is-peak is-peak-start" : "is-peak is-peak-end");
             const tip = t("tip.cell", { day: weekdayName(w, "long"), from: hourOf(h), to: hourOf(h + 1), n });
             return `<span class="${classes.join(" ")}" style="--v:${v.toFixed(2)};--i:${w + h}" data-tip="${tip}">${n || ""}</span>`;
           })
@@ -789,16 +800,16 @@
       id: "p-heat",
       title: t("p.heat"),
       aside: `<p class="chart-sub">${t("heat.sub")}</p>`,
-      body: `<div class="heat" role="img" style="--cols:${HOURS}" aria-label="${t("aria.heat", {
-        day: weekdayName(peak.w, "long"),
-        from: hourOf(peak.h),
-        to: hourOf(peak.h + 2),
-      })}">
+      body: `<div class="heat" role="img" style="--cols:${HOURS}" aria-label="${
+        peak.n > 0 ? t("aria.heat", { day: weekdayName(peak.w, "long"), from: hourOf(peak.h), to: hourOf(peak.h + 2) }) : t("heat.peak.none")
+      }">
           <span></span>${head.join("")}
           ${rows}
         </div>
         <div class="heat-foot">
-          <span class="heat-peak">${t("heat.peak", { day: weekdayName(peak.w, "long"), from: hourOf(peak.h), to: hourOf(peak.h + 2) })}</span>
+          <span class="heat-peak">${
+            peak.n > 0 ? t("heat.peak", { day: weekdayName(peak.w, "long"), from: hourOf(peak.h), to: hourOf(peak.h + 2) }) : t("heat.peak.none")
+          }</span>
           <span class="heat-scale" aria-hidden="true">${t("heat.few")}<i style="--v:0.08"></i><i style="--v:0.35"></i><i style="--v:0.65"></i><i style="--v:1"></i>${t("heat.many")}</span>
         </div>`,
       deep: t("deep.heat"),

@@ -182,7 +182,7 @@ button {
   width: var(--leg);
   display: flex;
   flex-direction: column;
-  padding: 0 8px 8px;
+  padding: 0 var(--space-2) var(--space-2);
   overflow: hidden;
   transition: width 0.36s var(--ease-out);
 }
@@ -193,10 +193,10 @@ button {
   flex: none;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2-5);
   width: var(--leg);
   height: 100%;
-  padding-left: 13px;
+  padding-left: var(--space-3);
   overflow: hidden;
   color: inherit;
   text-decoration: none;
@@ -218,7 +218,7 @@ button {
    Regular, tracked in by 1.5%, the same as the landing page's .display. */
 .wordmark {
   font-family: var(--font-wordmark);
-  font-weight: 400;
+  font-weight: var(--fw-regular);
   font-size: var(--text-h2);
   line-height: 1.1;
   letter-spacing: -0.015em;
@@ -227,7 +227,7 @@ button {
 
 .tagline {
   margin: 0;
-  padding: 0 6px 10px;
+  padding: 0 var(--space-1-5) var(--space-2-5);
   font-size: var(--text-micro);
   line-height: 1.35;
   color: var(--chrome-muted);
@@ -238,7 +238,7 @@ button {
   flex: 1;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 6px 0;
+  padding: var(--space-1-5) 0;
   border-top: 1px solid var(--chrome-line);
 }
 
@@ -247,17 +247,17 @@ button {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 2px;
+  gap: var(--space-0-5);
 }
 
 .nav li.nav-gap {
-  margin-top: 10px;
+  margin-top: var(--space-2-5);
 }
 
 /* The pages the server has but the design does not draw yet: folded away, so
    the nav shows only what can be opened. */
 .nav-soon {
-  margin-top: 10px;
+  margin-top: var(--space-2-5);
 }
 
 .nav-note {
@@ -265,7 +265,7 @@ button {
   align-items: center;
   justify-content: space-between;
   margin: 0;
-  padding: 6px 12px;
+  padding: var(--space-1-5) var(--space-3);
   border-radius: var(--r-control);
   font-size: var(--text-small);
   color: var(--chrome-muted);
@@ -295,13 +295,13 @@ button {
 .nav-link {
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: var(--space-2-5);
   width: 100%;
   min-height: 40px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   border-radius: var(--r-control);
   color: var(--chrome-ink);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   text-decoration: none;
   text-align: left;
   white-space: nowrap;
@@ -322,7 +322,7 @@ button {
 .nav-link[aria-current="page"] {
   background: var(--chrome-active);
   color: var(--chrome-active-ink);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   box-shadow: inset 0 0 0 1px var(--chrome-line);
 }
 
@@ -337,21 +337,21 @@ button {
 
 .sidebar-foot {
   display: grid;
-  gap: 8px;
-  padding-top: 8px;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
   border-top: 1px solid var(--chrome-line);
 }
 
 .share {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2-5);
   min-height: 40px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   border-radius: var(--r-control);
   border: 1px solid var(--chrome-line);
   background: var(--chrome-well);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
@@ -370,8 +370,8 @@ button {
 .account {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 4px 4px 4px 8px;
+  gap: var(--space-2-5);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
   white-space: nowrap;
 }
 
@@ -385,7 +385,7 @@ button {
   background: var(--chrome-active);
   color: var(--chrome-active-ink);
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .account-text {
@@ -403,7 +403,7 @@ a.account-text:hover strong {
 }
 
 .account-text strong {
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -423,8 +423,8 @@ a.account-text:hover strong {
   height: var(--bar-h);
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding-right: 9px;
+  gap: var(--space-2);
+  padding-right: var(--space-2);
 }
 
 /* Closed sidebar (wide screens only; on phones it is already a drawer).
@@ -462,9 +462,9 @@ a.account-text:hover strong {
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: var(--space-2);
   height: 36px;
-  padding: 0 14px;
+  padding: 0 var(--space-3-5);
   border-radius: var(--r-control);
   background: var(--chrome-well);
   border: 1px solid var(--chrome-line);
@@ -519,11 +519,11 @@ a.account-text:hover strong {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-2);
   height: 36px;
-  padding: 0 14px;
+  padding: 0 var(--space-3-5);
   border-radius: var(--r-control);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   white-space: nowrap;
   transition:
     transform 0.25s var(--ease-out),
@@ -565,7 +565,7 @@ a.btn {
 
 .btn-small {
   height: 30px;
-  padding: 0 11px;
+  padding: 0 var(--space-2-5);
   font-size: var(--text-ui);
   border-radius: var(--r-block);
 }
@@ -606,12 +606,12 @@ a.btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: var(--space-1-5);
   height: 30px;
-  padding: 0 14px;
+  padding: 0 var(--space-3-5);
   border-radius: var(--r-pill);
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--seg-ink);
   white-space: nowrap;
   transition: color 0.2s ease;
@@ -634,7 +634,7 @@ a.btn {
 
 .chrome .seg button {
   height: 28px;
-  padding: 0 11px;
+  padding: 0 var(--space-2-5);
 }
 
 /* ---------- Form controls ---------- */
@@ -642,14 +642,14 @@ a.btn {
 .field {
   display: grid;
   grid-template-columns: minmax(0, 1fr); /* so a long value inside cannot widen it */
-  gap: 6px;
+  gap: var(--space-1-5);
   min-width: 0;
 }
 
 .field > label,
 .field > .label {
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .field small {
@@ -659,14 +659,14 @@ a.btn {
 
 .field .error {
   font-size: var(--text-small);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   color: var(--signal);
 }
 
 .input {
   width: 100%;
   height: 40px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   border: 1px solid var(--line-strong);
   border-radius: var(--r-control);
   background: var(--well);
@@ -682,7 +682,7 @@ a.btn {
 }
 
 select.input {
-  padding-right: 34px;
+  padding-right: var(--space-8);
   appearance: none;
   background-image:
     linear-gradient(45deg, transparent 50%, currentColor 50%),
@@ -761,13 +761,13 @@ select.input optgroup {
 .field-pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .check {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   margin-top: -8px;
   font-size: var(--text-ui);
   cursor: pointer;
@@ -783,18 +783,18 @@ select.input optgroup {
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .chip-pick span {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   height: 36px;
-  padding: 0 14px 0 5px;
+  padding: 0 var(--space-3-5) 0 5px;
   border: 1px solid var(--line-strong);
   border-radius: var(--r-pill);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   cursor: pointer;
   transition:
     background-color 0.18s ease,
@@ -810,7 +810,7 @@ select.input optgroup {
   background: var(--well);
   font-style: normal;
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .chip-pick input:checked + span {
@@ -832,12 +832,12 @@ select.input optgroup {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 11px 14px;
+  gap: var(--space-3);
+  padding: var(--space-2-5) var(--space-3-5);
   border-radius: var(--r-control);
   background: var(--well);
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   cursor: pointer;
 }
 
@@ -846,13 +846,13 @@ select.input optgroup {
 .link-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .link-row code {
   flex: 1;
   min-width: 0;
-  padding: 9px 12px;
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--r-control);
   background: var(--well);
   font-family: var(--font-ui);
@@ -902,10 +902,10 @@ select.input optgroup {
   display: inline-flex;
   align-items: center;
   height: 24px;
-  padding: 0 10px;
+  padding: 0 var(--space-2-5);
   border-radius: var(--r-pill);
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   white-space: nowrap;
 }
 
@@ -914,14 +914,14 @@ select.input optgroup {
   place-items: center;
   min-width: 22px;
   height: 22px;
-  padding: 0 7px;
+  padding: 0 var(--space-1-5);
   border-radius: var(--r-pill);
   background: var(--st-pending-bg);
   color: var(--st-pending-ink);
   box-shadow: inset 0 0 0 1px var(--st-pending-edge);
   font-family: var(--font-ui);
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 /* ---------- Colour codes (branches, people, widgets) ---------- */
@@ -1015,7 +1015,7 @@ select.input optgroup {
   top: calc(100% + 6px);
   left: 0;
   min-width: 220px;
-  padding: 6px;
+  padding: var(--space-1-5);
   border-radius: var(--r-card);
   box-shadow: 0 12px 28px -14px rgb(0 0 0 / 0.3);
   transform-origin: top left;
@@ -1025,12 +1025,12 @@ select.input optgroup {
 .tick {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: var(--space-2);
   min-height: 36px;
-  padding: 0 10px;
+  padding: 0 var(--space-2-5);
   border-radius: var(--r-block);
   font-size: var(--text-ui);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   cursor: pointer;
 }
 
@@ -1046,17 +1046,17 @@ select.input optgroup {
 }
 
 .tick:first-child {
-  margin-bottom: 4px;
+  margin-bottom: var(--space-1);
 }
 
 /* A select the height of a small button, for toolbars. */
 select.input-small {
   width: auto;
   height: 30px;
-  padding: 0 28px 0 10px;
+  padding: 0 var(--space-7) 0 var(--space-2-5);
   border-radius: var(--r-block);
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   background-position:
     calc(100% - 15px) 12px,
     calc(100% - 10px) 12px;
@@ -1076,15 +1076,15 @@ select.input-small {
 }
 
 .dt th {
-  padding: 10px 18px;
+  padding: var(--space-2-5) var(--space-4);
   font-size: var(--text-small);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   color: var(--muted);
   white-space: nowrap;
 }
 
 .dt td {
-  padding: 12px 18px;
+  padding: var(--space-3) var(--space-4);
   border-top: 1px solid var(--line);
   vertical-align: middle;
 }
@@ -1100,13 +1100,13 @@ select.input-small {
 .dt .dt-name {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2-5);
   min-width: 0;
 }
 
 .dt .dt-name strong {
   display: block;
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .dt .dt-name small {
@@ -1133,7 +1133,7 @@ select.input-small {
   width: min(var(--sheet-w), calc(100vw - var(--gap) * 2));
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: var(--space-5);
   border: 1px solid var(--line-strong);
   border-radius: var(--r-sidebar);
   background: var(--panel-solid);
@@ -1157,13 +1157,13 @@ select.input-small {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .sheet-head h2 {
-  margin: 10px 0 0;
+  margin: var(--space-2-5) 0 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-display);
   line-height: 1.2;
 }
@@ -1178,15 +1178,15 @@ select.input-small {
 
 .facts {
   flex: 1;
-  margin: 18px 0 0;
+  margin: var(--space-4) 0 0;
   overflow-y: auto;
 }
 
 .facts div {
   display: grid;
   grid-template-columns: 110px 1fr;
-  gap: 12px;
-  padding: 12px 0;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
   border-top: 1px solid var(--line);
 }
 
@@ -1196,18 +1196,18 @@ select.input-small {
 
 .facts dd {
   margin: 0;
-  font-weight: 500;
+  font-weight: var(--fw-medium);
 }
 
 .facts dd span {
-  font-weight: 400;
+  font-weight: var(--fw-regular);
   color: var(--muted);
 }
 
 .sheet-actions {
   display: flex;
-  gap: 8px;
-  padding-top: 16px;
+  gap: var(--space-2);
+  padding-top: var(--space-4);
   border-top: 1px solid var(--line);
 }
 
@@ -1269,14 +1269,14 @@ select.input-small {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 16px 14px 8px 22px;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-3-5) var(--space-2) var(--space-5);
 }
 
 .dialog-head h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-h2);
   line-height: 1.2;
 }
@@ -1287,8 +1287,8 @@ select.input-small {
 
 .dialog-body {
   display: grid;
-  gap: 14px;
-  padding: 8px 22px 18px;
+  gap: var(--space-3-5);
+  padding: var(--space-2) var(--space-5) var(--space-4);
 }
 
 .dialog-foot {
@@ -1296,8 +1296,8 @@ select.input-small {
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
-  padding: 14px 22px 18px;
+  gap: var(--space-2);
+  padding: var(--space-3-5) var(--space-5) var(--space-4);
   border-top: 1px solid var(--line);
 }
 
@@ -1319,7 +1319,7 @@ select.input-small {
   top: calc(var(--edge) + var(--bar-h) + 8px);
   right: var(--gap);
   min-width: 220px;
-  padding: 6px;
+  padding: var(--space-1-5);
   border-radius: var(--r-card);
   box-shadow: 0 12px 28px -14px rgb(0 0 0 / 0.3);
   transform-origin: top right;
@@ -1333,12 +1333,12 @@ select.input-small {
 .menu a {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2-5);
   min-height: 38px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   border-radius: var(--r-control);
   color: var(--ink);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   text-decoration: none;
 }
 
@@ -1358,11 +1358,11 @@ select.input-small {
   z-index: 60;
   left: 50%;
   bottom: 26px;
-  padding: 11px 18px;
+  padding: var(--space-2-5) var(--space-4);
   border-radius: var(--r-pill);
   background: var(--ink);
   color: var(--paper);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   transform: translate(-50%, 0);
   animation: toast-in 0.36s var(--ease-out);
 }
@@ -1387,7 +1387,7 @@ select.input-small {
 .page {
   position: relative;
   z-index: 1;
-  padding: calc(var(--edge) + var(--bar-h) + var(--gap) + 14px) calc(var(--gap) + 14px) 14px calc(var(--edge) + var(--side) + var(--gap) + 14px);
+  padding: calc(var(--edge) + var(--bar-h) + var(--gap) + var(--space-3-5)) calc(var(--gap) + var(--space-3-5)) var(--space-3-5) calc(var(--edge) + var(--side) + var(--gap) + var(--space-3-5));
   transition: padding-left 0.36s var(--ease-out);
 }
 
@@ -1413,7 +1413,7 @@ select.input-small {
 
   .sidebar {
     top: calc(var(--edge) * 2 + var(--bar-h));
-    padding-top: 8px;
+    padding-top: var(--space-2);
     border: 1px solid var(--line-strong);
     border-radius: var(--r-edge);
     background: var(--chrome-solid);
@@ -1441,7 +1441,7 @@ select.input-small {
     top: var(--edge);
     z-index: 50;
     width: var(--sidebar-w);
-    padding: 8px;
+    padding: var(--space-2);
     border: 1px solid var(--line-strong);
     border-radius: var(--r-edge);
     background: var(--chrome-solid);
@@ -1453,7 +1453,7 @@ select.input-small {
     display: flex;
     width: auto;
     height: auto;
-    padding: 6px 4px 8px;
+    padding: var(--space-1-5) var(--space-1) var(--space-2);
   }
 
   .nav-open .sidebar {
@@ -1470,12 +1470,12 @@ select.input-small {
 
   /* Menu button first, then the logo, as on most phone apps. */
   .topbar {
-    padding-left: 7px;
+    padding-left: var(--space-1-5);
   }
 
   .topbar .brand {
     width: auto;
-    padding-left: 2px;
+    padding-left: var(--space-0-5);
   }
 
   .topbar .side-btn {
@@ -1496,8 +1496,8 @@ select.input-small {
   }
 
   .page {
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
   }
 }
 

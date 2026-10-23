@@ -126,6 +126,8 @@
       "block.saved": "Đã chặn giờ",
       "block.opened": "Đã mở lại giờ",
       "cal.label": "Lịch hẹn theo giờ",
+      "who.label": "Xem lịch của",
+      "who.waiting": "có lịch chờ xác nhận",
       note: "Dữ liệu mẫu. Đây là bản thiết kế, chưa nối với hệ thống.",
       count: ({ n }) => `${n} lịch`,
       minutes: ({ n }) => `${n} phút`,
@@ -258,6 +260,8 @@
       "block.saved": "Time blocked",
       "block.opened": "Time opened again",
       "cal.label": "Bookings by hour",
+      "who.label": "Show the day of",
+      "who.waiting": "has a booking waiting",
       note: "Sample data. This is a design mockup, not connected to the system.",
       count: ({ n }) => `${n} ${plural(n, "booking", "bookings")}`,
       minutes: ({ n }) => `${n} min`,
@@ -304,6 +308,7 @@
     changed: null,
     entering: true,
     rail: false,
+    person: null, // on a phone, whose day the calendar shows
   };
 
   try {
@@ -337,6 +342,25 @@
   const staffOf = (id) => STAFF.find((s) => s.id === id);
   const inScope = (b) => PBM.branches.has(b.branch);
   const staffShown = () => STAFF.filter((s) => PBM.branches.has(s.branch));
+
+  // A phone has room for one person's day, not one column per barber. The day
+  // calendar then shows the person picked in the strip above it, starting with
+  // the first one who has bookings that day (as Fresha's and Square's phone
+  // calendars do). Any wider window keeps every column and narrows them, as
+  // Google Calendar does (bookings.css). The test is the page's layout width,
+  // read when drawing, at the same 640px edge as the CSS; the stage's
+  // ResizeObserver redraws when it is crossed.
+  const PHONE_MAX = 640;
+  const onePerson = () =>
+    document.documentElement.clientWidth <= PHONE_MAX && state.view === "calendar" && state.range === "day";
+  function personShown(offset) {
+    const people = staffShown();
+    if (!people.some((p) => p.id === state.person)) {
+      const busy = people.find((p) => dayItems(offset).some((b) => b.staff === p.id && isLive(b)));
+      state.person = (busy || people[0])?.id ?? null;
+    }
+    return people.filter((p) => p.id === state.person);
+  }
   const severalBranches = () => BRANCHES.length > 1 && PBM.branches.chosen.length !== 1;
 
   // The colour a booking wears. A cancelled one is a ghost whatever the colours
@@ -506,8 +530,9 @@
     const offset = offsetOf(state.date);
     let index = 0;
 
+    const one = isDay && onePerson();
     const columns = isDay
-      ? staffShown().map((person) => {
+      ? (one ? personShown(offset) : staffShown()).map((person) => {
           const items = dayItems(offset).filter((b) => b.staff === person.id);
           const branch = branchOf(person.branch);
           // With more than one branch on show, each column says which branch it is.
@@ -563,8 +588,9 @@
       .join("");
 
     return `
+      ${one ? personStripHTML(offset) : ""}
       <div class="cal-scroll" id="calScroll" tabindex="0" aria-label="${t("cal.label")}">
-        <div class="cal ${isDay ? "cal-day" : "cal-week"}" style="--cols:${columns.length};--hours:${HOURS};--hour:${hour}px">
+        <div class="cal ${isDay ? "cal-day" : "cal-week"}${one ? " is-one" : ""}" style="--cols:${columns.length};--hours:${HOURS};--hour:${hour}px">
           <div class="cal-head">
             <div class="cal-corner"></div>
             ${columns.map((col) => `<div class="cal-colhead${col.today ? " is-today" : ""}">${col.head}</div>`).join("")}
@@ -576,6 +602,26 @@
           </div>
         </div>
       </div>`;
+  }
+
+  // The people on show, one pill each: their initial, name and number of
+  // bookings that day, and the "waiting" dot when one of them needs an answer.
+  // The picked one is ringed in ink, as every picker is.
+  function personStripHTML(offset) {
+    const people = staffShown()
+      .map((p) => {
+        const items = dayItems(offset).filter((b) => b.staff === p.id);
+        const waiting = items.some((b) => b.status === "PENDING");
+        return `<button type="button" class="who" data-person="${p.id}" aria-pressed="${p.id === state.person}">
+            <span class="avatar" aria-hidden="true">${p.name.charAt(0)}</span>
+            <span class="who-name">${p.name}</span>
+            <span class="who-count num">${items.filter(isLive).length}</span>${
+              waiting ? `<i class="who-wait" aria-hidden="true"></i><span class="visually-hidden">${t("who.waiting")}</span>` : ""
+            }
+          </button>`;
+      })
+      .join("");
+    return `<div class="who-strip" role="group" aria-label="${t("who.label")}">${people}</div>`;
   }
 
   // The key follows what the colours stand for, and lists only what is on screen.
@@ -1293,6 +1339,12 @@
       return openForm({ day: Number(col.dataset.day), start, staff: col.dataset.staff || "any" });
     }
     if (event.target.closest("[data-close]")) return closeSheet();
+    const who = event.target.closest("[data-person]");
+    if (who) {
+      const person = STAFF.find((s) => String(s.id) === who.dataset.person);
+      if (person && person.id !== state.person) change({ person: person.id });
+      return;
+    }
     const booking = event.target.closest("[data-bk]");
     if (booking) openSheet(booking.dataset.bk);
   });
@@ -1318,7 +1370,12 @@
 
   // Refit when the window, the sidebar or the rail changes the size of the panel,
   // and once the web fonts land (they change the height of the column headings).
-  new ResizeObserver(fitHours).observe($("stage"));
+  // The same watch swaps between one person and everyone when the page crosses
+  // PHONE_MAX: turning a phone, or narrowing a window that far.
+  new ResizeObserver(() => {
+    if (Boolean(document.querySelector(".cal.is-one")) !== onePerson()) renderAll();
+    else fitHours();
+  }).observe($("stage"));
   document.fonts?.ready.then(fitHours);
 
   // "Tạo nhanh → Lịch hẹn mới" arrives with #new: open the window straight away.

@@ -12,8 +12,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 12px;
-  margin: 0 4px 12px;
+  gap: var(--space-1) var(--space-3);
+  margin: 0 var(--space-1) var(--space-3);
 }
 
 .head h1 {
@@ -21,7 +21,7 @@
   min-width: 0;
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-title);
   line-height: 1.2;
   letter-spacing: -0.015em;
@@ -48,11 +48,11 @@
 
 .head-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .note {
-  margin: 14px 4px 4px;
+  margin: var(--space-3-5) var(--space-1) var(--space-1);
   font-size: var(--text-small);
   color: var(--muted);
 }
@@ -62,7 +62,7 @@
    week in words, and what can be done to it. */
 
 .list {
-  padding: 4px 0;
+  padding: var(--space-1) 0;
 }
 
 .row {
@@ -70,8 +70,8 @@
   display: grid;
   grid-template-columns: minmax(200px, 1.2fr) 150px minmax(200px, 1.3fr) minmax(96px, auto);
   align-items: center;
-  gap: 6px 24px;
-  padding: 14px 18px;
+  gap: var(--space-1-5) var(--space-6);
+  padding: var(--space-3-5) var(--space-4);
   transition: background-color 0.18s ease;
 }
 
@@ -84,8 +84,8 @@
 }
 
 .row-head {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: var(--space-2-5);
+  padding-bottom: var(--space-2-5);
   font-size: var(--text-small);
   color: var(--muted);
 }
@@ -104,7 +104,7 @@
 }
 
 .row-open strong {
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .row-open::after {
@@ -126,7 +126,7 @@
 .row-zone {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1-5);
   font-size: var(--text-small);
   color: var(--muted);
 }
@@ -138,7 +138,7 @@
 
 .cell-hours {
   display: grid;
-  gap: 2px;
+  gap: var(--space-0-5);
   font-size: var(--text-ui);
 }
 
@@ -147,7 +147,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .cell-actions .icon-btn:hover {
@@ -162,8 +162,8 @@
 .empty {
   display: grid;
   justify-items: center;
-  gap: 14px;
-  padding: 48px 20px;
+  gap: var(--space-3-5);
+  padding: var(--space-12) var(--space-5);
   border: 1px dashed var(--line-strong);
   border-radius: var(--r-panel);
   text-align: center;
@@ -182,14 +182,14 @@
   display: inline-grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
-  gap: 4px;
+  gap: var(--space-1);
   width: 150px;
 }
 
 .week-day {
   display: grid;
   justify-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .week-track {
@@ -215,7 +215,7 @@
 
 .week-day b {
   font-size: var(--text-micro);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   line-height: 1;
   color: var(--muted);
 }
@@ -223,8 +223,8 @@
 .week.is-big {
   position: relative;
   width: 100%;
-  gap: 6px;
-  padding: 6px 0 0 46px;
+  gap: var(--space-1-5);
+  padding: var(--space-1-5) 0 0 var(--space-11);
 }
 
 .week.is-big .week-track {
@@ -270,39 +270,39 @@
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
   align-items: start;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .form-main,
 .form-side {
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
   min-width: 0;
 }
 
 .card {
   display: grid;
-  gap: 14px;
-  padding: 18px 22px 22px;
+  gap: var(--space-3-5);
+  padding: var(--space-4) var(--space-5) var(--space-5);
 }
 
 .card h2,
 .reserved h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-h3);
   line-height: 1.25;
 }
 
 .alert {
   margin: 0;
-  padding: 11px 14px;
+  padding: var(--space-2-5) var(--space-3-5);
   border: 1px solid color-mix(in srgb, var(--signal) 45%, transparent);
   border-radius: var(--r-control);
   background: color-mix(in srgb, var(--signal) 9%, transparent);
   font-size: var(--text-ui);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   color: var(--signal);
 }
 
@@ -310,9 +310,9 @@
   display: grid;
   grid-template-columns: 124px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 6px 14px;
+  gap: var(--space-1-5) var(--space-3-5);
   min-height: 58px;
-  padding: 8px 0;
+  padding: var(--space-2) 0;
 }
 
 .day + .day {
@@ -321,21 +321,21 @@
 
 .day-name {
   font-size: var(--text-body);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .day-hours {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 8px;
+  gap: var(--space-1-5) var(--space-2);
   color: var(--muted);
 }
 
 .day-hours .error {
   flex-basis: 100%;
   font-size: var(--text-small);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   color: var(--signal);
 }
 
@@ -370,7 +370,7 @@ select.time {
 
 /* What the server cannot do yet: there, but plainly not ready. */
 .reserved {
-  padding: 16px 20px 18px;
+  padding: var(--space-4) var(--space-5) var(--space-4);
   border: 1px dashed var(--line-strong);
   border-radius: var(--r-panel);
 }
@@ -379,21 +379,21 @@ select.time {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: var(--space-2-5);
   font-size: var(--text-lead);
 }
 
 .reserved p {
-  margin: 6px 0 0;
+  margin: var(--space-1-5) 0 0;
   font-size: var(--text-ui);
   color: var(--muted);
 }
 
 .link-btn {
   display: inline-block;
-  margin-top: 8px;
+  margin-top: var(--space-2);
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--accent);
   text-decoration: none;
 }
@@ -406,12 +406,12 @@ select.time {
   display: inline-flex;
   align-items: center;
   height: 22px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border-radius: var(--r-chip);
   background: var(--well);
   font-family: var(--font-ui);
   font-size: var(--text-small);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   white-space: nowrap;
 }
 

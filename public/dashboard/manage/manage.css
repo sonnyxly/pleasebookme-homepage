@@ -51,9 +51,9 @@ button {
 .wrap {
   display: grid;
   justify-items: center;
-  gap: 14px;
+  gap: var(--space-3-5);
   min-height: 100dvh;
-  padding: 28px 16px 40px;
+  padding: var(--space-7) var(--space-4) var(--space-10);
   align-content: start;
 }
 
@@ -91,8 +91,8 @@ button {
 .shop {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 18px 20px 14px;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5) var(--space-3-5);
   border-bottom: 1px solid var(--card-line);
 }
 
@@ -116,7 +116,7 @@ button {
 
 .shop-text strong {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-semibold);
   font-size: var(--text-h3);
 }
 
@@ -128,22 +128,22 @@ button {
 .lang {
   flex: none;
   height: 28px;
-  padding: 0 10px;
+  padding: 0 var(--space-2-5);
   border: 1px solid var(--card-line);
   border-radius: var(--r-pill);
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .body {
   display: grid;
-  gap: 14px;
-  padding: 20px;
+  gap: var(--space-3-5);
+  padding: var(--space-5);
 }
 
 .body.is-centre {
   justify-items: center;
-  padding: 44px 24px;
+  padding: var(--space-11) var(--space-6);
   text-align: center;
 }
 
@@ -156,10 +156,10 @@ button {
 .status {
   justify-self: start;
   margin: 0;
-  padding: 3px 10px;
+  padding: 3px var(--space-2-5);
   border-radius: var(--r-pill);
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .st-confirmed {
@@ -182,8 +182,9 @@ button {
 .body h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   line-height: 1.2;
+  text-wrap: balance; /* "Thứ Năm, / 15 tháng 10", never a lone "10" */
 }
 
 .body h1 {
@@ -202,14 +203,14 @@ button {
 
 .facts {
   display: grid;
-  gap: 10px;
+  gap: var(--space-2-5);
   margin: 0;
 }
 
 .facts div {
   display: grid;
   grid-template-columns: 104px minmax(0, 1fr);
-  gap: 10px;
+  gap: var(--space-2-5);
   font-size: var(--text-body);
 }
 
@@ -219,11 +220,11 @@ button {
 
 .facts dd {
   margin: 0;
-  font-weight: 500;
+  font-weight: var(--fw-medium);
 }
 
 .facts dd span {
-  font-weight: 400;
+  font-weight: var(--fw-regular);
   color: var(--card-muted);
 }
 
@@ -235,13 +236,13 @@ button {
 }
 
 .bill th {
-  padding: 7px 0;
-  font-weight: 500;
+  padding: var(--space-1-5) 0;
+  font-weight: var(--fw-medium);
   text-align: left;
 }
 
 .bill td {
-  padding: 7px 0 7px 12px;
+  padding: var(--space-1-5) 0 var(--space-1-5) var(--space-3);
   color: var(--card-muted);
   white-space: nowrap;
 }
@@ -259,14 +260,14 @@ button {
 .bill tfoot th,
 .bill tfoot td {
   border-top: 1.5px solid var(--card-ink);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--card-ink);
 }
 
 .foot {
   display: grid;
-  gap: 10px;
-  padding: 16px 20px 20px;
+  gap: var(--space-2-5);
+  padding: var(--space-4) var(--space-5) var(--space-5);
   border-top: 1px solid var(--card-line);
 }
 
@@ -283,7 +284,7 @@ button {
 
 .actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .btn {
@@ -291,13 +292,13 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-2);
   min-height: 46px;
-  padding: 0 16px;
+  padding: 0 var(--space-4);
   border-radius: var(--r-control);
   background: var(--a);
   color: var(--a-ink);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   text-decoration: none;
   transition:
     transform 0.25s var(--ease-out),
@@ -333,13 +334,13 @@ button {
 .month {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .month strong {
   flex: 1;
   font-size: var(--text-body);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .month button {
@@ -366,9 +367,9 @@ button {
 }
 
 .cal b {
-  padding: 2px 0 4px;
+  padding: var(--space-0-5) 0 var(--space-1);
   font-size: var(--text-micro);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   text-align: center;
   color: var(--card-muted);
 }
@@ -380,12 +381,12 @@ button {
   border-radius: var(--r-block);
   background: var(--card-well);
   font-size: var(--text-body);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .date:disabled {
   background: none;
-  font-weight: 400;
+  font-weight: var(--fw-regular);
   color: var(--card-muted);
   opacity: 0.55;
   cursor: default;
@@ -411,14 +412,14 @@ button {
 .slots {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 7px;
+  gap: var(--space-1-5);
 }
 
 .slot {
   height: 42px;
   border: 1px solid var(--card-line);
   border-radius: var(--r-block);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
 }
 
 .slot.is-on {
@@ -431,12 +432,12 @@ button {
 .swap {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: var(--space-2-5);
   margin: 0;
 }
 
 .swap div {
-  padding: 12px 14px;
+  padding: var(--space-3) var(--space-3-5);
   border-radius: var(--r-control);
   background: var(--card-well);
 }
@@ -447,32 +448,32 @@ button {
 }
 
 .swap dd {
-  margin: 2px 0 0;
-  font-weight: 600;
+  margin: var(--space-0-5) 0 0;
+  font-weight: var(--fw-semibold);
   line-height: 1.35;
 }
 
 .swap .is-old dd {
-  font-weight: 400;
+  font-weight: var(--fw-regular);
   color: var(--card-muted);
   text-decoration: line-through;
 }
 
 .field {
   display: grid;
-  gap: 6px;
+  gap: var(--space-1-5);
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .field textarea {
   width: 100%;
-  padding: 10px 12px;
+  padding: var(--space-2-5) var(--space-3);
   border: 1px solid var(--card-line);
   border-radius: var(--r-control);
   background: var(--card-well);
   font: inherit;
-  font-weight: 400;
+  font-weight: var(--fw-regular);
   color: inherit;
   resize: vertical;
 }
@@ -502,8 +503,8 @@ button {
 
 .mock {
   width: min(440px, 100%);
-  margin-top: 18px;
-  padding: 10px 14px;
+  margin-top: var(--space-4);
+  padding: var(--space-2-5) var(--space-3-5);
   border: 1px dashed var(--line-strong);
   border-radius: var(--r-control);
   font-size: var(--text-small);
@@ -517,13 +518,13 @@ button {
 .mock-picks {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
+  gap: var(--space-1-5);
+  margin-top: var(--space-2-5);
 }
 
 .mock-picks button {
   height: 28px;
-  padding: 0 10px;
+  padding: 0 var(--space-2-5);
   border: 1px solid var(--line-strong);
   border-radius: var(--r-pill);
   font-size: var(--text-small);

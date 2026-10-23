@@ -477,8 +477,7 @@
   const esc = (s) =>
     String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   const clone = (value) => JSON.parse(JSON.stringify(value));
-  const getPath = (object, path) => path.split(".").reduce((o, key) => o[key], object);
-  const setPath = (object, path, value) => {
+  const setPath =(object, path, value) => {
     const keys = path.split(".");
     const last = keys.pop();
     keys.reduce((o, key) => o[key], object)[last] = value;

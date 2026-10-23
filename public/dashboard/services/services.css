@@ -14,14 +14,14 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 4px 20px;
-  margin: 0 4px 12px;
+  gap: var(--space-1) var(--space-5);
+  margin: 0 var(--space-1) var(--space-3);
 }
 
 .head h1 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-title);
   line-height: 1.2;
   letter-spacing: -0.015em;
@@ -38,7 +38,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .toolbar [aria-pressed="true"] {
@@ -46,7 +46,7 @@
 }
 
 .note {
-  margin: 14px 4px 4px;
+  margin: var(--space-3-5) var(--space-1) var(--space-1);
   font-size: var(--text-small);
   color: var(--muted);
 }
@@ -58,12 +58,12 @@
 .shop {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 
 .shop > * {
   min-width: 0;
-  padding: 15px 18px;
+  padding: var(--space-3-5) var(--space-4);
 }
 
 .shop-basket {
@@ -75,26 +75,26 @@
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 0 12px;
+  gap: 0 var(--space-3);
 }
 
 .shop h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-h3);
   line-height: 1.25;
 }
 
 .shop h3 {
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .shop-edit {
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--accent);
   white-space: nowrap;
   text-decoration: none;
@@ -105,7 +105,7 @@
 }
 
 .shop-sub {
-  margin: 2px 0 12px;
+  margin: var(--space-0-5) 0 var(--space-3);
   font-size: var(--text-ui);
   color: var(--muted);
 }
@@ -113,8 +113,22 @@
 .facts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
-  gap: 10px 20px;
+  gap: var(--space-2-5) var(--space-5);
   margin: 0;
+}
+
+/* `.facts` is also the booking side panel's list (shell.css), which sets each
+   row as a 110px label beside its value and scrolls. Here each fact is a label
+   over its value in a grid cell, so both are undone; otherwise a 150px cell
+   leaves the value about 27px and it breaks one word per line. */
+.shop .facts {
+  overflow: visible;
+}
+
+.shop .facts > div {
+  display: block;
+  padding: 0;
+  border-top: 0;
 }
 
 .facts dt {
@@ -124,12 +138,12 @@
 
 .facts dd {
   margin: 0;
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .example {
   min-height: 128px; /* its taller state, so the panel does not jump when the setting changes */
-  margin-top: 10px;
+  margin-top: var(--space-2-5);
   font-size: var(--text-ui);
   color: var(--muted);
 }
@@ -139,14 +153,14 @@
 }
 
 .example b {
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--ink);
 }
 
 /* The example booking, listed like a bill: each service, then the total. */
 .bill {
   width: 100%;
-  margin: 6px 0;
+  margin: var(--space-1-5) 0;
   border-collapse: collapse;
   color: var(--ink);
 }
@@ -154,12 +168,12 @@
 .bill th,
 .bill td {
   padding: 3px 0;
-  font-weight: 400;
+  font-weight: var(--fw-regular);
   text-align: left;
 }
 
 .bill td {
-  padding-left: 12px;
+  padding-left: var(--space-3);
   white-space: nowrap;
 }
 
@@ -175,7 +189,7 @@
 .bill tfoot td {
   padding-top: 5px;
   border-top: 1px solid var(--line-strong);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 /* ---------- Tiles ---------- */
@@ -186,7 +200,7 @@
 .tiles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 /* A tile's colours do not change with the theme: they are the owner's choice.
@@ -223,7 +237,7 @@
   flex-direction: column;
   align-items: center;
   min-height: 320px;
-  padding: 14px 22px 0;
+  padding: var(--space-3-5) var(--space-5) 0;
   border: 1px solid color-mix(in srgb, var(--t-ink) 12%, transparent);
   border-radius: var(--r-panel);
   background: linear-gradient(180deg, var(--t-top), var(--t-end));
@@ -272,16 +286,16 @@
   display: inline-flex;
   align-items: center;
   height: 24px;
-  padding: 0 10px;
+  padding: 0 var(--space-2-5);
   border-radius: var(--r-pill);
   background: color-mix(in srgb, var(--t-ink) 14%, transparent);
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .tile-who {
   display: inline-flex;
-  padding-left: 6px;
+  padding-left: var(--space-1-5);
 }
 
 .tile-who i {
@@ -295,20 +309,20 @@
   box-shadow: 0 0 0 2px var(--t-top);
   font-style: normal;
   font-size: var(--text-micro);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .tile-title {
-  margin: 12px 0 0;
+  margin: var(--space-3) 0 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-semibold);
   font-size: var(--text-display);
   line-height: 1.15;
   letter-spacing: -0.01em;
 }
 
 .is-hero .tile-title {
-  margin-top: 4px;
+  margin-top: var(--space-1);
   font-size: clamp(38px, 4.4cqi, 54px);
 }
 
@@ -338,7 +352,7 @@
 
 .tile-line {
   max-width: 36ch;
-  margin: 4px 0 0;
+  margin: var(--space-1) 0 0;
   font-size: var(--text-body);
   color: var(--t-muted);
 }
@@ -351,18 +365,18 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
-  margin: 12px 0 0;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
 }
 
 .tile-pills span {
   display: inline-flex;
   align-items: center;
   height: 30px;
-  padding: 0 14px;
+  padding: 0 var(--space-3-5);
   border-radius: var(--r-pill);
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   white-space: nowrap;
 }
 
@@ -376,7 +390,7 @@
 }
 
 .tile-note {
-  margin: 9px 0 0;
+  margin: var(--space-2) 0 0;
   font-size: var(--text-small);
   color: var(--t-muted);
 }
@@ -457,11 +471,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-2);
   min-height: 84px;
   border: 1.5px dashed var(--line-strong);
   border-radius: var(--r-panel);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--muted);
   transition:
     background-color 0.18s ease,
@@ -554,14 +568,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 18px 16px 12px 22px;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4) var(--space-3) var(--space-5);
 }
 
 .window-head h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-h2);
   line-height: 1.2;
 }
@@ -581,9 +595,9 @@
 .window-fields {
   display: grid;
   align-content: start;
-  gap: 16px;
+  gap: var(--space-4);
   min-height: 0;
-  padding: 4px 22px 22px;
+  padding: var(--space-1) var(--space-5) var(--space-5);
   overflow-y: auto;
   scrollbar-width: thin;
 }
@@ -591,15 +605,15 @@
 .window-side {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 4px 22px 22px 20px;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-5) var(--space-5) var(--space-5);
   border-left: 1px solid var(--line);
 }
 
 .window-side .label {
   margin: 0;
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 .tile.is-preview {
@@ -611,8 +625,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  padding: 14px 22px;
+  gap: var(--space-2);
+  padding: var(--space-3-5) var(--space-5);
   border-top: 1px solid var(--line);
 }
 
@@ -622,7 +636,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .photo-pick {
@@ -636,7 +650,7 @@
 
 .swatches {
   display: flex;
-  gap: 9px;
+  gap: var(--space-2);
   margin-left: auto;
 }
 
@@ -667,7 +681,7 @@
 
 /* Folded by default: most services follow the shop and never open this. */
 .rules {
-  padding: 0 14px;
+  padding: 0 var(--space-3-5);
   border: 1px solid var(--line-strong);
   border-radius: var(--r-control);
 }
@@ -675,10 +689,10 @@
 .rules summary {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   min-height: 46px;
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   list-style: none;
   cursor: pointer;
 }
@@ -691,7 +705,7 @@
   content: "";
   width: 8px;
   height: 8px;
-  margin: 0 4px 3px auto;
+  margin: 0 var(--space-1) 3px auto;
   border-right: 1.75px solid currentColor;
   border-bottom: 1.75px solid currentColor;
   transform: rotate(45deg);
@@ -704,13 +718,13 @@
 }
 
 .rules-hint {
-  margin: 0 0 12px;
+  margin: 0 0 var(--space-3);
   font-size: var(--text-small);
   color: var(--muted);
 }
 
 .rules .field-pair {
-  padding-bottom: 14px;
+  padding-bottom: var(--space-3-5);
 }
 
 /* ---------- Narrower pages ---------- */
@@ -738,6 +752,33 @@
   .tile-art,
   .is-hero .tile-art {
     width: min(56%, 250px);
+  }
+}
+
+/* Phones narrower than 375px (360 and 320): the two long choices share the
+   width and may wrap, and the example's receipt sets a size smaller with
+   tighter cells, so nothing runs past the panel. A 375px phone still has
+   room for both on one line. */
+@container page (max-width: 345px) {
+  .shop .seg {
+    display: grid;
+    width: 100%;
+  }
+
+  .shop .seg button {
+    height: auto;
+    min-height: 30px;
+    padding: var(--space-1) var(--space-2);
+    line-height: 1.25;
+    white-space: normal;
+  }
+
+  .bill {
+    font-size: var(--text-small);
+  }
+
+  .bill td {
+    padding-left: var(--space-2);
   }
 }
 
@@ -769,7 +810,7 @@
 /* ---------- The menu as a table ---------- */
 
 .menu-table {
-  padding: 4px 0 0;
+  padding: var(--space-1) 0 0;
   overflow: hidden;
 }
 
@@ -832,11 +873,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-2);
   width: 100%;
   min-height: 52px;
   border-top: 1px solid var(--line);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--muted);
   transition:
     background-color 0.18s ease,

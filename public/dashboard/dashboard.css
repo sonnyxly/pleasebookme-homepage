@@ -14,7 +14,7 @@
    and every other booking stays in reach while one is open. */
 @media (min-width: 1200px) {
   body:has(#sheet:not([hidden])) .page {
-    padding-right: calc(var(--sheet-w) + var(--gap) * 2 + 4px);
+    padding-right: calc(var(--sheet-w) + var(--gap) * 2 + var(--space-1));
   }
 }
 
@@ -25,14 +25,14 @@
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 2px 20px;
-  margin: 0 4px 12px;
+  gap: var(--space-0-5) var(--space-5);
+  margin: 0 var(--space-1) var(--space-3);
 }
 
 .head h1 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-title);
   line-height: 1.2;
   letter-spacing: -0.015em;
@@ -48,49 +48,61 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 14px;
+  gap: var(--space-1-5) var(--space-3-5);
 }
 
 /* ---------- The four counts ---------- */
 /* Each is one plain count, cheap to work out, and doubles as the tab for its
-   list. They read as one strip of tabs, not four cards: the picked one is
-   underlined in ink. */
+   list. Drawn as four blocks so they read as something to press: the
+   underlined strip of 18 October did not (Trung, 21 October). Still flat: a
+   hairline box on the panel colour, a darker edge on hover, and an ink ring
+   round the picked one. No fill colour, because a picker never takes the
+   accent. */
 
 .counts {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-bottom: 12px;
-  border-bottom: 1px solid var(--line-strong);
+  gap: var(--space-2-5);
+  margin-bottom: var(--space-3);
 }
 
 .count {
   display: grid;
   align-content: start;
   gap: 1px;
-  margin-bottom: -1px;
-  padding: 8px 16px 12px 4px;
-  border-bottom: 2px solid transparent;
+  padding: var(--space-3) var(--space-4) var(--space-3-5);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-card);
+  background: var(--panel-solid);
   font: inherit;
   text-align: left;
   color: inherit;
   cursor: pointer;
-  transition: border-color 0.2s ease;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.25s var(--ease-out);
 }
 
 .count:hover {
-  border-bottom-color: var(--line-strong);
+  border-color: color-mix(in srgb, var(--ink) 45%, transparent);
+}
+
+.count:active {
+  transform: scale(0.98);
 }
 
 .count[aria-selected="true"] {
-  border-bottom-color: var(--ink);
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
 }
 
 .count-label {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: var(--space-1-5);
   font-size: var(--text-ui);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   color: var(--muted);
 }
 
@@ -106,6 +118,7 @@
 
 .count-value {
   font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
   font-size: var(--text-h2);
   line-height: 1.2;
   letter-spacing: -0.01em;
@@ -123,20 +136,20 @@
 }
 
 .list-head {
-  padding: 15px 18px 8px;
+  padding: var(--space-3-5) var(--space-4) var(--space-2);
 }
 
 .list-head h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--fw-extrabold);
   font-size: var(--text-h3);
   line-height: 1.25;
 }
 
 .list-head p {
   max-width: 70ch;
-  margin: 2px 0 0;
+  margin: var(--space-0-5) 0 0;
   font-size: var(--text-small);
   color: var(--muted);
 }
@@ -146,8 +159,8 @@
 }
 
 .list .dt td {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: var(--space-2-5);
+  padding-bottom: var(--space-2-5);
 }
 
 .list .dt tbody tr.is-open {
@@ -167,7 +180,7 @@
   display: block;
   font-family: var(--font-display);
   font-size: var(--text-lead);
-  font-weight: 400;
+  font-weight: var(--fw-semibold);
   line-height: 1.2;
 }
 
@@ -196,12 +209,12 @@
 }
 
 .cell-actions .btn + .btn {
-  margin-left: 6px;
+  margin-left: var(--space-1-5);
 }
 
 /* "Now" sits between the bookings that have started and the ones to come. */
 .list .dt .now-row td {
-  padding: 0 18px;
+  padding: 0 var(--space-4);
   border-top: 0;
 }
 
@@ -212,10 +225,10 @@
 .now-line {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2-5);
   height: 26px;
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--signal);
 }
 
@@ -229,20 +242,20 @@
 
 .list-empty {
   margin: 0;
-  padding: 18px;
+  padding: var(--space-4);
   border-top: 1px solid var(--line);
   color: var(--muted);
 }
 
 .list-foot {
-  padding: 11px 18px 13px;
+  padding: var(--space-2-5) var(--space-4) var(--space-3);
   border-top: 1px solid var(--line);
   font-size: var(--text-small);
 }
 
 .list-foot a,
 .deeper-link a {
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--accent);
   text-decoration: none;
 }
@@ -256,7 +269,7 @@
 
 .sheet-tools {
   display: flex;
-  gap: 6px;
+  gap: var(--space-1-5);
 }
 
 .sheet-tools .icon-btn {
@@ -279,11 +292,11 @@
 .sheet-link {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   align-self: flex-start;
-  margin: 4px 0 14px;
+  margin: var(--space-1) 0 var(--space-3-5);
   font-size: var(--text-ui);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--accent);
   text-decoration: none;
 }
@@ -301,13 +314,13 @@
 
 .deeper-link,
 .note {
-  margin: 14px 4px 4px;
+  margin: var(--space-3-5) var(--space-1) var(--space-1);
   font-size: var(--text-small);
   color: var(--muted);
 }
 
 .note {
-  margin-top: 4px;
+  margin-top: var(--space-1);
 }
 
 /* ---------- Narrower pages ---------- */
@@ -327,18 +340,22 @@
     display: none;
   }
 
+  /* Four blocks in a row leave each about 80px on a phone, so they go two by
+     two and keep their full-size number. */
+  .counts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
   .count {
-    padding-right: 6px;
+    padding: var(--space-2-5) var(--space-3) var(--space-3);
   }
 
-  .count-value {
-    font-size: var(--text-lead);
-  }
-
+  /* Tighter cells on a phone, so the yes and no buttons stay on screen. */
   .list .dt th,
   .list .dt td {
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
   }
 
   .list .dt-name small {
@@ -350,6 +367,12 @@
     display: none;
   }
 
+  /* So are the person's colour and avatar: without them the yes and no
+     buttons still fit on a 360px phone. */
+  .list .dt-name .avatar {
+    display: none;
+  }
+
   /* The yes and no buttons stack, so the name keeps its room. */
   .cell-actions .btn {
     display: flex;
@@ -357,7 +380,22 @@
   }
 
   .cell-actions .btn + .btn {
-    margin: 6px 0 0;
+    margin: var(--space-1-5) 0 0;
+  }
+}
+
+/* The smallest phones (320px wide) leave the table about 294px. The two widest
+   columns give way: the time drops to body size and the buttons to small text
+   with less side padding. Their height does not change, so they are as easy
+   to tap as before. */
+@container page (max-width: 340px) {
+  .cell-when strong {
+    font-size: var(--text-body);
+  }
+
+  .cell-actions .btn {
+    padding: 0 var(--space-2-5);
+    font-size: var(--text-small);
   }
 }
 
@@ -374,13 +412,13 @@
 .earlier-row button {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   width: 100%;
   min-height: 38px;
-  padding: 0 18px;
+  padding: 0 var(--space-4);
   font: inherit;
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   color: var(--muted);
   text-align: left;
   cursor: pointer;
