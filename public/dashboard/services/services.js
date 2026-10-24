@@ -16,7 +16,7 @@
   "use strict";
 
   const { t, icon, toast } = PBM;
-  const { OPEN, CLOSE, SHOP, STAFF, SERVICES, SERVICE_ORDER } = PBM_SAMPLE;
+  const { OPEN, CLOSE, SHOP, STAFF, SERVICES, SERVICE_ORDER, SCHEDULES } = PBM_SAMPLE;
 
   const plural = (n, one, many) => (n === 1 ? one : many);
 
@@ -26,6 +26,11 @@
       "page.title": "Dịch vụ",
       lede: ({ n, h }) =>
         `${n} dịch vụ trên trang đặt lịch${h ? `, ${h} đang ẩn` : ""}. Khách có thể chọn nhiều dịch vụ trong một lần đặt.`,
+      "lede.none": "Dịch vụ là thứ khách chọn khi đặt lịch, như cắt tóc hay uốn.",
+      "shop.hours.none": "Chưa đặt giờ làm việc",
+      "blank.title": "Chưa có dịch vụ nào",
+      "blank.text": "Khách chưa đặt lịch được, vì chưa có gì để chọn. Thêm dịch vụ đầu tiên của tiệm: tên, thời lượng và giá.",
+      "blank.go": "Thêm dịch vụ đầu tiên",
       new: "Dịch vụ mới",
       add: "Thêm dịch vụ",
       sort: "Sắp xếp",
@@ -133,6 +138,11 @@
       "page.title": "Services",
       lede: ({ n, h }) =>
         `${n} ${plural(n, "service", "services")} on the booking page${h ? `, ${h} hidden` : ""}. A customer can pick several services in one booking.`,
+      "lede.none": "A service is what customers pick when they book, like a haircut.",
+      "shop.hours.none": "No working hours yet",
+      "blank.title": "No services yet",
+      "blank.text": "Customers cannot book yet, because there is nothing to choose. Add the shop's first service: a name, a length and a price.",
+      "blank.go": "Add the first service",
       new: "New service",
       add: "Add a service",
       sort: "Reorder",
@@ -347,7 +357,7 @@
   function renderHead() {
     const hidden = state.order.filter((id) => SERVICES[id].hidden).length;
     $("title").textContent = t("page.title");
-    $("lede").textContent = t("lede", { n: state.order.length - hidden, h: hidden });
+    $("lede").textContent = state.order.length ? t("lede", { n: state.order.length - hidden, h: hidden }) : t("lede.none");
     $("note").textContent = t("note");
     document.title = t("doc.title");
     $("toolbar").innerHTML = `
@@ -355,15 +365,22 @@
         <button type="button" data-view="tiles" aria-pressed="${state.view === "tiles"}">${icon("grid")}<span>${t("view.tiles")}</span></button>
         <button type="button" data-view="table" aria-pressed="${state.view === "table"}">${icon("rows")}<span>${t("view.table")}</span></button>
       </div>
-      <button class="btn btn-quiet" type="button" data-sort aria-pressed="${state.sorting}">${icon("swap")}${t(
-        state.sorting ? "sort.done" : "sort"
-      )}</button>
+      ${
+        state.order.length > 1
+          ? `<button class="btn btn-quiet" type="button" data-sort aria-pressed="${state.sorting}">${icon("swap")}${t(
+              state.sorting ? "sort.done" : "sort"
+            )}</button>`
+          : ""
+      }
       <button class="btn btn-primary" type="button" data-open="new">${icon("plus")}${t("new")}</button>`;
   }
 
   // ---------- Shop settings ----------
 
   function renderShop() {
+    // The choice about several services needs two to choose between.
+    const basket = state.order.length > 1;
+    $("shop").classList.toggle("is-single", !basket);
     $("shop").innerHTML = `
       <div class="shop-main">
         <div class="shop-head">
@@ -372,21 +389,25 @@
         </div>
         <p class="shop-sub">${t("shop.sub")}</p>
         <dl class="facts">
-          <div><dt>${t("shop.hours")}</dt><dd class="num">${clock(OPEN)} – ${clock(CLOSE)}</dd></div>
+          <div><dt>${t("shop.hours")}</dt><dd class="num">${SCHEDULES.length ? `${clock(OPEN)} – ${clock(CLOSE)}` : t("shop.hours.none")}</dd></div>
           <div><dt>${t("shop.notice")}</dt><dd>${duration(SHOP.notice)}</dd></div>
           <div><dt>${t("shop.confirm")}</dt><dd>${t("confirm." + SHOP.confirm)}</dd></div>
           <div><dt>${t("shop.staff")}</dt><dd>${t("shop.staff.yes")}</dd></div>
         </dl>
       </div>
-      <div class="shop-basket">
+      ${
+        basket
+          ? `<div class="shop-basket">
         <h3 id="basket-label">${t("basket.label")}</h3>
         <div class="seg" id="basketSeg" role="group" aria-labelledby="basket-label" style="--n:2;--i:${state.basket === "one" ? 0 : 1}">
           <button type="button" data-basket="one" aria-pressed="${state.basket === "one"}">${t("basket.one")}</button>
           <button type="button" data-basket="split" aria-pressed="${state.basket === "split"}">${t("basket.split")}</button>
         </div>
         <div class="example" id="example" aria-live="polite"></div>
-      </div>`;
-    renderExample();
+      </div>`
+          : ""
+      }`;
+    if (basket) renderExample();
   }
 
   // Shows what the setting means with two real services from the menu: by
@@ -394,6 +415,7 @@
   // a bill, each with its length and price and then the total. Nothing is
   // added between them or after them: a booking is as long as its services.
   function renderExample() {
+    if (!$("example")) return; // one service has nothing to combine, so the panel is not drawn
     const open = state.order.map((id) => SERVICES[id]).filter((s) => !s.hidden && s.rules.combine !== "solo");
     if (open.length < 2) {
       $("example").innerHTML = "";
@@ -519,6 +541,19 @@
   function renderTiles() {
     const tiles = $("tiles");
     const table = $("table");
+    // A shop with no services shows one invitation, whichever view is chosen.
+    if (!state.order.length) {
+      tiles.hidden = false;
+      table.hidden = true;
+      table.innerHTML = "";
+      tiles.classList.remove("is-sorting", "is-entering");
+      tiles.innerHTML = `<div class="blank">
+          <h2>${t("blank.title")}</h2>
+          <p>${t("blank.text")}</p>
+          <div class="blank-actions"><button class="btn btn-primary" type="button" data-open="new">${icon("plus")}${t("blank.go")}</button></div>
+        </div>`;
+      return;
+    }
     tiles.hidden = state.view === "table";
     table.hidden = state.view !== "table";
     if (state.view === "table") {

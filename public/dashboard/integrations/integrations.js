@@ -158,13 +158,18 @@
 
   const EMAIL = "tiemtocmau@gmail.com";
   const NAME_MAX = 255; // CALENDAR_NAME_MAX_LENGTH in Trung's client
-  const serviceCount = () => Object.keys(window.PBM_SAMPLE?.SERVICES || {}).length;
+  // The connected states show an example menu, since they are about what
+  // happens once a shop has services; the shop itself may have none yet.
+  const serviceCount = () => Object.keys(PBM_SAMPLE.EXAMPLE?.SERVICES || PBM_SAMPLE.SERVICES || {}).length;
 
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  // A shop that has set nothing up has not connected Google either, so the page
+  // opens on "not connected"; #on and #no-calendar show the other two states.
   const state = () => {
     const h = location.hash.slice(1);
-    return h === "none" || h === "no-calendar" ? h : "on";
+    if (h === "none" || h === "no-calendar" || h === "on") return h;
+    return PBM_SAMPLE.WITH_SETUP ? "on" : "none";
   };
   const connectedOn = () => new Date(2026, 9, 9).toLocaleDateString(PBM.locale, { day: "numeric", month: "numeric", year: "numeric" });
 
@@ -278,7 +283,7 @@
     else if (s === "no-calendar") body = accountHTML() + noCalendarHTML();
     else body = accountHTML() + `<p class="ok">${icon("check")}${t("acct.ok")}</p>` + destinationHTML() + lookHTML();
 
-    const link = (hash, key) => `<a href="${hash}"${(hash === "#" ? "on" : hash.slice(1)) === s ? ' aria-current="true"' : ""}>${t(key)}</a>`;
+    const link = (hash, key) => `<a href="${hash}"${hash.slice(1) === s ? ' aria-current="true"' : ""}>${t(key)}</a>`;
 
     $("view").innerHTML = `
       <div class="wrap">
@@ -309,14 +314,14 @@
           </ul>
         </section>
 
-        <p class="note">${t("note")} ${t("note.states")} ${link("#none", "state.none")} · ${link("#no-calendar", "state.nocal")} · ${link("#", "state.on")}</p>
+        <p class="note">${t("note")} ${t("note.states")} ${link("#none", "state.none")} · ${link("#no-calendar", "state.nocal")} · ${link("#on", "state.on")}</p>
       </div>`;
   }
 
   $("view").addEventListener("click", (event) => {
     if (event.target.closest("[data-google]")) {
       toast(t("demo.google"));
-      if (state() !== "on") location.hash = "";
+      if (state() !== "on") location.hash = "on"; // as if Google had said yes
       return;
     }
     if (event.target.closest("[data-off]")) {

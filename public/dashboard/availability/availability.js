@@ -25,7 +25,8 @@
       "none": "Chưa đặt giờ",
       "off": "Nghỉ",
       "week.label": ({ name, lines }) => `Giờ trong tuần của ${name}: ${lines}`,
-      "on.soon": "Chưa bật tắt được từng lịch. Sắp có.",
+      "soon.title": "Sắp có",
+      "on.soon": "Chưa bật hay tắt riêng từng lịch làm việc được.",
       "on.label": ({ name }) => `Bật lịch ${name}`,
       "del": ({ name }) => `Xoá ${name}`,
       "del.sure": "Xoá lịch này",
@@ -73,7 +74,8 @@
       "none": "No hours set",
       "off": "Closed",
       "week.label": ({ name, lines }) => `Weekly hours of ${name}: ${lines}`,
-      "on.soon": "Schedules cannot be switched off one by one yet. Coming soon.",
+      "soon.title": "Coming soon",
+      "on.soon": "Schedules cannot be switched on or off one by one yet.",
       "on.label": ({ name }) => `Use ${name}`,
       "del": ({ name }) => `Delete ${name}`,
       "del.sure": "Delete this schedule",
@@ -249,7 +251,10 @@
             sure
               ? `<button class="btn btn-quiet btn-small" type="button" data-keep>${t("del.cancel")}</button>
                  <button class="btn btn-small btn-danger is-sure" type="button" data-delete="${s.id}">${icon("trash")}${t("del.sure")}</button>`
-              : `<input class="switch" type="checkbox" checked disabled aria-label="${esc(t("on.label", { name: s.title }))}" title="${t("on.soon")}" />
+              : `<span class="soon-wrap" tabindex="0" aria-describedby="soon-${s.id}">
+                   <input class="switch" type="checkbox" checked disabled aria-label="${esc(t("on.label", { name: s.title }))}" />
+                   <span class="soon-note" id="soon-${s.id}" role="tooltip"><strong>${t("soon.title")}</strong>${t("on.soon")}</span>
+                 </span>
                  <button class="icon-btn btn-danger" type="button" data-delete="${s.id}" aria-label="${esc(t("del", { name: s.title }))}" title="${esc(t("del", { name: s.title }))}">${icon("trash")}</button>`
           }
         </div>

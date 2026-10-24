@@ -128,6 +128,11 @@
       "cal.label": "Lịch hẹn theo giờ",
       "who.label": "Xem lịch của",
       "who.waiting": "có lịch chờ xác nhận",
+      "blank.title": "Chưa có ai nhận lịch",
+      "blank.text": "Lịch hẹn hiện theo từng người làm. Thêm nhân viên đầu tiên trong Tài nguyên, rồi dịch vụ trong Dịch vụ, để khách đặt được.",
+      "blank.staff": "Thêm nhân viên",
+      "blank.services": "Thêm dịch vụ",
+      "blank.off": "Có sau khi thêm nhân viên và dịch vụ",
       note: "Dữ liệu mẫu. Đây là bản thiết kế, chưa nối với hệ thống.",
       count: ({ n }) => `${n} lịch`,
       minutes: ({ n }) => `${n} phút`,
@@ -262,6 +267,11 @@
       "cal.label": "Bookings by hour",
       "who.label": "Show the day of",
       "who.waiting": "has a booking waiting",
+      "blank.title": "Nobody is taking bookings yet",
+      "blank.text": "Bookings are shown for each person. Add the first staff member in Resources, then a service in Services, so customers can book.",
+      "blank.staff": "Add a staff member",
+      "blank.services": "Add a service",
+      "blank.off": "Available once there is a staff member and a service",
       note: "Sample data. This is a design mockup, not connected to the system.",
       count: ({ n }) => `${n} ${plural(n, "booking", "bookings")}`,
       minutes: ({ n }) => `${n} min`,
@@ -459,6 +469,8 @@
 
   function renderToolbar() {
     const unit = state.range;
+    // Adding or blocking time needs someone to do the work and something to book.
+    const canBook = STAFF.length > 0 && SERVICE_ORDER.length > 0;
     $("toolbar").innerHTML = `
       <div class="datenav">
         <button class="icon-btn" type="button" data-step="-1" aria-label="${t("step.prev." + unit)}">${icon("left")}</button>
@@ -485,8 +497,8 @@
       <button class="btn btn-quiet btn-small pending-btn" type="button" data-rail aria-pressed="${state.rail}" aria-controls="rail">
         <span>${t("todo")}</span><span class="pill num" id="pendingCount"></span>
       </button>
-      <button class="btn btn-quiet btn-small" type="button" data-block>${t("block")}</button>
-      <button class="btn btn-quiet btn-small" type="button" data-add>${icon("plus")}${t("add")}</button>`;
+      <button class="btn btn-quiet btn-small" type="button" data-block ${canBook ? "" : `disabled title="${t("blank.off")}"`}>${t("block")}</button>
+      <button class="btn btn-quiet btn-small" type="button" data-add ${canBook ? "" : `disabled title="${t("blank.off")}"`}>${icon("plus")}${t("add")}</button>`;
     $("board").classList.toggle("rail-open", state.rail);
   }
 
@@ -528,6 +540,18 @@
   function calendarHTML() {
     const isDay = state.range === "day";
     const offset = offsetOf(state.date);
+    // A day is one column per person, so a shop with nobody on the team has no
+    // columns to draw: it says what is missing instead of an empty grid.
+    if (isDay && !staffShown().length) {
+      return `<div class="blank is-bare">
+          <h2>${t("blank.title")}</h2>
+          <p>${t("blank.text")}</p>
+          <div class="blank-actions">
+            <a class="btn btn-primary" href="/dashboard/resources#new">${icon("plus")}${t("blank.staff")}</a>
+            <a class="btn btn-quiet" href="/dashboard/services">${t("blank.services")}</a>
+          </div>
+        </div>`;
+    }
     let index = 0;
 
     const one = isDay && onePerson();
@@ -1088,6 +1112,7 @@
   }
 
   function openForm(seed) {
+    if (!STAFF.length || !SERVICE_ORDER.length) return; // the button is off too; this covers #new
     const quarter = Math.ceil(NOW / 15) * 15;
     const day = Math.max(0, offsetOf(state.date));
     state.block = null;
@@ -1096,6 +1121,7 @@
   }
 
   function openBlock(seed) {
+    if (!STAFF.length) return;
     const day = Math.max(0, offsetOf(state.date));
     const first = BRANCHES.find((b) => PBM.branches.has(b.id));
     state.form = null;
@@ -1373,7 +1399,7 @@
   // The same watch swaps between one person and everyone when the page crosses
   // PHONE_MAX: turning a phone, or narrowing a window that far.
   new ResizeObserver(() => {
-    if (Boolean(document.querySelector(".cal.is-one")) !== onePerson()) renderAll();
+    if (Boolean(document.querySelector(".cal.is-one")) !== (onePerson() && staffShown().length > 0)) renderAll();
     else fitHours();
   }).observe($("stage"));
   document.fonts?.ready.then(fitHours);

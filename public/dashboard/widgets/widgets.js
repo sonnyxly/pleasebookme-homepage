@@ -28,6 +28,10 @@
       "doc.title": "Widget đặt lịch | pleasebookme",
       "page.title": "Widget đặt lịch",
       lede: "Mỗi widget là một lối vào đặt lịch. Bạn chọn chi nhánh, dịch vụ và người làm cho nó, rồi đặt nó ở link, trong website hoặc sau một nút bật.",
+      "blank.title": "Chưa có widget nào",
+      "blank.text": "Widget là lối vào đặt lịch: một link, một khung trong website hoặc một nút bật. Widget đầu tiên, link đặt lịch của tiệm, được tạo cùng dịch vụ đầu tiên.",
+      "blank.go": "Thêm dịch vụ đầu tiên",
+      "new.off": "Có sau khi thêm dịch vụ đầu tiên",
       new: "Widget mới",
       "col.widget": "Widget",
       "col.scope": "Phạm vi",
@@ -186,6 +190,10 @@
       "doc.title": "Booking widgets | pleasebookme",
       "page.title": "Booking widgets",
       lede: "Each widget is one way into booking. You choose its branches, services and staff, then put it behind a link, inside a website or behind a pop-up button.",
+      "blank.title": "No widgets yet",
+      "blank.text": "A widget is a way into booking: a link, a frame in a website or a pop-up button. The first one, the shop's booking link, is created with the first service.",
+      "blank.go": "Add the first service",
+      "new.off": "Available after the first service",
       new: "New widget",
       "col.widget": "Widget",
       "col.scope": "What it offers",
@@ -591,6 +599,23 @@
 
   function renderList() {
     document.title = t("doc.title");
+    // A new widget starts as a copy of an existing one, and the first widget is
+    // made with the first service, so a shop with none has nothing to start from.
+    if (!WIDGETS.length) {
+      $("view").innerHTML = `
+      <header class="head">
+        <h1>${t("page.title")}</h1>
+        <div class="toolbar"><button class="btn btn-primary" type="button" disabled title="${t("new.off")}">${icon("plus")}${t("new")}</button></div>
+        <p>${t("lede")}</p>
+      </header>
+      <section class="blank">
+        <h2>${t("blank.title")}</h2>
+        <p>${t("blank.text")}</p>
+        <div class="blank-actions"><a class="btn btn-primary" href="/dashboard/services">${icon("plus")}${t("blank.go")}</a></div>
+      </section>
+      <p class="note">${t("note")}</p>`;
+      return;
+    }
     $("view").innerHTML = `
       <header class="head">
         <h1>${t("page.title")}</h1>
@@ -1317,6 +1342,7 @@
   }
 
   function openEditor(id) {
+    if (!WIDGETS.length) return; // nothing to start from; the list says why
     const source = WIDGETS.find((w) => w.id === id);
     state.draft = source
       ? clone(source)

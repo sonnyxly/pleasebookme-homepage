@@ -247,6 +247,16 @@
   color: var(--muted);
 }
 
+/* The first day, with no services: the same line, and the two things to do about it. */
+.list-empty p {
+  margin: 0;
+}
+
+.list-empty .blank-actions {
+  justify-content: flex-start;
+  margin-top: var(--space-3);
+}
+
 .list-foot {
   padding: var(--space-2-5) var(--space-4) var(--space-3);
   border-top: 1px solid var(--line);

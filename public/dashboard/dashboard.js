@@ -42,6 +42,9 @@
       "l.next": "10 lịch gần nhất, theo giờ bắt đầu.",
       "l.unmarked": "Lịch nằm ở đây cho tới khi bạn ghi lại khách đã đến hay không đến.",
       "e.today": "Hôm nay chưa có lịch nào. Gửi link đặt lịch để khách tự chọn giờ.",
+      "e.setup": "Tiệm chưa nhận khách được: khách cần có dịch vụ để chọn, và giờ làm việc để biết lúc nào đặt được.",
+      "setup.services": "Thêm dịch vụ",
+      "setup.hours": "Đặt giờ làm việc",
       "e.pending": "Không còn lịch nào chờ bạn.",
       "e.next": "Chưa có lịch nào sắp tới.",
       "e.unmarked": "Mọi lịch đã qua đều được ghi lại.",
@@ -119,6 +122,9 @@
       "l.next": "The 10 nearest bookings, by start time.",
       "l.unmarked": "A booking stays here until you mark whether the customer came.",
       "e.today": "No bookings today yet. Share your booking link so customers can pick a time.",
+      "e.setup": "The shop cannot take bookings yet: customers need a service to choose and working hours to know when they can book.",
+      "setup.services": "Add a service",
+      "setup.hours": "Set working hours",
       "e.pending": "Nothing is waiting for you.",
       "e.next": "No bookings coming up.",
       "e.unmarked": "Every past booking is marked.",
@@ -372,6 +378,11 @@
               </tr></thead>
               <tbody>${body.join("")}</tbody>
             </table></div>`
+          : state.list === "today" && !Object.keys(SERVICES).length
+          ? `<div class="list-empty">
+              <p>${t("e.setup")}</p>
+              <div class="blank-actions"><a class="btn btn-primary" href="/dashboard/services">${icon("plus")}${t("setup.services")}</a><a class="btn btn-quiet" href="/dashboard/availability">${t("setup.hours")}</a></div>
+            </div>`
           : `<p class="list-empty">${t("e." + state.list)}</p>`
       }
       <footer class="list-foot">${foot}</footer>`;

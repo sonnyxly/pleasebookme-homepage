@@ -172,6 +172,47 @@ button {
   border-radius: var(--r-panel);
 }
 
+/* A shop's first day: a page that has nothing yet says what it needs and
+   offers the one way to start. The dashed hairline means "nothing here yet", as
+   on the empty tables of Tài nguyên and Giờ làm việc. Inside a panel use
+   `.is-bare`, so a box does not sit in a box. */
+.blank {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-10) var(--space-5);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-panel);
+  text-align: center;
+  color: var(--muted);
+}
+
+.blank.is-bare {
+  border: 0;
+}
+
+.blank h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--fw-extrabold);
+  font-size: var(--text-h3);
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.blank p {
+  margin: 0;
+  max-width: 46ch;
+}
+
+.blank-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
 /* ---------- Sidebar ---------- */
 
 .sidebar {

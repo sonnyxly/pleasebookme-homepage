@@ -74,7 +74,8 @@
 
   const draft = {
     name: t("org.name"),
-    bio: "Cắt tóc nam, cạo mặt và uốn nhuộm. Đặt trước để không phải chờ.",
+    // A new shop has written nothing about itself yet.
+    bio: PBM_SAMPLE.WITH_SETUP ? "Cắt tóc nam, cạo mặt và uốn nhuộm. Đặt trước để không phải chờ." : "",
     address: BRANCHES[0]?.address || "",
     phone: SHOP.phone,
     timezone: "Asia/Saigon",

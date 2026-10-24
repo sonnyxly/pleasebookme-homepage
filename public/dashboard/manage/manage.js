@@ -9,7 +9,11 @@
 (function () {
   "use strict";
 
-  const { TODAY, NOW, SHOP, SERVICES, BRANCHES, STAFF } = PBM_SAMPLE;
+  // This page is about one example booking, so it reads the example shop
+  // (a menu, a branch, a barber), which stays whether or not the dashboard's
+  // sample shop has been set up (see EXAMPLE in sample.js).
+  const { TODAY, NOW } = PBM_SAMPLE;
+  const { SHOP, SERVICES, BRANCHES, STAFF } = PBM_SAMPLE.EXAMPLE;
 
   const STRINGS = {
     vi: {

@@ -589,7 +589,40 @@
     w.week = BOOKINGS.filter((b) => b.widget === w.id && b.day >= -7 && b.day < 0).length;
   });
 
+  // ---------- A shop that has set up nothing (Sonny, 24 October) ----------
+  // The public mockups show a shop on its first day: signed up, with a name
+  // and a booking link, and nothing else. No working hours, no services, no
+  // branches, staff or places, no widgets, no closed time, no bookings.
+  // Set WITH_SETUP to true to draw the busy sample shop again for design work,
+  // and back to false before the copy goes live.
+  //
+  // The customer's booking page (manage/) is about one example booking, which
+  // needs a menu, a branch and a barber to be about. It reads EXAMPLE, which is
+  // taken before anything is emptied, so it never depends on this switch.
+  const WITH_SETUP = false;
+  const EXAMPLE = {
+    SHOP: { ...SHOP },
+    SERVICES: { ...SERVICES },
+    BRANCHES: [...BRANCHES],
+    STAFF: [...STAFF],
+  };
+  if (!WITH_SETUP) {
+    SCHEDULES.length = 0;
+    Object.keys(SERVICES).forEach((key) => delete SERVICES[key]);
+    SERVICE_ORDER.length = 0;
+    STAFF.length = 0;
+    BRANCHES.length = 0;
+    RESOURCES.length = 0;
+    WIDGETS.length = 0;
+    CLOSURES.length = 0;
+    BOOKINGS.length = 0;
+    CUSTOMERS.length = 0;
+    SHOP.phone = "";
+  }
+
   window.PBM_SAMPLE = {
+    EXAMPLE,
+    WITH_SETUP,
     TODAY,
     NOW,
     OPEN,

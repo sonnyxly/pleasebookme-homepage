@@ -159,6 +159,64 @@
   cursor: not-allowed;
 }
 
+/* A disabled control gets no hover or tap of its own, so the switch sits in a
+   wrapper that does. Hovering, focusing (Tab) or tapping it shows a small
+   flat note saying why it is off; a browser tooltip would never show on a
+   phone. */
+.soon-wrap {
+  position: relative;
+  display: inline-flex;
+  border-radius: var(--r-pill);
+  cursor: not-allowed;
+}
+
+.soon-wrap .switch {
+  pointer-events: none;
+}
+
+.soon-note {
+  position: absolute;
+  z-index: 6;
+  right: 0;
+  bottom: calc(100% + var(--space-2));
+  width: max-content;
+  max-width: 220px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-card);
+  background: var(--panel-solid);
+  box-shadow: 0 12px 28px -14px rgb(0 0 0 / 0.3);
+  font-size: var(--text-small);
+  line-height: 1.4;
+  color: var(--muted);
+  text-align: left;
+  opacity: 0;
+  transform: translateY(var(--space-1));
+  pointer-events: none;
+  transition:
+    opacity 0.18s ease,
+    transform 0.25s var(--ease-out);
+}
+
+.soon-note strong {
+  display: block;
+  font-size: var(--text-ui);
+  font-weight: var(--fw-semibold);
+  color: var(--ink);
+}
+
+.soon-wrap:hover .soon-note,
+.soon-wrap:focus .soon-note {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .soon-note {
+    transition: none;
+  }
+}
+
 .empty {
   display: grid;
   justify-items: center;

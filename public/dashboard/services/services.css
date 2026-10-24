@@ -61,6 +61,11 @@
   margin-bottom: var(--space-3);
 }
 
+/* Fewer than two services: nothing to combine, so the shop's settings are one column. */
+.shop.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .shop > * {
   min-width: 0;
   padding: var(--space-3-5) var(--space-4);
@@ -201,6 +206,11 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
+}
+
+/* The first-day invitation takes the whole row. */
+.tiles > .blank {
+  grid-column: 1 / -1;
 }
 
 /* A tile's colours do not change with the theme: they are the owner's choice.
