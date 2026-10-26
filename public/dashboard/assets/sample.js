@@ -97,8 +97,8 @@
     },
     colour: {
       vi: "Nhuộm tóc",
-      en: "Colour",
-      line: { vi: "Nhuộm màu theo yêu cầu, có thử màu trước.", en: "Colour to order, with a test first." },
+      en: "Color",
+      line: { vi: "Nhuộm màu theo yêu cầu, có thử màu trước.", en: "Color to order, with a test first." },
       slug: "nhuom-toc",
       min: 120,
       price: 450000,

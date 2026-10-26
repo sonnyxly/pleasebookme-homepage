@@ -128,13 +128,13 @@
       "dest.done": "Created “{name}” and linked it to {n} services.",
       "remind": "Reminder before a booking",
       "remind.d": "Google uses that calendar's own default reminders for now.",
-      soon: "Coming",
+      soon: "Coming soon",
 
       "look.title": "In Google Calendar",
       "look.sample": "Haircut · Thảo",
       "look.wait": "Waiting: a tentative event",
       "look.ok": "Confirmed: a normal event",
-      "look.gone": "Cancelled or rejected: the event is removed",
+      "look.gone": "Canceled or rejected: the event is removed",
       "look.invite": "Customers only get pleasebookme's email, never an invitation from Google.",
       "look.oneway": "Editing or deleting the event in Google does not change the booking here, and the next change to the booking puts the event back. To move a booking, move it in Bookings.",
 

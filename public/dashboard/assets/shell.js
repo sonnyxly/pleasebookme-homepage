@@ -19,7 +19,7 @@
     }
   };
 
-  // ---------- Strings (Vietnamese first, English alongside) ----------
+  // ---------- Strings (English first, worded like Cal.com and Calendly; Vietnamese alongside) ----------
 
   const strings = {
     vi: {
@@ -72,13 +72,13 @@
       "nav.analytics": "Analytics",
       "nav.notifications": "Notifications",
       "nav.settings": "Settings",
-      "nav.soon": "Soon",
+      "nav.soon": "Coming soon",
       "nav.label": "Dashboard sections",
-      "share.copy": "Copy booking page link",
+      "share.copy": "Copy link to booking page",
       "share.done": "Booking page link copied",
       "search.placeholder": "Search bookings, customers or services",
       "search.label": "Search",
-      quick: "Quick create",
+      quick: "Create",
       "quick.booking": "New booking",
       "quick.service": "New service",
       "quick.resource": "New resource",
@@ -100,11 +100,11 @@
     },
   };
 
-  let lang = read(STORE.lang) === "en" ? "en" : "vi";
+  let lang = read(STORE.lang) === "vi" ? "vi" : "en";
   const listeners = new Set();
 
   function t(key, vars) {
-    const value = strings[lang][key] ?? strings.vi[key] ?? key;
+    const value = strings[lang][key] ?? strings.en[key] ?? strings.vi[key] ?? key;
     if (typeof value === "function") return value(vars || {});
     if (!vars) return value;
     return value.replace(/\{(\w+)\}/g, (_, name) => vars[name] ?? "");
@@ -125,8 +125,8 @@
 
     // The switches were redrawn, so start each thumb on the old side and let it slide.
     document.querySelectorAll(".lang-seg").forEach((seg) => {
-      seg.style.setProperty("--i", lang === "vi" ? 1 : 0);
-      requestAnimationFrame(() => seg.style.setProperty("--i", lang === "vi" ? 0 : 1));
+      seg.style.setProperty("--i", lang === "en" ? 1 : 0);
+      requestAnimationFrame(() => seg.style.setProperty("--i", lang === "en" ? 0 : 1));
     });
     [...document.querySelectorAll(`[data-lang="${lang}"]`)].find((btn) => btn.offsetParent)?.focus();
   }
@@ -242,9 +242,9 @@
   }
 
   function langSwitch(extraClass) {
-    return `<div class="seg lang-seg ${extraClass}" role="group" aria-label="${t("lang.label")}" style="--n:2;--i:${lang === "vi" ? 0 : 1}">
-        <button type="button" data-lang="vi" aria-pressed="${lang === "vi"}">VI</button>
+    return `<div class="seg lang-seg ${extraClass}" role="group" aria-label="${t("lang.label")}" style="--n:2;--i:${lang === "en" ? 0 : 1}">
         <button type="button" data-lang="en" aria-pressed="${lang === "en"}">EN</button>
+        <button type="button" data-lang="vi" aria-pressed="${lang === "vi"}">VI</button>
       </div>`;
   }
 
@@ -533,7 +533,7 @@
       return lang;
     },
     get locale() {
-      return lang === "vi" ? "vi-VN" : "en-GB";
+      return lang === "vi" ? "vi-VN" : "en-US";
     },
   };
 })();

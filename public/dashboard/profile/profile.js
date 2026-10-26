@@ -62,7 +62,7 @@
       address: "Address",
       "address.hint": "A shop with several branches sets each branch's address in Resources.",
       phone: "Phone number",
-      "phone.hint": "Customers call this number once it is too late to change or cancel online.",
+      "phone.hint": "Customers call this number once it is too late to reschedule or cancel online.",
       zone: "Timezone",
       seen: "What customers see",
       "seen.none": "Not set",

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,14 +8,14 @@
     <link rel="icon" type="image/svg+xml" href="/dashboard/assets/brand/pleasebookme-mark-small.svg" />
     <title>Lịch hẹn | pleasebookme</title>
     <script>
-      // Set the theme before the first paint: the saved choice, else the device setting.
+      // Set the theme before the first paint: the saved choice, else dark.
       (function () {
         var saved;
         try {
           saved = localStorage.getItem("pbm-theme");
         } catch (e) {}
         if (saved !== "light" && saved !== "dark") {
-          saved = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          saved = "dark";
         }
         document.documentElement.dataset.theme = saved;
         try {
