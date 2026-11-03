@@ -1,10 +1,13 @@
 /* Tài nguyên: everything a booking can take up or happen at. Branches, staff
    and places are all resources of different types, and a shop can add types.
 
-   This is a redesign of the page that already exists in the app
-   (client/features/resources), not a new one: the same three counts, the same
-   filters, the same table, and the same two forms (a resource, and a type of
-   resource). As there, a resource can be added but not yet edited or removed.
+   It began as a redesign of the page in the app (client/features/resources):
+   the same counts, filters, table and two forms. Since 3 November it also does
+   what the app's page cannot: the types sit in a list on the left, as Notion
+   lists pages, each with a "…" menu to edit or delete it; and a row opens the
+   resource in a side peek where everything about it can be changed. The
+   server already has the endpoints for both (PUT and DELETE on resources and
+   resource types, and the tables the peek's sections read).
 
    Two things here are not in the app yet. Both come from how the shop is meant
    to work, where resources connect to each other without needing each other:
@@ -98,6 +101,62 @@
       "type.icon": "Biểu tượng",
       "type.save": "Thêm loại",
       "type.added": ({ name }) => `Đã thêm loại ${name}`,
+      "rail.label": "Loại tài nguyên",
+      "rail.all": "Tất cả",
+      "rail.new": "Loại mới",
+      "rail.more": ({ name }) => `Tuỳ chọn cho ${name}`,
+      "rail.edit": "Sửa loại",
+      "rail.del": "Xoá loại",
+      open: ({ name }) => `Mở ${name}`,
+      close: "Đóng",
+      "p.details": "Chi tiết",
+      "p.services": "Dịch vụ",
+      "p.services.lede": "Những dịch vụ tài nguyên này nhận.",
+      "p.services.all": "Chọn tất cả",
+      "p.services.none": "Tiệm chưa có dịch vụ nào.",
+      "p.hours": "Giờ làm việc và ngày nghỉ",
+      "p.account": "Tài khoản và giá",
+      "f.bookable": "Khách đặt được",
+      "f.bookable.hint": "Tắt nếu chỉ tiệm dùng, không mở cho khách chọn.",
+      "f.hours": "Giờ làm việc",
+      "f.hours.branch": ({ name }) => `Theo chi nhánh ${name}`,
+      "f.hours.shop": "Theo giờ mở cửa của tiệm",
+      "f.hours.edit": "Sửa trong Giờ làm việc",
+      "off.title": "Ngày nghỉ và bảo trì",
+      "off.none": "Chưa có ngày nghỉ nào.",
+      "off.add": "Thêm ngày nghỉ",
+      "off.from": "Từ ngày",
+      "off.to": "Đến ngày",
+      "off.reason": "Lý do",
+      "off.reason.ph": "Không bắt buộc",
+      "off.save": "Thêm",
+      "off.remove": ({ when }) => `Xoá ngày nghỉ ${when}`,
+      "off.error": "Ngày kết thúc phải bằng hoặc sau ngày bắt đầu.",
+      "f.member": "Tài khoản nhân viên",
+      "f.member.none": "Chưa nối tài khoản",
+      "f.member.hint": "Người này đăng nhập và thấy lịch hẹn của chính mình.",
+      "f.price": "Giá riêng",
+      "f.price.ph": "Không bắt buộc",
+      "f.price.hint": "Cho thứ được thuê riêng, như một phòng hay một chiếc xe.",
+      "f.price.error": "Giá phải là một số không âm.",
+      save: "Lưu",
+      saved: ({ name }) => `Đã lưu ${name}`,
+      unsaved: "Có thay đổi chưa lưu",
+      del: "Xoá",
+      "del.sure": "Chắc chắn xoá",
+      deleted: ({ name }) => `Đã xoá ${name}`,
+      "del.blocked": ({ name, uses }) => `Chưa xoá được ${name}: ${uses}. Hãy ngừng dùng thay vì xoá, để lịch sử còn nguyên.`,
+      "uses.links": ({ n }) => `${n} tài nguyên liên kết với nó`,
+      "uses.bookings": ({ n }) => `${n} lịch hẹn dùng nó`,
+      "uses.and": " và ",
+      "del.retire": "Ngừng dùng",
+      retired: ({ name }) => `${name} đã ngừng dùng`,
+      "type.edit": "Sửa loại tài nguyên",
+      "type.count": ({ n }) => `${n} tài nguyên thuộc loại này`,
+      "type.del.blocked": ({ name, n }) => `Chưa xoá được ${name}: ${n} tài nguyên thuộc loại này. Đổi loại hoặc xoá chúng trước.`,
+      "type.show": "Xem các tài nguyên đó",
+      "type.saved": ({ name }) => `Đã lưu loại ${name}`,
+      "type.deleted": ({ name }) => `Đã xoá loại ${name}`,
       note: "Dữ liệu mẫu. Đây là bản thiết kế, chưa nối với hệ thống.",
     },
     en: {
@@ -181,11 +240,88 @@
       "type.icon": "Icon",
       "type.save": "Add type",
       "type.added": ({ name }) => `Added the type ${name}`,
+      "rail.label": "Resource types",
+      "rail.all": "All resources",
+      "rail.new": "New type",
+      "rail.more": ({ name }) => `Options for ${name}`,
+      "rail.edit": "Edit type",
+      "rail.del": "Delete type",
+      open: ({ name }) => `Open ${name}`,
+      close: "Close",
+      "p.details": "Details",
+      "p.services": "Services",
+      "p.services.lede": "The services this resource can take.",
+      "p.services.all": "Select all",
+      "p.services.none": "The shop has no services yet.",
+      "p.hours": "Working hours and time off",
+      "p.account": "Account and price",
+      "f.bookable": "Customers can book it",
+      "f.bookable.hint": "Turn off to keep it for the shop's own use.",
+      "f.hours": "Working hours",
+      "f.hours.branch": ({ name }) => `Same as ${name}`,
+      "f.hours.shop": "Same as the shop's opening hours",
+      "f.hours.edit": "Edit in Availability",
+      "off.title": "Time off and maintenance",
+      "off.none": "No time off planned.",
+      "off.add": "Add time off",
+      "off.from": "From",
+      "off.to": "To",
+      "off.reason": "Reason",
+      "off.reason.ph": "Optional",
+      "off.save": "Add",
+      "off.remove": ({ when }) => `Remove time off ${when}`,
+      "off.error": "The end must be on or after the start.",
+      "f.member": "Team member account",
+      "f.member.none": "Not linked to an account",
+      "f.member.hint": "This person signs in and sees their own bookings.",
+      "f.price": "Price of its own",
+      "f.price.ph": "Optional",
+      "f.price.hint": "For things hired out on their own, such as a room or a car.",
+      "f.price.error": "The price must be a number of zero or more.",
+      save: "Save changes",
+      saved: ({ name }) => `Saved ${name}`,
+      unsaved: "Unsaved changes",
+      del: "Delete",
+      "del.sure": "Yes, delete",
+      deleted: ({ name }) => `Deleted ${name}`,
+      "del.blocked": ({ name, uses }) => `${name} can't be deleted: ${uses}. Retire it instead, so its history stays whole.`,
+      "uses.links": ({ n }) => `${n} ${n === 1 ? "resource is" : "resources are"} linked to it`,
+      "uses.bookings": ({ n }) => `${n} ${n === 1 ? "booking uses" : "bookings use"} it`,
+      "uses.and": " and ",
+      "del.retire": "Retire instead",
+      retired: ({ name }) => `Retired ${name}`,
+      "type.edit": "Edit resource type",
+      "type.count": ({ n }) => `${n} ${n === 1 ? "resource has" : "resources have"} this type`,
+      "type.del.blocked": ({ name, n }) =>
+        `${name} can't be deleted: ${n} ${n === 1 ? "resource has" : "resources have"} this type. Change their type or delete them first.`,
+      "type.show": "Show them",
+      "type.saved": ({ name }) => `Saved the type ${name}`,
+      "type.deleted": ({ name }) => `Deleted the type ${name}`,
       note: "Sample data. This is a design mockup, not connected to the system.",
     },
   });
 
-  const { RESOURCES, RESOURCE_TYPES, SERVICES, SERVICE_ORDER } = PBM_SAMPLE;
+  const { RESOURCES, RESOURCE_TYPES, SERVICES, SERVICE_ORDER, SCHEDULES, STAFF, BOOKINGS, TODAY } = PBM_SAMPLE;
+
+  // What the peek edits beyond the list's columns, each a table the server
+  // already has: `bookable` (resources.is_bookable), `hours` (a schedule, from
+  // resource_calendars; null follows its branch or the shop), `off` (time off
+  // and maintenance, from resource_maintenance), `member` (the team member's
+  // account, from resource_assignments) and `price` (resource_pricing).
+  // The sample shop has none of them, so they are filled in here.
+  const MEMBERS = STAFF.map((person) => ({ id: "m" + person.id, name: person.name }));
+  const dayISO = (offset) => {
+    const d = new Date(TODAY);
+    d.setDate(d.getDate() + offset);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  };
+  RESOURCES.forEach((r) => {
+    r.bookable ??= r.status !== "RETIRED";
+    r.hours ??= { b1: 1, b2: 2, p3: 3 }[r.id] ?? null;
+    r.off ??= r.id === "c3" ? [{ from: dayISO(-1), to: dayISO(3), reason: "Thay đệm ghế" }] : [];
+    r.member ??= r.type === "people" && STAFF.some((person) => "p" + person.id === r.id) ? "m" + r.id.slice(1) : "";
+    r.price ??= r.id === "c4" ? 50000 : null;
+  });
 
   const STATUSES = ["ACTIVE", "INACTIVE", "MAINTENANCE", "RETIRED"];
   const STATE_CLASS = { ACTIVE: "is-active", INACTIVE: "is-inactive", MAINTENANCE: "is-maintenance", RETIRED: "is-retired" };
@@ -216,6 +352,9 @@
 
   const state = {
     view: "list", // "list", "new" or "new-type"
+    // The side peek: { kind: "resource" | "type", id, draft, errors, sure, offDraft }.
+    peek: null,
+    menu: "", // the type whose "…" menu is open
     q: "",
     type: "",
     status: "",
@@ -294,9 +433,12 @@
     ]
       .filter(Boolean)
       .join('<span class="sep" aria-hidden="true">·</span>');
-    return `<tr>
+    // The name is a button whose hit area is the whole row (resources.css), so a
+    // row opens its peek from anywhere, as a booking does on Tổng quan.
+    const open = state.peek?.kind === "resource" && state.peek.id === r.id;
+    return `<tr data-row="${r.id}" class="${open ? "is-open" : ""}">
         <td class="c-state">${stateOf(r.status)}</td>
-        <td class="c-name"><span class="dt-name"><i class="code-dot code-${r.code}"></i><span><strong>${esc(r.name)}</strong><small>${esc(r.slug)}</small></span></span></td>
+        <td class="c-name"><span class="dt-name"><i class="code-dot code-${r.code}"></i><span><button class="row-open" type="button" data-open="${r.id}" aria-label="${esc(t("open", { name: r.name }))}" aria-expanded="${open}"><strong>${esc(r.name)}</strong></button><small>${esc(r.slug)}</small></span></span></td>
         <td class="c-type">${typeHTML}</td>
         <td class="c-link">${link}</td>
         <td class="c-cap num">${r.capacity ?? `<span class="dt-quiet">–</span>`}</td>
@@ -349,30 +491,70 @@
         <p>${t("page.lede")}</p>
       </header>
       ${summaryHTML()}
-      <form class="panel filters" id="filters" role="search">
-        <label class="filter-search">
-          ${icon("search")}
-          <span class="visually-hidden">${t("search.label")}</span>
-          <input class="input" type="search" id="q" value="${esc(state.q)}" placeholder="${t("search.ph")}" autocomplete="off" />
-        </label>
-        <select class="input" id="f-type" aria-label="${t("filter.type")}">
-          <option value="">${t("filter.type.all")}</option>
-          ${RESOURCE_TYPES.map((type) => `<option value="${type.id}" ${state.type === type.id ? "selected" : ""}>${esc(typeName(type))}</option>`).join("")}
-        </select>
-        <select class="input" id="f-status" aria-label="${t("filter.status")}">
-          <option value="">${t("filter.status.all")}</option>
-          ${STATUSES.map((status) => `<option value="${status}" ${state.status === status ? "selected" : ""}>${t("st." + status)}</option>`).join("")}
-        </select>
-        <button class="btn btn-quiet" type="button" data-clear id="clear" ${filtering() ? "" : "hidden"}>${icon("x")}${t("filter.clear")}</button>
-      </form>
-      <div id="results">${tableHTML()}</div>
+      <div class="res-layout">
+        <nav class="rail" id="rail" aria-label="${t("rail.label")}">${railHTML()}</nav>
+        <div class="res-main">
+          <form class="panel filters" id="filters" role="search">
+            <label class="filter-search">
+              ${icon("search")}
+              <span class="visually-hidden">${t("search.label")}</span>
+              <input class="input" type="search" id="q" value="${esc(state.q)}" placeholder="${t("search.ph")}" autocomplete="off" />
+            </label>
+            <select class="input" id="f-status" aria-label="${t("filter.status")}">
+              <option value="">${t("filter.status.all")}</option>
+              ${STATUSES.map((status) => `<option value="${status}" ${state.status === status ? "selected" : ""}>${t("st." + status)}</option>`).join("")}
+            </select>
+            <button class="btn btn-quiet" type="button" data-clear id="clear" ${filtering() ? "" : "hidden"}>${icon("x")}${t("filter.clear")}</button>
+          </form>
+          <div id="results">${tableHTML()}</div>
+        </div>
+      </div>
       <p class="note">${t("note")}</p>`;
+  }
+
+  // The types, as Notion lists pages in its sidebar: picking one filters the
+  // table, and each has a "…" menu to edit or delete it. This replaces the
+  // type filter that used to sit beside the search box. On a phone it is a row
+  // of chips above the table (resources.css).
+  function railHTML() {
+    const count = (id) => RESOURCES.filter((r) => !id || r.type === id).length;
+    const item = (id, label, glyph) => {
+      const type = id && typeOf(id);
+      const menuOpen = Boolean(type) && state.menu === id;
+      return `<li class="rail-item ${state.type === id ? "is-current" : ""} ${menuOpen ? "has-menu" : ""}">
+          <button class="rail-pick" type="button" data-type="${id}" aria-pressed="${state.type === id}">
+            ${icon(glyph)}<span class="rail-name">${esc(label)}</span><span class="rail-count num">${count(id)}</span>
+          </button>
+          ${
+            type
+              ? `<button class="icon-btn rail-more" type="button" data-menu="${id}" aria-haspopup="menu" aria-expanded="${menuOpen}" aria-label="${esc(
+                  t("rail.more", { name: label })
+                )}" title="${esc(t("rail.more", { name: label }))}">${icon("more")}</button>
+                ${
+                  menuOpen
+                    ? `<div class="rail-menu" role="menu">
+                        <button type="button" role="menuitem" data-edit-type="${id}">${icon("sliders")}${t("rail.edit")}</button>
+                        <button type="button" role="menuitem" class="is-danger" data-del-type="${id}">${icon("trash")}${t("rail.del")}</button>
+                      </div>`
+                    : ""
+                }`
+              : ""
+          }
+        </li>`;
+    };
+    return `<p class="rail-label">${t("rail.label")}</p>
+      <ul>
+        ${item("", t("rail.all"), "grid")}
+        ${RESOURCE_TYPES.map((type) => item(type.id, typeName(type), type.icon || "box")).join("")}
+      </ul>
+      <a class="rail-new" href="#new-type">${icon("plus")}${t("rail.new")}</a>`;
   }
 
   // Typing in the search box redraws the table only, so the box keeps its cursor.
   function refreshResults() {
     $("results").innerHTML = tableHTML();
     $("summary").outerHTML = summaryHTML();
+    $("rail").innerHTML = railHTML();
     $("clear").hidden = !filtering();
   }
 
@@ -529,13 +711,16 @@
 
   function renderTypeForm() {
     const d = state.typeDraft;
+    // Opened from the resource form, it goes back there; from the list, to the list.
+    const back = state.typeFrom === "new" ? "#new" : "#";
+    const backLabel = state.typeFrom === "new" ? t("form.title") : t("back");
     document.title = `${t("type.title")} | pleasebookme`;
     $("view").innerHTML = `
       <header class="head">
-        <a class="icon-btn back" href="#new" aria-label="${t("form.title")}" title="${t("form.title")}">${icon("left")}</a>
+        <a class="icon-btn back" href="${back}" aria-label="${backLabel}" title="${backLabel}">${icon("left")}</a>
         <h1>${t("type.title")}</h1>
         <div class="head-actions">
-          <a class="btn btn-quiet" href="#new">${t("cancel")}</a>
+          <a class="btn btn-quiet" href="${back}">${t("cancel")}</a>
           <button class="btn btn-primary" type="submit" form="form">${t("type.save")}</button>
         </div>
         <p>${t("type.lede")}</p>
@@ -575,17 +760,514 @@
     const name = d.name.trim();
     const type = { id: "t" + ++made, vi: name, en: name, description: d.description.trim(), icon: d.icon, asks: "which" };
     RESOURCE_TYPES.push(type);
-    // Back to the resource being added, with the new type already chosen.
-    state.draft = { ...(state.draft || blankResource()), type: type.id };
     state.typeDraft = null;
-    location.hash = "new";
+    if (state.typeFrom === "new") {
+      // Back to the resource being added, with the new type already chosen.
+      state.draft = { ...(state.draft || blankResource()), type: type.id };
+      location.hash = "new";
+    } else {
+      // Back to the list, showing the new (empty) type.
+      Object.assign(state, { type: type.id, q: "", status: "", page: 0 });
+      location.hash = "";
+    }
     toast(t("type.added", { name }));
   }
+
+  // ---------- The side peek: one resource, or one type ----------
+  // Opens beside the table, as a booking does on Tổng quan, so the next row can
+  // be picked without closing it. New things still get a page (#new,
+  // #new-type); things that exist open here. Every field can be changed, and
+  // nothing is kept until "Save".
+
+  const peekEl = $("peek");
+  let lastFocus = null;
+  const clone = (value) => JSON.parse(JSON.stringify(value));
+  const NUMERIC = new Set(["capacity", "price", "hours"]);
+  const asNumber = (value) => (!value.trim() ? null : /^\d+$/.test(value.trim()) ? Number(value) : value);
+  const fmtDay = (iso) =>
+    new Date(iso + "T00:00").toLocaleDateString(PBM.lang === "vi" ? "vi-VN" : "en-GB", { day: "numeric", month: "short" });
+
+  // What still points at a resource. Bookings keep the resource they used, so a
+  // resource with any is retired, not deleted (the server answers 409 too).
+  function usesOf(r) {
+    const links = RESOURCES.filter((other) => other.branch === r.id).length;
+    const bookings = BOOKINGS.filter((b) => b.branch === r.id || "p" + b.staff === r.id).length;
+    return { links, bookings, any: links + bookings > 0 };
+  }
+
+  function usesText({ links, bookings }) {
+    return [links && t("uses.links", { n: links }), bookings && t("uses.bookings", { n: bookings })].filter(Boolean).join(t("uses.and"));
+  }
+
+  function openPeek(kind, id) {
+    const source = kind === "resource" ? RESOURCES.find((r) => r.id === id) : typeOf(id);
+    if (!source) return closePeek();
+    if (!state.peek) lastFocus = document.activeElement;
+    state.peek = { kind, id, draft: clone(source), errors: {}, sure: false, offDraft: null };
+    state.menu = "";
+    renderPeek();
+    if (state.view === "list") refreshResults();
+    peekEl.querySelector("[data-close]").focus();
+  }
+
+  function closePeek() {
+    if (!state.peek) return;
+    const id = state.peek.id;
+    state.peek = null;
+    renderPeek();
+    if (state.view === "list") refreshResults();
+    if (location.hash.startsWith("#r/") || location.hash.startsWith("#t/")) history.replaceState(null, "", location.pathname);
+    const row = document.querySelector(`[data-open="${id}"]`);
+    (row || (lastFocus && document.contains(lastFocus) ? lastFocus : null))?.focus();
+  }
+
+  const changed = () => {
+    const p = state.peek;
+    const source = p.kind === "resource" ? RESOURCES.find((r) => r.id === p.id) : typeOf(p.id);
+    return JSON.stringify(source) !== JSON.stringify(p.draft);
+  };
+
+  const pErr = (key, id) =>
+    state.peek.errors[key] ? `<span class="error" id="${id}-error">${t(state.peek.errors[key])}</span>` : "";
+  const pInvalid = (key, id) => (state.peek.errors[key] ? `aria-invalid="true" aria-describedby="${id}-error"` : "");
+
+  function resourcePeekHTML() {
+    const d = state.peek.draft;
+    const type = typeOf(d.type);
+    const branch = d.branch && RESOURCES.find((r) => r.id === d.branch);
+    const linkable = RESOURCES.filter((r) => r.id !== d.id && r.status !== "RETIRED" && r.branch !== d.id);
+    const uses = usesOf(d);
+    const isPerson = type?.asks === "who";
+    const off = [...d.off].sort((a, b) => a.from.localeCompare(b.from));
+    const o = state.peek.offDraft;
+
+    return `
+      <header class="sheet-head peek-head">
+        <div>
+          <p class="peek-kind">${icon(type?.icon || "box")}${esc(type ? typeName(type) : "")}</p>
+          <h2 id="peek-title"><i class="code-dot code-${d.code}" aria-hidden="true"></i>${esc(d.name || "…")}</h2>
+        </div>
+        <button class="icon-btn" type="button" data-close aria-label="${t("close")}" title="${t("close")}">${icon("x")}</button>
+      </header>
+      <form class="peek-body" id="peek-form" novalidate>
+        <section class="peek-sec" aria-labelledby="ps-details">
+          <h3 id="ps-details">${t("p.details")}</h3>
+          <div class="field">
+            <label for="p-name">${t("f.name")}</label>
+            <input class="input" id="p-name" data-p="name" maxlength="255" value="${esc(d.name)}" autocomplete="off" ${pInvalid("name", "p-name")} />
+            ${pErr("name", "p-name")}
+          </div>
+          <div class="field">
+            <label for="p-slug">${t("f.slug")}</label>
+            <input class="input" id="p-slug" data-p="slug" maxlength="255" value="${esc(d.slug)}" autocomplete="off" spellcheck="false" ${pInvalid("slug", "p-slug")} />
+            ${pErr("slug", "p-slug")}
+          </div>
+          <div class="field-pair">
+            <div class="field">
+              <label for="p-type">${t("f.type")}</label>
+              <select class="input" id="p-type" data-p="type">
+                ${RESOURCE_TYPES.map((tp) => `<option value="${tp.id}" ${d.type === tp.id ? "selected" : ""}>${esc(typeName(tp))}</option>`).join("")}
+              </select>
+            </div>
+            <div class="field">
+              <label for="p-status">${t("f.status")}</label>
+              <select class="input" id="p-status" data-p="status">
+                ${STATUSES.map((s) => `<option value="${s}" ${d.status === s ? "selected" : ""}>${t("st." + s)}</option>`).join("")}
+              </select>
+            </div>
+          </div>
+          <div class="field-pair">
+            <div class="field">
+              <label for="p-capacity">${t("f.capacity")}</label>
+              <input class="input" id="p-capacity" data-p="capacity" inputmode="numeric" value="${esc(d.capacity ?? "")}" placeholder="${t("f.capacity.ph")}" ${pInvalid("capacity", "p-capacity")} />
+              ${pErr("capacity", "p-capacity")}
+            </div>
+            <div class="field">
+              <label for="p-link">${t("f.link")}</label>
+              <select class="input" id="p-link" data-p="branch">
+                <option value="">${t("f.link.none")}</option>
+                ${linkable.map((r) => `<option value="${r.id}" ${d.branch === r.id ? "selected" : ""}>${esc(r.name)}</option>`).join("")}
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <span class="label" id="p-code-label">${t("f.code")}</span>
+            <div class="swatches" role="radiogroup" aria-labelledby="p-code-label">
+              ${Array.from({ length: 8 }, (_, i) => i + 1)
+                .map(
+                  (n) =>
+                    `<label class="swatch"><input type="radio" name="p-code" value="${n}" ${d.code === n ? "checked" : ""} /><i class="code-${n}" aria-hidden="true"></i><span class="visually-hidden">${t("f.code.n", { n })}</span></label>`
+                )
+                .join("")}
+            </div>
+          </div>
+          <div class="field">
+            <label for="p-desc">${t("f.desc")}</label>
+            <textarea class="input area" id="p-desc" data-p="description" rows="3" placeholder="${t("f.desc.ph")}">${esc(d.description)}</textarea>
+          </div>
+          <label class="switch-line">
+            <span><strong>${t("f.bookable")}</strong><small>${t("f.bookable.hint")}</small></span>
+            <input class="switch" type="checkbox" role="switch" id="p-bookable" ${d.bookable ? "checked" : ""} />
+          </label>
+        </section>
+
+        <section class="peek-sec" aria-labelledby="ps-services">
+          <div class="peek-sec-head">
+            <h3 id="ps-services">${t("p.services")}</h3>
+            ${SERVICE_ORDER.length ? `<button class="link-btn" type="button" data-all-services>${t("p.services.all")}</button>` : ""}
+          </div>
+          <p class="peek-lede">${SERVICE_ORDER.length ? t("p.services.lede") : t("p.services.none")}</p>
+          <div class="svc-picks">
+            ${SERVICE_ORDER.map(
+              (id) =>
+                `<label class="svc-pick"><input type="checkbox" data-svc="${id}" ${d.does.includes(id) ? "checked" : ""} /><span>${icon("check")}${esc(
+                  SERVICES[id][PBM.lang]
+                )}</span></label>`
+            ).join("")}
+          </div>
+        </section>
+
+        <section class="peek-sec" aria-labelledby="ps-hours">
+          <h3 id="ps-hours">${t("p.hours")}</h3>
+          <div class="field">
+            <span class="label-row"><label for="p-hours">${t("f.hours")}</label><a class="link-btn" href="/dashboard/availability">${t("f.hours.edit")}</a></span>
+            <select class="input" id="p-hours" data-p="hours">
+              <option value="">${branch ? t("f.hours.branch", { name: branch.name }) : t("f.hours.shop")}</option>
+              ${SCHEDULES.map((s) => `<option value="${s.id}" ${String(d.hours) === String(s.id) ? "selected" : ""}>${esc(s.title)}</option>`).join("")}
+            </select>
+          </div>
+          <div class="field">
+            <span class="label">${t("off.title")}</span>
+            ${
+              off.length
+                ? `<ul class="off-list">${off
+                    .map((span) => {
+                      const when = span.from === span.to ? fmtDay(span.from) : `${fmtDay(span.from)} – ${fmtDay(span.to)}`;
+                      const i = d.off.indexOf(span);
+                      return `<li><span><strong class="num">${when}</strong>${span.reason ? `<small>${esc(span.reason)}</small>` : ""}</span>
+                        <button class="icon-btn" type="button" data-off-remove="${i}" aria-label="${esc(t("off.remove", { when }))}" title="${esc(t("off.remove", { when }))}">${icon("x")}</button></li>`;
+                    })
+                    .join("")}</ul>`
+                : `<p class="peek-lede">${t("off.none")}</p>`
+            }
+            ${
+              o
+                ? `<div class="off-new">
+                    <div class="field-pair">
+                      <div class="field"><label for="o-from">${t("off.from")}</label><input class="input" type="date" id="o-from" data-o="from" value="${o.from}" /></div>
+                      <div class="field"><label for="o-to">${t("off.to")}</label><input class="input" type="date" id="o-to" data-o="to" value="${o.to}" ${pInvalid("off", "o-to")} /></div>
+                    </div>
+                    ${pErr("off", "o-to")}
+                    <div class="field"><label for="o-reason">${t("off.reason")}</label><input class="input" id="o-reason" data-o="reason" value="${esc(o.reason)}" placeholder="${t("off.reason.ph")}" /></div>
+                    <div class="off-actions">
+                      <button class="btn btn-quiet btn-small" type="button" data-off-cancel>${t("cancel")}</button>
+                      <button class="btn btn-small" type="button" data-off-save>${t("off.save")}</button>
+                    </div>
+                  </div>`
+                : `<button class="btn btn-quiet btn-small off-add" type="button" data-off-add>${icon("plus")}${t("off.add")}</button>`
+            }
+          </div>
+        </section>
+
+        <section class="peek-sec" aria-labelledby="ps-account">
+          <h3 id="ps-account">${t("p.account")}</h3>
+          ${
+            isPerson
+              ? `<div class="field">
+                  <label for="p-member">${t("f.member")}</label>
+                  <select class="input" id="p-member" data-p="member">
+                    <option value="">${t("f.member.none")}</option>
+                    ${MEMBERS.map((m) => `<option value="${m.id}" ${d.member === m.id ? "selected" : ""}>${esc(m.name)}</option>`).join("")}
+                  </select>
+                  <small>${t("f.member.hint")}</small>
+                </div>`
+              : ""
+          }
+          <div class="field">
+            <label for="p-price">${t("f.price")}</label>
+            <span class="price-input"><input class="input num" id="p-price" data-p="price" inputmode="numeric" value="${esc(d.price ?? "")}" placeholder="${t("f.price.ph")}" ${pInvalid("price", "p-price")} /><span aria-hidden="true">₫</span></span>
+            <small>${t("f.price.hint")}</small>
+            ${pErr("price", "p-price")}
+          </div>
+        </section>
+
+        ${
+          state.peek.sure === "blocked"
+            ? `<p class="peek-blocked" role="alert">${t("del.blocked", { name: esc(d.name), uses: usesText(uses) })}</p>`
+            : ""
+        }
+      </form>
+      <footer class="sheet-actions peek-actions">
+        ${
+          state.peek.sure === "blocked"
+            ? `<button class="btn btn-quiet" type="button" data-retire ${d.status === "RETIRED" ? "disabled" : ""}>${t("del.retire")}</button>`
+            : `<button class="btn btn-quiet btn-danger ${state.peek.sure ? "is-sure" : ""}" type="button" data-delete>${icon("trash")}${t(
+                state.peek.sure ? "del.sure" : "del"
+              )}</button>`
+        }
+        <span class="peek-dirty" ${changed() ? "" : "hidden"}>${t("unsaved")}</span>
+        <button class="btn btn-primary" type="submit" form="peek-form" ${changed() ? "" : "disabled"}>${t("save")}</button>
+      </footer>`;
+  }
+
+  function typePeekHTML() {
+    const d = state.peek.draft;
+    const n = RESOURCES.filter((r) => r.type === d.id).length;
+    return `
+      <header class="sheet-head peek-head">
+        <div>
+          <p class="peek-kind">${t("type.edit")}</p>
+          <h2 id="peek-title">${icon(d.icon || "box")}${esc(d[PBM.lang] || d.vi || "…")}</h2>
+        </div>
+        <button class="icon-btn" type="button" data-close aria-label="${t("close")}" title="${t("close")}">${icon("x")}</button>
+      </header>
+      <form class="peek-body" id="peek-form" novalidate>
+        <section class="peek-sec">
+          <p class="peek-lede">${t("type.count", { n })}</p>
+          <div class="field">
+            <label for="pt-name">${t("type.name")}</label>
+            <input class="input" id="pt-name" data-pt="name" maxlength="100" value="${esc(d[PBM.lang] || d.vi)}" autocomplete="off" ${pInvalid("typeName", "pt-name")} />
+            ${pErr("typeName", "pt-name")}
+          </div>
+          <div class="field">
+            <label for="pt-desc">${t("type.desc")}</label>
+            <textarea class="input area" id="pt-desc" data-pt="description" rows="3" placeholder="${t("type.desc.ph")}">${esc(d.description || "")}</textarea>
+          </div>
+          <div class="field">
+            <span class="label" id="pt-icon-label">${t("type.icon")}</span>
+            <div class="icon-picks" role="radiogroup" aria-labelledby="pt-icon-label">
+              ${TYPE_ICONS.map(
+                (name) =>
+                  `<label class="icon-pick"><input type="radio" name="pt-icon" value="${name}" ${d.icon === name ? "checked" : ""} /><span>${icon(name)}</span><span class="visually-hidden">${name}</span></label>`
+              ).join("")}
+            </div>
+          </div>
+        </section>
+        ${
+          state.peek.sure === "blocked"
+            ? `<p class="peek-blocked" role="alert">${t("type.del.blocked", { name: esc(d[PBM.lang] || d.vi), n })}</p>`
+            : ""
+        }
+      </form>
+      <footer class="sheet-actions peek-actions">
+        ${
+          state.peek.sure === "blocked"
+            ? `<button class="btn btn-quiet" type="button" data-show-type="${d.id}">${t("type.show")}</button>`
+            : `<button class="btn btn-quiet btn-danger ${state.peek.sure ? "is-sure" : ""}" type="button" data-delete>${icon("trash")}${t(
+                state.peek.sure ? "del.sure" : "del"
+              )}</button>`
+        }
+        <span class="peek-dirty" ${changed() ? "" : "hidden"}>${t("unsaved")}</span>
+        <button class="btn btn-primary" type="submit" form="peek-form" ${changed() ? "" : "disabled"}>${t("save")}</button>
+      </footer>`;
+  }
+
+  function renderPeek() {
+    peekEl.hidden = !state.peek;
+    if (!state.peek) return (peekEl.innerHTML = "");
+    const scroll = peekEl.querySelector(".peek-body")?.scrollTop || 0;
+    peekEl.innerHTML = state.peek.kind === "resource" ? resourcePeekHTML() : typePeekHTML();
+    peekEl.querySelector(".peek-body").scrollTop = scroll;
+  }
+
+  // Only the footer follows typing, so a field keeps its cursor.
+  function refreshPeekFooter() {
+    const dirty = changed();
+    peekEl.querySelector(".peek-dirty").hidden = !dirty;
+    peekEl.querySelector('[type="submit"]').disabled = !dirty;
+    if (state.peek.sure) {
+      state.peek.sure = false;
+      const del = peekEl.querySelector("[data-delete]");
+      if (del) {
+        del.classList.remove("is-sure");
+        del.innerHTML = `${icon("trash")}${t("del")}`;
+      }
+    }
+  }
+
+  function savePeek() {
+    const p = state.peek;
+    const d = p.draft;
+    if (p.kind === "type") {
+      const name = String(d[PBM.lang] || "").trim();
+      p.errors = name ? {} : { typeName: "type.name.error" };
+      if (!name) return renderPeek(), $("pt-name").focus();
+      Object.assign(typeOf(p.id), d, { vi: d.vi.trim(), en: d.en.trim(), description: (d.description || "").trim() });
+      toast(t("type.saved", { name }));
+    } else {
+      p.errors = {};
+      if (!d.name.trim()) p.errors.name = "f.name.error";
+      if (!d.slug.trim()) p.errors.slug = "f.slug.error.empty";
+      else if (!SLUG_SHAPE.test(d.slug.trim())) p.errors.slug = "f.slug.error.shape";
+      else if (RESOURCES.some((r) => r.id !== d.id && r.slug === d.slug.trim())) p.errors.slug = "f.slug.error.taken";
+      if (String(d.capacity ?? "").trim() && !Number.isInteger(Number(d.capacity))) p.errors.capacity = "f.capacity.error";
+      if (String(d.price ?? "").trim() && !(Number(d.price) >= 0)) p.errors.price = "f.price.error";
+      const firstBad = ["name", "slug", "capacity", "price"].find((key) => p.errors[key]);
+      if (firstBad) return renderPeek(), $("p-" + firstBad).focus();
+      Object.assign(RESOURCES.find((r) => r.id === p.id), d, {
+        name: d.name.trim(),
+        slug: d.slug.trim(),
+        description: d.description.trim(),
+        capacity: String(d.capacity ?? "").trim() ? Number(d.capacity) : null,
+        price: String(d.price ?? "").trim() ? Number(d.price) : null,
+        hours: d.hours ? Number(d.hours) : null,
+        branch: d.branch || undefined,
+      });
+      toast(t("saved", { name: d.name.trim() }));
+    }
+    p.draft = clone(p.kind === "resource" ? RESOURCES.find((r) => r.id === p.id) : typeOf(p.id));
+    renderPeek();
+    refreshResults();
+  }
+
+  // Delete asks twice. If something still uses it, the second press is
+  // replaced by what uses it and the way out: retire a resource, or show the
+  // resources that have a type.
+  function deleteFromPeek() {
+    const p = state.peek;
+    if (p.kind === "resource") {
+      const r = RESOURCES.find((x) => x.id === p.id);
+      if (usesOf(r).any) p.sure = "blocked";
+      else if (!p.sure) p.sure = true;
+      else {
+        RESOURCES.splice(RESOURCES.indexOf(r), 1);
+        toast(t("deleted", { name: r.name }));
+        return closePeek();
+      }
+    } else {
+      const type = typeOf(p.id);
+      if (RESOURCES.some((r) => r.type === type.id)) p.sure = "blocked";
+      else if (!p.sure) p.sure = true;
+      else {
+        RESOURCE_TYPES.splice(RESOURCE_TYPES.indexOf(type), 1);
+        if (state.type === type.id) state.type = "";
+        toast(t("type.deleted", { name: typeName(type) }));
+        return closePeek();
+      }
+    }
+    renderPeek();
+    peekEl.querySelector(p.sure === "blocked" ? ".peek-blocked" : "[data-delete]")?.scrollIntoView({ block: "nearest" });
+    (peekEl.querySelector("[data-retire], [data-show-type], [data-delete]") || peekEl).focus();
+  }
+
+  peekEl.addEventListener("input", (event) => {
+    const el = event.target;
+    const p = state.peek;
+    if (!p) return;
+    // Numbers stay numbers, so typing a value back counts as no change.
+    if (el.dataset.p) p.draft[el.dataset.p] = NUMERIC.has(el.dataset.p) ? asNumber(el.value) : el.value;
+    if (el.dataset.pt === "name") p.draft[PBM.lang] = el.value;
+    else if (el.dataset.pt) p.draft[el.dataset.pt] = el.value;
+    if (el.dataset.o) p.offDraft[el.dataset.o] = el.value;
+    if (el.dataset.p === "name") peekEl.querySelector("#peek-title").lastChild.textContent = el.value || "…";
+    if (!el.dataset.o) refreshPeekFooter();
+  });
+
+  peekEl.addEventListener("change", (event) => {
+    const el = event.target;
+    const p = state.peek;
+    if (el.name === "p-code") p.draft.code = Number(el.value);
+    else if (el.name === "pt-icon") p.draft.icon = el.value;
+    else if (el.id === "p-bookable") p.draft.bookable = el.checked;
+    else if (el.dataset.svc) {
+      p.draft.does = SERVICE_ORDER.filter((id) => (id === el.dataset.svc ? el.checked : p.draft.does.includes(id)));
+    } else if (el.id === "p-type" || el.id === "p-link") {
+      // Both change what the peek shows (the account field, the hours' default).
+      return renderPeek();
+    } else return;
+    if (el.name === "p-code" || el.name === "pt-icon") return renderPeek();
+    refreshPeekFooter();
+  });
+
+  peekEl.addEventListener("click", (event) => {
+    const p = state.peek;
+    const at = (selector) => event.target.closest(selector);
+    if (at("[data-close]")) return closePeek();
+    if (at("[data-delete]")) return deleteFromPeek();
+    if (at("[data-retire]")) {
+      p.draft.status = "RETIRED";
+      p.draft.bookable = false;
+      Object.assign(RESOURCES.find((r) => r.id === p.id), { status: "RETIRED", bookable: false });
+      p.sure = false;
+      toast(t("retired", { name: p.draft.name }));
+      renderPeek();
+      return refreshResults();
+    }
+    const show = at("[data-show-type]");
+    if (show) {
+      Object.assign(state, { type: show.dataset.showType, q: "", status: "", page: 0 });
+      closePeek();
+      return renderList();
+    }
+    if (at("[data-all-services]")) {
+      p.draft.does = [...SERVICE_ORDER];
+      peekEl.querySelectorAll("[data-svc]").forEach((box) => (box.checked = true));
+      return refreshPeekFooter();
+    }
+    if (at("[data-off-add]")) {
+      p.offDraft = { from: dayISO(1), to: dayISO(1), reason: "" };
+      renderPeek();
+      return $("o-from").focus();
+    }
+    if (at("[data-off-cancel]")) {
+      p.offDraft = null;
+      delete p.errors.off;
+      renderPeek();
+      return peekEl.querySelector("[data-off-add]").focus();
+    }
+    if (at("[data-off-save]")) {
+      const o = p.offDraft;
+      if (!o.from || !o.to || o.to < o.from) {
+        p.errors.off = "off.error";
+        renderPeek();
+        return $("o-to").focus();
+      }
+      delete p.errors.off;
+      p.draft.off = [...p.draft.off, { from: o.from, to: o.to, reason: o.reason.trim() }];
+      p.offDraft = null;
+      renderPeek();
+      return peekEl.querySelector("[data-off-add]").focus();
+    }
+    const remove = at("[data-off-remove]");
+    if (remove) {
+      p.draft.off = p.draft.off.filter((_, i) => i !== Number(remove.dataset.offRemove));
+      renderPeek();
+      return peekEl.querySelector("[data-off-add], [data-off-save]")?.focus();
+    }
+  });
+
+  peekEl.addEventListener("submit", (event) => {
+    event.preventDefault();
+    savePeek();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    if (state.menu) {
+      const id = state.menu;
+      state.menu = "";
+      $("rail").innerHTML = railHTML();
+      return document.querySelector(`[data-menu="${id}"]`)?.focus();
+    }
+    if (state.peek && !event.target.closest?.("select")) closePeek();
+  });
 
   // ---------- Which view ----------
 
   function route() {
     const asked = location.hash.slice(1);
+    // #r/<id> and #t/<id> open a resource or a type over the list, so a peek
+    // can be linked to. Opening one from the page keeps the scroll.
+    const peekAsked = asked.match(/^([rt])\/(.+)$/);
+    if (peekAsked) {
+      if (state.view !== "list" || !$("results")) {
+        state.view = "list";
+        state.draft = null;
+        render();
+      }
+      return openPeek(peekAsked[1] === "r" ? "resource" : "type", decodeURIComponent(peekAsked[2]));
+    }
+    if (state.peek) closePeek();
     state.errors = {};
     if (asked === "new") {
       state.view = "new";
@@ -595,6 +1277,7 @@
         state.slugEdited = false;
       }
     } else if (asked === "new-type") {
+      if (state.view !== "new-type") state.typeFrom = state.view;
       state.view = "new-type";
       state.typeDraft = blankType();
     } else {
@@ -640,8 +1323,8 @@
 
   view.addEventListener("change", (event) => {
     const el = event.target;
-    if (el.id === "f-type" || el.id === "f-status") {
-      state[el.id === "f-type" ? "type" : "status"] = el.value;
+    if (el.id === "f-status") {
+      state.status = el.value;
       state.page = 0;
       return refreshResults();
     }
@@ -650,6 +1333,42 @@
   });
 
   view.addEventListener("click", (event) => {
+    const at = (selector) => event.target.closest(selector);
+    const row = at("[data-open]");
+    if (row) {
+      openPeek("resource", row.dataset.open);
+      return history.replaceState(null, "", "#r/" + row.dataset.open);
+    }
+    const more = at("[data-menu]");
+    if (more) {
+      state.menu = state.menu === more.dataset.menu ? "" : more.dataset.menu;
+      $("rail").innerHTML = railHTML();
+      return (state.menu ? $("rail").querySelector("[role=menuitem]") : $("rail").querySelector(`[data-menu="${more.dataset.menu}"]`)).focus();
+    }
+    const edit = at("[data-edit-type]");
+    if (edit) {
+      openPeek("type", edit.dataset.editType);
+      return history.replaceState(null, "", "#t/" + edit.dataset.editType);
+    }
+    const del = at("[data-del-type]");
+    if (del) {
+      // The same two presses as in the peek, starting from the first one.
+      openPeek("type", del.dataset.delType);
+      history.replaceState(null, "", "#t/" + del.dataset.delType);
+      return deleteFromPeek();
+    }
+    const pickType = at("[data-type]");
+    if (pickType) {
+      state.type = pickType.dataset.type;
+      state.menu = "";
+      state.page = 0;
+      refreshResults();
+      return $("rail").querySelector(`[data-type="${state.type}"]`).focus();
+    }
+    if (state.menu && !at(".rail-menu")) {
+      state.menu = "";
+      $("rail").innerHTML = railHTML();
+    }
     if (event.target.closest("[data-clear]")) {
       Object.assign(state, { q: "", type: "", status: "", page: 0 });
       renderList();

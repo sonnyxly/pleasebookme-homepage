@@ -368,7 +368,564 @@ td > .state.is-retired {
   outline-offset: 2px;
 }
 
+/* ---------- The types, on the left ---------- */
+/* As Notion lists pages in its sidebar: a quiet column of the shop's types.
+   Picking one filters the table; each has a "…" menu to edit or delete it. */
+
+.page {
+  transition: padding-right 0.36s var(--ease-out);
+}
+
+.res-layout {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-4);
+}
+
+.rail {
+  position: sticky;
+  top: calc(var(--edge) + var(--bar-h) + var(--gap));
+  display: grid;
+  gap: var(--space-1);
+  padding-top: var(--space-1);
+}
+
+.rail-label {
+  margin: 0 var(--space-2) var(--space-1);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.rail ul {
+  display: grid;
+  gap: var(--space-0-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rail-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: var(--r-control);
+}
+
+.rail-item:hover,
+.rail-item.has-menu {
+  background: var(--well);
+}
+
+.rail-item.is-current {
+  background: color-mix(in srgb, var(--ink) 9%, transparent);
+}
+
+.rail-pick {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2-5);
+  height: 36px;
+  padding: 0 var(--space-2);
+  border-radius: var(--r-control);
+  font: inherit;
+  font-size: var(--text-ui);
+  color: var(--muted);
+  text-align: left;
+  cursor: pointer;
+}
+
+.rail-pick .icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.rail-item.is-current .rail-pick {
+  color: var(--ink);
+  font-weight: var(--fw-semibold);
+}
+
+.rail-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rail-count {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* The "…" takes the count's place on hover or focus, as in Notion. */
+.rail-more {
+  position: absolute;
+  right: var(--space-1);
+  width: 28px;
+  height: 28px;
+  opacity: 0;
+}
+
+.rail-item:hover .rail-more,
+.rail-more:focus-visible,
+.rail-more[aria-expanded="true"] {
+  opacity: 1;
+}
+
+.rail-item:has(.rail-more):hover .rail-count,
+.rail-item:has(.rail-more):focus-within .rail-count,
+.rail-item.has-menu .rail-count {
+  visibility: hidden;
+}
+
+.rail-more:hover {
+  background: var(--line);
+}
+
+.rail-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + var(--space-1));
+  right: 0;
+  display: grid;
+  min-width: 170px;
+  padding: var(--space-1);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-card);
+  background: var(--panel-solid);
+  box-shadow: 0 12px 28px -14px rgb(0 0 0 / 0.35);
+}
+
+.rail-menu button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2-5);
+  height: 34px;
+  padding: 0 var(--space-2-5);
+  border-radius: var(--r-control);
+  font: inherit;
+  font-size: var(--text-ui);
+  text-align: left;
+  cursor: pointer;
+}
+
+.rail-menu button:hover,
+.rail-menu button:focus-visible {
+  background: var(--well);
+}
+
+.rail-menu .icon {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+}
+
+.rail-menu .is-danger,
+.rail-menu .is-danger .icon {
+  color: var(--signal);
+}
+
+.rail-new {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2-5);
+  height: 36px;
+  padding: 0 var(--space-2);
+  border-radius: var(--r-control);
+  font-size: var(--text-ui);
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.rail-new:hover {
+  background: var(--well);
+  color: var(--ink);
+}
+
+.rail-new .icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------- A row opens its resource ---------- */
+
+.dt tbody tr {
+  position: relative;
+  cursor: pointer;
+}
+
+.dt tbody tr:hover {
+  background: var(--well);
+}
+
+.dt tbody tr.is-open {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+.row-open {
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.row-open::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.row-open:focus-visible {
+  outline: none;
+}
+
+.row-open:focus-visible::after {
+  outline: 2px solid var(--focus);
+  outline-offset: -3px;
+  border-radius: var(--r-control);
+}
+
+/* ---------- The side peek ---------- */
+/* The booking side panel (shell.css), wider, because everything in it can be
+   changed. The body scrolls; the head and the save line stay put. */
+
+.peek {
+  --sheet-w: 460px;
+  padding: 0;
+}
+
+@media (min-width: 1200px) {
+  body:has(#peek:not([hidden])) .page {
+    padding-right: calc(460px + var(--gap) * 2 + var(--space-1));
+  }
+}
+
+.peek-head {
+  padding: var(--space-5) var(--space-5) var(--space-3);
+  border-bottom: 1px solid var(--line);
+}
+
+.peek-kind {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.peek-kind .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.peek-head h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2-5);
+  margin-top: var(--space-1-5);
+  font-size: var(--text-h3);
+  overflow-wrap: anywhere;
+}
+
+.peek-head h2 .code-dot {
+  flex: none;
+  width: 12px;
+  height: 12px;
+}
+
+.peek-head h2 .icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+.peek-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 var(--space-5);
+}
+
+.peek-sec {
+  display: grid;
+  gap: var(--space-3-5);
+  padding: var(--space-5) 0;
+}
+
+.peek-sec + .peek-sec {
+  border-top: 1px solid var(--line);
+}
+
+.peek-sec h3 {
+  margin: 0;
+  font-size: var(--text-ui);
+  font-weight: var(--fw-semibold);
+}
+
+.peek-sec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.peek-lede {
+  margin: calc(var(--space-2) * -1) 0 0;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.field .peek-lede {
+  margin: 0;
+}
+
+.switch-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  cursor: pointer;
+}
+
+.switch-line strong {
+  display: block;
+  font-size: var(--text-ui);
+  font-weight: var(--fw-semibold);
+}
+
+.switch-line small {
+  display: block;
+  margin-top: var(--space-0-5);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* Services: chips that carry a tick when chosen. */
+.svc-picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.svc-pick input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.svc-pick span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  height: 34px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font-size: var(--text-ui);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.svc-pick .icon {
+  display: none;
+  width: 14px;
+  height: 14px;
+}
+
+.svc-pick input:checked + span {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.svc-pick input:checked + span .icon {
+  display: block;
+}
+
+.svc-pick input:focus-visible + span {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Time off: one line per stretch, and a small form to add one. */
+.off-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+
+.off-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+}
+
+.off-list li + li {
+  border-top: 1px solid var(--line);
+}
+
+.off-list strong {
+  display: block;
+  font-size: var(--text-ui);
+  font-weight: var(--fw-semibold);
+}
+
+.off-list small {
+  display: block;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.off-list .icon-btn:hover {
+  background: var(--well);
+}
+
+.off-add {
+  justify-self: start;
+}
+
+.off-new {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-card);
+}
+
+.off-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.price-input {
+  position: relative;
+  display: block;
+}
+
+.price-input .input {
+  padding-right: var(--space-8);
+}
+
+.price-input > span {
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);
+  transform: translateY(-50%);
+  color: var(--muted);
+}
+
+.peek-blocked {
+  margin: 0 0 var(--space-5);
+  padding: var(--space-3) var(--space-3-5);
+  border-radius: var(--r-card);
+  background: color-mix(in srgb, var(--signal) 12%, transparent);
+  font-size: var(--text-ui);
+  line-height: 1.5;
+}
+
+.peek-actions {
+  align-items: center;
+  padding: var(--space-3) var(--space-5);
+}
+
+.peek-actions .btn {
+  flex: none;
+  height: 40px;
+}
+
+.peek-dirty {
+  flex: 1;
+  font-size: var(--text-small);
+  color: var(--muted);
+  text-align: right;
+}
+
+.peek-actions .btn-primary {
+  margin-left: auto;
+}
+
+.peek-dirty:not([hidden]) + .btn-primary {
+  margin-left: 0;
+}
+
 /* ---------- Narrower rooms ---------- */
+
+/* Below about 1000px the table needs the width, so the types become a row of
+   chips above it. Each chip keeps its "…", always shown, since touch has no hover. */
+@container page (max-width: 1000px) {
+  .res-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+
+  .rail {
+    position: static;
+    padding: 0;
+  }
+
+  .rail-label {
+    display: none;
+  }
+
+  .rail ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1-5);
+  }
+
+  .rail-item {
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-pill);
+  }
+
+  .rail-item.is-current {
+    border-color: transparent;
+  }
+
+  .rail-pick {
+    height: 34px;
+    padding: 0 var(--space-3);
+    border-radius: var(--r-pill);
+  }
+
+  .rail-more {
+    position: static;
+    width: 28px;
+    height: 28px;
+    margin-right: var(--space-1);
+    opacity: 1;
+  }
+
+  .rail-item:hover .rail-count,
+  .rail-item:focus-within .rail-count,
+  .rail-item.has-menu .rail-count {
+    visibility: visible;
+  }
+
+  .rail-menu {
+    left: 0;
+    right: auto;
+  }
+
+  .rail-new {
+    height: 36px;
+    padding: 0 var(--space-3);
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--r-pill);
+    justify-self: start;
+  }
+}
 
 @container page (max-width: 760px) {
   .filters select.input {

@@ -598,6 +598,18 @@ a.btn {
   background: var(--well);
 }
 
+/* A button that cannot act yet (nothing to save, nothing to add to) steps
+   back and stops answering the pointer. Its hint says why. */
+.btn:disabled,
+.btn:disabled:hover {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-quiet:disabled:hover {
+  background: none;
+}
+
 .btn-on-chrome {
   border-radius: var(--r-control);
   background: var(--ink);
