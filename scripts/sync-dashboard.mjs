@@ -14,7 +14,12 @@
 // rewritten on the way in. Nothing in public/dashboard is edited by hand:
 // change the design files, then run this again. The clean addresses come from
 // the rewrites in next.config.ts.
+//
+// Browsers keep the CSS and JS here for hours, so each page links them with a
+// short hash of the file (shell.css?v=1a2b3c4d). A changed file gets a new
+// address and is fetched at once; an unchanged one keeps its old address.
 
+import { createHash } from "node:crypto";
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, extname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -82,6 +87,20 @@ function copyFolder(folder, into, page) {
 
 copyFolder(SHARED, join(target, SHARED), null);
 for (const page of pages) copyFolder(page, page === HOME ? target : join(target, page), page);
+
+// /dashboard/assets/shell.css  ->  /dashboard/assets/shell.css?v=1a2b3c4d
+const hashes = new Map();
+function versioned(url) {
+  const file = join(target, url.slice("/dashboard/".length));
+  if (!written.has(file)) return url;
+  if (!hashes.has(file)) hashes.set(file, createHash("sha256").update(readFileSync(file)).digest("hex").slice(0, 8));
+  return `${url}?v=${hashes.get(file)}`;
+}
+for (const file of written) {
+  if (extname(file) !== ".html") continue;
+  const html = readFileSync(file, "utf8");
+  writeFileSync(file, html.replace(/\b(href|src)="(\/dashboard\/[^"?#]+\.(?:css|js))"/g, (_, attr, url) => `${attr}="${versioned(url)}"`));
+}
 
 const show = (path) => relative(target, path).split(sep).join("/");
 console.log(`Copied ${written.size} files to public/dashboard`);
