@@ -701,6 +701,11 @@
       code: d.code,
       branch: d.branch || undefined,
       does: [],
+      bookable: d.status !== "RETIRED",
+      hours: null,
+      off: [],
+      member: "",
+      price: null,
     });
     state.draft = null;
     location.hash = "";
