@@ -18,9 +18,11 @@ export const metadata: Metadata = pageMetadata({
   BẢN TIẾNG VIỆT, CHƯA ĐƯỢC KIỂM TRA. Đây là bản dịch của app/(en)/terms/page.tsx, do
   AI viết, chưa có người bản ngữ hay luật sư Việt Nam rà soát. Cần làm trước khi ra
   mắt: (1) người bản ngữ đọc lại văn phong; (2) luật sư rà soát, nhất là mục 14 (giới
-  hạn trách nhiệm), mục 16 (luật áp dụng, toà án Hà Nội) và các mục về AI; (3) giữ hai
-  bản luôn khớp nhau cùng các mục "cần xác nhận" ghi ở đầu bản tiếng Anh. Bản tiếng
-  Anh nói bản tiếng Việt này là bản có hiệu lực nếu hai bản khác nhau.
+  hạn trách nhiệm), mục 16 (luật áp dụng, toà án Hà Nội) và mục 7 (Google Calendar);
+  (3) giữ hai bản luôn khớp nhau cùng các mục "cần xác nhận" ghi ở đầu bản tiếng Anh.
+  Bản tiếng Anh nói bản tiếng Việt này là bản có hiệu lực nếu hai bản khác nhau.
+  Các điều khoản về AI (trợ lý, đọc bảng giá) đã được bỏ ngày 3/11/2026: hai tính năng
+  này chưa từng được xây dựng.
 */
 
 export default function Terms() {
@@ -138,45 +140,31 @@ export default function Terms() {
         </li>
       </ul>
 
-      <h2>7. Các tính năng AI</h2>
+      <h2>7. Google Calendar</h2>
       <p>
-        pleasebookme có các tính năng AI: một trợ lý giúp khách của bạn hỏi giờ
-        và đặt lịch, và một công cụ đọc ảnh bảng giá của bạn thành một danh sách
-        dịch vụ nháp. Chúng đang được phát triển và có thể thay đổi hoặc bị gỡ
-        bỏ.
+        Bạn có thể kết nối tài khoản Google để mỗi lịch hẹn được thêm vào Google
+        Calendar của bạn.{" "}
+        <Link href="/vi/privacy">Chính sách quyền riêng tư</Link> liệt kê những
+        gì mỗi sự kiện mang theo, bao gồm họ tên và thông tin liên hệ của khách.
       </p>
       <ul>
         <li>
-          <strong>Hãy kiểm tra bản nháp.</strong> Danh sách dịch vụ được đọc từ
-          ảnh chỉ là bản nháp. Bạn phải kiểm tra tên, giá và thời lượng trước khi
-          đăng, và bạn chịu trách nhiệm về những gì bạn đăng.
+          <strong>pleasebookme là nơi ghi nhận.</strong> Lịch hẹn đi từ
+          pleasebookme sang lịch của bạn. Những thay đổi bạn làm trong Google
+          Calendar chưa được sao chép ngược lại, nên hãy đổi hoặc huỷ lịch hẹn
+          trong pleasebookme.
         </li>
         <li>
-          <strong>Trợ lý có thể sai.</strong> Nó hoạt động thông qua hệ thống đặt
-          lịch của chúng tôi, nơi ghi lại những gì đã được đặt, nhưng AI vẫn có
-          thể hiểu nhầm một tin nhắn. Hãy xem lịch của bạn, và báo cho khách nếu
-          một lịch hẹn không đúng.
+          <strong>Lịch của bạn, bạn giữ gìn.</strong> Khi lịch hẹn đã ở trong
+          Google Calendar, nó nằm trong tài khoản Google của chính bạn, theo điều
+          khoản của Google. Chỉ chia sẻ lịch đó với những người nên xem thông tin
+          của khách.
         </li>
         <li>
-          <strong>Hãy cho khách biết.</strong> Trợ lý nói rõ rằng nó là một trợ
-          lý tự động. Đừng giới thiệu nó như một con người.
-        </li>
-        <li>
-          <strong>Những gì bạn tải lên.</strong> Chỉ tải lên bảng giá và thực đơn
-          dịch vụ mà bạn có quyền sử dụng, không tải ảnh có người hay thông tin
-          cá nhân của họ.
-        </li>
-        <li>
-          <strong>Dùng đúng cách.</strong> Đừng cố khiến trợ lý làm bất cứ điều gì
-          ngoài việc giúp mọi người đặt lịch.
+          <strong>Bạn có thể ngắt kết nối.</strong> Ngắt kết nối bất cứ lúc nào,
+          và chúng tôi sẽ ngừng gửi lịch hẹn vào lịch đó.
         </li>
       </ul>
-      <p>
-        Chúng tôi dùng các nhà cung cấp AI bên thứ ba để vận hành những tính
-        năng này, và <Link href="/vi/privacy">Chính sách quyền riêng tư</Link>{" "}
-        giải thích cách dữ liệu được xử lý. Chúng tôi không đảm bảo kết quả của
-        AI không có sai sót.
-      </p>
 
       <h2>8. Nội dung và dữ liệu của bạn</h2>
       <p>
@@ -198,7 +186,7 @@ export default function Terms() {
       <h2>10. Các dịch vụ khác</h2>
       <p>
         pleasebookme dựa vào các dịch vụ khác, chẳng hạn các nhà cung cấp lưu trữ
-        và nhắn tin như Zalo, cùng các dịch vụ AI mà chúng tôi sử dụng. Chúng tôi
+        và nhắn tin như Zalo, cùng Google khi bạn kết nối lịch. Chúng tôi
         không kiểm soát những dịch vụ đó. Nếu một trong số chúng thay đổi hoặc
         ngừng hoạt động, một phần của pleasebookme có thể bị ảnh hưởng.
       </p>

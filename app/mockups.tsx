@@ -251,51 +251,45 @@ export function PhoneMock({
   );
 }
 
-// The menu board is a photo of a Vietnamese menu, so its text is Vietnamese in
-// both languages. The draft list on the right is translated.
-const BOARD = [
-  { vi: "Cắt tóc", price: "80k" },
-  { vi: "Cắt + cạo râu", price: "110k" },
-  { vi: "Cạo mặt", price: "40k" },
-];
-
-// A menu board photo on the left, and the draft list of services it becomes on
-// the right. The last row has no length on purpose: a menu names services and
-// prices, so the owner sets how long each one takes and checks every line.
-export function MenuMock({
+// The owner's list of questions on the left, and the customer's booking form
+// that asks them on the right. A PMU studio, because asking about allergies
+// before a brow session is the plainest reason a shop needs its own questions.
+// The answers appear one by one, on the same 10s loop the other mockups use.
+export function FormMock({
   t,
   className = "",
 }: {
   t: Dict["mocks"];
   className?: string;
 }) {
-  const m = t.menu;
+  const f = t.form;
   return (
     <div
       role="img"
-      aria-label={m.aria}
-      className={`grid items-center gap-8 md:grid-cols-[1fr_auto_1.15fr] ${className}`}
+      aria-label={f.aria}
+      className={`grid items-center gap-8 md:grid-cols-[1fr_auto_1fr] ${className}`}
     >
-      <div aria-hidden className="relative mx-auto w-full max-w-[19rem] px-3 py-3">
-        <span className="absolute left-0 top-0 h-6 w-6 rounded-tl-lg border-l-2 border-t-2 border-ink" />
-        <span className="absolute right-0 top-0 h-6 w-6 rounded-tr-lg border-r-2 border-t-2 border-ink" />
-        <span className="absolute bottom-0 left-0 h-6 w-6 rounded-bl-lg border-b-2 border-l-2 border-ink" />
-        <span className="absolute bottom-0 right-0 h-6 w-6 rounded-br-lg border-b-2 border-r-2 border-ink" />
-        <div className="relative -rotate-2 overflow-hidden rounded-lg bg-soft-black p-6 text-titanium ring-1 ring-line shadow-[0_24px_50px_-28px_rgba(26,26,26,0.7)]">
-          <p lang="vi" className="display text-2xl">
-            Bảng giá
-          </p>
-          <ul lang="vi" className="mt-5 grid gap-3.5">
-            {BOARD.map((b) => (
-              <li key={b.vi} className="flex items-baseline gap-2">
-                <span>{b.vi}</span>
-                <span className="flex-1 border-b border-dotted border-titanium/40" />
-                <span className="tabular-nums">{b.price}</span>
-              </li>
-            ))}
-          </ul>
-          <span className="scan" />
-        </div>
+      <div
+        aria-hidden
+        className="overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_30px_70px_-40px_rgba(26,26,26,0.5)]"
+      >
+        <p className="border-b border-line px-5 py-3.5 text-sm font-semibold">{f.editorTitle}</p>
+        <ul className="grid gap-2.5 p-4">
+          {f.items.map((item) => (
+            <li
+              key={item.q}
+              className="flex items-center gap-3 rounded-lg border border-line px-3.5 py-3 text-sm"
+            >
+              <span className="min-w-0 font-semibold">{item.q}</span>
+              <span className="ml-auto whitespace-nowrap rounded-md border border-line px-2 py-1 text-xs text-muted">
+                {item.type}
+              </span>
+            </li>
+          ))}
+          <li className="rounded-lg border border-dashed border-ink px-3.5 py-3 text-sm">
+            + {f.add}
+          </li>
+        </ul>
       </div>
 
       <svg
@@ -313,46 +307,38 @@ export function MenuMock({
 
       <div
         aria-hidden
-        className="overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_30px_70px_-40px_rgba(26,26,26,0.5)]"
+        className="mx-auto w-full max-w-[22rem] overflow-hidden rounded-2xl border border-line bg-surface shadow-[0_30px_70px_-40px_rgba(26,26,26,0.5)]"
       >
         <div className="flex items-center gap-3 border-b border-line px-5 py-3.5">
-          <span className="text-sm font-semibold">{m.listTitle}</span>
-          <span className="ml-auto rounded-full border border-line px-2.5 py-0.5 text-xs text-muted">
-            {m.draft}
-          </span>
+          <Mark className="h-5 w-5 text-ink" />
+          <span className="text-sm font-semibold">{f.formTitle}</span>
         </div>
-        <ul className="grid gap-2.5 p-4">
-          {m.rows.map((row, i) => (
-            <li
-              key={row.name}
-              className="row-in flex items-center gap-3 rounded-lg border border-line px-3.5 py-3 text-sm"
-              style={{ ["--i" as string]: i }}
-            >
-              <span className="min-w-0">
-                <span lang="vi" className="font-semibold">
-                  {row.name}
+        <div className="grid gap-3 p-5 text-sm">
+          <p className="flex flex-wrap justify-between gap-x-3 gap-y-1">
+            <span className="font-semibold">{f.service}</span>
+            <span className="tabular-nums text-muted">{f.time}</span>
+          </p>
+          <div className="row-in grid gap-1.5 border-t border-line pt-3" style={{ ["--i" as string]: 0 }}>
+            <span className="text-xs text-muted">{f.items[0].q}</span>
+            <span className="rounded-md border border-line bg-paper px-3 py-2">{f.answer}</span>
+          </div>
+          <div className="row-in grid gap-1.5" style={{ ["--i" as string]: 1 }}>
+            <span className="text-xs text-muted">{f.items[1].q}</span>
+            <span className="flex gap-2">
+              {f.choices.map((c, i) => (
+                <span
+                  key={c}
+                  className={`rounded-md px-3 py-1.5 text-xs ${
+                    i === 0 ? "bg-highlight text-highlight-ink" : "border border-line text-muted"
+                  }`}
+                >
+                  {c}
                 </span>
-                {row.gloss && (
-                  <span className="block text-xs text-muted">{row.gloss}</span>
-                )}
-              </span>
-              <span className="ml-auto tabular-nums">{row.price}</span>
-              <span
-                className={`rounded-md px-2 py-1 text-xs tabular-nums ${
-                  row.len
-                    ? "bg-highlight text-highlight-ink"
-                    : "border border-dashed border-ink text-ink"
-                }`}
-              >
-                {row.len || m.setLength}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <div className="flex items-center gap-3 border-t border-line px-5 py-3.5 text-xs text-muted">
-          <span>{m.footer}</span>
-          <span className="ml-auto whitespace-nowrap rounded-md bg-ink px-3 py-1.5 font-semibold text-paper opacity-40">
-            {m.publish}
+              ))}
+            </span>
+          </div>
+          <span className="mt-1 block rounded-lg bg-ink py-2.5 text-center text-xs font-semibold text-paper">
+            {f.confirm}
           </span>
         </div>
       </div>

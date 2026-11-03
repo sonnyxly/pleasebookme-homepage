@@ -17,12 +17,15 @@ export const metadata: Metadata = pageMetadata({
 /*
   DRAFT BASELINE. Not reviewed by a Vietnamese lawyer. Before launch, confirm:
   - "free for now" and the 30 days' notice before any fee (section 3);
-  - the 30 day export window after closure (section 12);
-  - the liability cap wording against Vietnamese commercial and civil law (section 13);
-  - the courts of Hanoi as the forum (section 15);
+  - the 30 day export window after closure (section 13);
+  - the liability cap wording against Vietnamese commercial and civil law (section 14);
+  - the courts of Hanoi as the forum (section 16);
   - who "we" is once the household business (HKD) is registered;
   - that the Vietnamese version (app/vi/terms) is kept in step with this one;
-  - the AI clauses (section 7) against Vietnamese rules on AI, which were not checked.
+  - the Google Calendar clause (section 7): that the owner, not us, answers for who
+    sees customer details once they are in the owner's calendar.
+  The AI clauses (assistant, menu reader) were removed on 3 November 2026: those
+  features were never built.
 */
 
 export default function Terms() {
@@ -132,44 +135,30 @@ export default function Terms() {
         </li>
       </ul>
 
-      <h2>7. AI features</h2>
+      <h2>7. Google Calendar</h2>
       <p>
-        pleasebookme includes AI features: an assistant that helps your
-        customers ask about times and book, and a tool that reads a photo of
-        your menu into a draft list of services. They are in development and may
-        change or be removed.
+        You can connect your Google account so that each booking is added to
+        your Google Calendar. The{" "}
+        <Link href="/privacy">Privacy Policy</Link> lists what each event
+        carries, including your customer&apos;s name and contact details.
       </p>
       <ul>
         <li>
-          <strong>Check the drafts.</strong> A list of services read from a
-          photo is only a draft. You must check the names, prices and lengths
-          before you publish it, and you are responsible for what you publish.
+          <strong>pleasebookme is the record.</strong> Bookings go from
+          pleasebookme to your calendar. A change you make in Google Calendar is
+          not copied back yet, so change or cancel a booking in pleasebookme.
         </li>
         <li>
-          <strong>The assistant can be wrong.</strong> It works through our
-          booking system, which is the record of what is booked, but AI can
-          misunderstand a message. Look at your schedule, and tell your customer
-          if a booking is not right.
+          <strong>Your calendar, your care.</strong> Once a booking is in your
+          Google Calendar, it is in your own Google account, under Google&apos;s
+          terms. Share that calendar only with people who should see your
+          customers&apos; details.
         </li>
         <li>
-          <strong>Tell your customers.</strong> The assistant says that it is an
-          automated assistant. Do not present it as a person.
-        </li>
-        <li>
-          <strong>What you upload.</strong> Upload only menus and price lists
-          you have the right to use, not photos of people or their personal
-          details.
-        </li>
-        <li>
-          <strong>Use it properly.</strong> Do not try to make the assistant do
-          anything other than help people book.
+          <strong>You can disconnect.</strong> Disconnect at any time, and we
+          stop sending bookings to that calendar.
         </li>
       </ul>
-      <p>
-        We use third-party AI providers to run these features, and the{" "}
-        <Link href="/privacy">Privacy Policy</Link> explains how data is handled.
-        We do not promise that AI output is free of errors.
-      </p>
 
       <h2>8. Your content and your data</h2>
       <p>
@@ -190,7 +179,7 @@ export default function Terms() {
       <h2>10. Other services</h2>
       <p>
         pleasebookme relies on other services, for example hosting and messaging
-        providers such as Zalo, and the AI services we use. We do not control them. If one of them changes
+        providers such as Zalo, and Google when you connect your calendar. We do not control them. If one of them changes
         or goes down, parts of pleasebookme may be affected.
       </p>
 

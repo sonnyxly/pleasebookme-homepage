@@ -1,9 +1,9 @@
-import AssistantDemo from "./assistant-demo";
+import ConfirmDemo from "./confirm-demo";
 import BookingDemo from "./booking-demo";
 import ChatDemo from "./chat-demo";
 import Field from "./field";
 import { getDict, type Locale } from "./i18n";
-import { DashboardMock, MenuMock, PhoneMock } from "./mockups";
+import { DashboardMock, FormMock, PhoneMock } from "./mockups";
 import Reveal from "./reveal";
 import { SITE_NAME, SITE_URL } from "./seo";
 import { CONTACT_EMAIL, CONTACT_HREF } from "./site";
@@ -145,23 +145,18 @@ export default function Home({ locale }: { locale: Locale }) {
           </div>
         </section>
 
-        <section id="assistant" className="scroll-mt-4">
+        <section id="confirmations" className="scroll-mt-4">
           <div className="mx-auto grid w-full max-w-6xl gap-14 px-5 py-24 sm:px-8 lg:grid-cols-2 lg:items-center">
             <Reveal>
-              <div className="flex flex-wrap items-center gap-3">
-                <p className="text-sm font-semibold text-accent">{t.assistant.eyebrow}</p>
-                <span className="rounded-full border border-line px-2.5 py-0.5 text-xs text-muted">
-                  {t.assistant.pill}
-                </span>
-              </div>
+              <p className="text-sm font-semibold text-accent">{t.confirmations.eyebrow}</p>
               <h2 className="display mt-3 max-w-xl text-4xl sm:text-5xl">
-                {t.assistant.h2}
+                {t.confirmations.h2}
               </h2>
               <p className="mt-5 max-w-[32rem] text-lg leading-relaxed text-muted">
-                {t.assistant.body}
+                {t.confirmations.body}
               </p>
               <ul className="mt-8 grid max-w-[32rem] gap-4">
-                {t.assistant.points.map((p) => (
+                {t.confirmations.points.map((p) => (
                   <li key={p.title} className="border-t border-line pt-4">
                     <span className="font-semibold">{p.title}</span>{" "}
                     <span className="text-muted">{p.text}</span>
@@ -170,8 +165,8 @@ export default function Home({ locale }: { locale: Locale }) {
               </ul>
             </Reveal>
             <Reveal delay={120}>
-              <AssistantDemo t={d.assistantDemo} />
-              <p className="mt-5 text-sm text-muted">{t.assistant.caption}</p>
+              <ConfirmDemo t={d.confirmDemo} />
+              <p className="mt-5 text-sm text-muted">{t.confirmations.caption}</p>
             </Reveal>
           </div>
         </section>
@@ -179,7 +174,10 @@ export default function Home({ locale }: { locale: Locale }) {
         <section id="whole" className="scroll-mt-4 border-y border-line bg-surface">
           <div className="mx-auto w-full max-w-6xl px-5 py-20 sm:px-8">
             <Reveal>
-              <h2 className="display max-w-3xl text-4xl sm:text-5xl">{t.whole.h2}</h2>
+              <span className="rounded-full border border-line px-2.5 py-0.5 text-xs text-muted">
+                {t.whole.pill}
+              </span>
+              <h2 className="display mt-3 max-w-3xl text-4xl sm:text-5xl">{t.whole.h2}</h2>
               <p className="mt-5 max-w-[40rem] text-lg leading-relaxed text-muted">
                 {t.whole.body}
               </p>
@@ -245,23 +243,23 @@ export default function Home({ locale }: { locale: Locale }) {
           </div>
         </section>
 
-        <section id="menu" className="scroll-mt-4">
+        <section id="own-questions" className="scroll-mt-4">
           <div className="mx-auto w-full max-w-6xl px-5 py-24 sm:px-8">
             <Reveal>
               <div className="flex flex-wrap items-center gap-3">
-                <p className="text-sm font-semibold text-accent">{t.menu.eyebrow}</p>
+                <p className="text-sm font-semibold text-accent">{t.ownQuestions.eyebrow}</p>
                 <span className="rounded-full border border-line px-2.5 py-0.5 text-xs text-muted">
-                  {t.menu.pill}
+                  {t.ownQuestions.pill}
                 </span>
               </div>
-              <h2 className="display mt-3 max-w-3xl text-4xl sm:text-5xl">{t.menu.h2}</h2>
+              <h2 className="display mt-3 max-w-3xl text-4xl sm:text-5xl">{t.ownQuestions.h2}</h2>
               <p className="mt-5 max-w-[40rem] text-lg leading-relaxed text-muted">
-                {t.menu.body}
+                {t.ownQuestions.body}
               </p>
             </Reveal>
             <Reveal delay={120} className="mt-14">
-              <MenuMock t={d.mocks} />
-              <p className="mt-6 text-sm text-muted">{t.menu.caption}</p>
+              <FormMock t={d.mocks} />
+              <p className="mt-6 text-sm text-muted">{t.ownQuestions.caption}</p>
             </Reveal>
           </div>
         </section>

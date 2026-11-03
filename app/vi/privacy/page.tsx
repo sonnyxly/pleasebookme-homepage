@@ -19,9 +19,10 @@ export const metadata: Metadata = pageMetadata({
   do AI viết, chưa có người bản ngữ hay luật sư Việt Nam rà soát. Cần làm trước khi
   ra mắt: (1) người bản ngữ đọc lại văn phong; (2) luật sư rà soát nội dung; (3) giữ
   hai bản luôn khớp nhau, cùng các mục "cần xác nhận" ghi ở đầu bản tiếng Anh (thời
-  hạn lưu trữ, cam kết 2 ngày làm việc, cam kết nhà cung cấp AI không dùng dữ liệu để
-  huấn luyện mô hình...). Bản tiếng Anh nói bản tiếng Việt này là bản có hiệu lực nếu
-  hai bản khác nhau.
+  hạn lưu trữ, cam kết 2 ngày làm việc, mục Google...). Bản tiếng Anh nói bản tiếng
+  Việt này là bản có hiệu lực nếu hai bản khác nhau.
+  Trợ lý đặt lịch và công cụ đọc bảng giá đã được bỏ ngày 3/11/2026: hai tính năng
+  này chưa từng được xây dựng.
   Cơ sở pháp lý: Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15 và Nghị định
   356/2025/NĐ-CP, cùng có hiệu lực từ ngày 1/1/2026.
 */
@@ -62,9 +63,9 @@ export default function Privacy() {
           của bạn.
         </li>
         <li>
-          Trợ lý đặt lịch và công cụ đọc bảng giá là các tính năng AI đang được
-          phát triển. Chúng hoạt động thông qua hệ thống đặt lịch của chúng tôi,
-          và mục 7 giải thích về chúng.
+          Nếu cửa hàng kết nối Google Calendar, các lịch hẹn, kèm họ tên và
+          thông tin liên hệ của khách, được sao chép vào lịch đó. Mục 7 giải
+          thích.
         </li>
         <li>
           Với khách đặt lịch qua một cửa hàng, cửa hàng quyết định thu thập gì và
@@ -130,17 +131,6 @@ export default function Privacy() {
             </td>
           </tr>
           <tr>
-            <td>Khách sử dụng trợ lý đặt lịch</td>
-            <td>
-              Nội dung bạn nhắn, câu trả lời của trợ lý, và lịch hẹn được tạo ra.
-              Vui lòng không chia sẻ thông tin nhạy cảm trong cuộc trò chuyện.
-            </td>
-          </tr>
-          <tr>
-            <td>Chủ tiệm tải lên ảnh bảng giá</td>
-            <td>Bức ảnh, và danh sách dịch vụ được đọc ra từ đó.</td>
-          </tr>
-          <tr>
             <td>Khách đặt lịch</td>
             <td>
               Các thông tin cửa hàng yêu cầu, thường là họ tên và số điện thoại
@@ -166,9 +156,9 @@ export default function Privacy() {
           lịch hẹn, và giữ cho lịch của cửa hàng luôn chính xác.
         </li>
         <li>
-          <strong>Để vận hành các tính năng AI:</strong> để hiểu tin nhắn của
-          khách và trả lời, để kiểm tra lịch trống và tạo lịch hẹn, và để đọc ảnh
-          bảng giá thành một danh sách dịch vụ nháp.
+          <strong>Để cập nhật lịch đã kết nối:</strong> khi chủ tiệm kết nối
+          Google Calendar, để thêm từng lịch hẹn vào đó và cập nhật sự kiện khi
+          lịch hẹn thay đổi.
         </li>
         <li>
           <strong>Để gửi tin nhắn về lịch hẹn:</strong> xác nhận và nhắc lịch,
@@ -179,7 +169,10 @@ export default function Privacy() {
         <li>
           <strong>Để giữ dịch vụ an toàn và cải thiện nó:</strong> để ngăn chặn
           hành vi lạm dụng, tìm lỗi, sửa lỗi, và xem pleasebookme được sử dụng ra
-          sao.
+          sao. Chúng tôi có thể dùng công cụ AI cho việc này, chủ yếu với dữ liệu
+          đã tổng hợp hoặc đã loại bỏ thông tin nhận dạng, và chỉ từ những nhà
+          cung cấp có điều khoản không cho phép họ dùng dữ liệu đó để huấn luyện
+          mô hình.
         </li>
         <li>
           <strong>Để trả lời bạn:</strong> khi bạn viết cho chúng tôi.
@@ -207,8 +200,12 @@ export default function Privacy() {
         <li>
           <strong>Nhà cung cấp dịch vụ</strong> giúp chúng tôi vận hành
           pleasebookme: lưu trữ đám mây, an ninh, email, các kênh nhắn tin nêu
-          trên và các dịch vụ AI ở mục 7. Họ chỉ được dùng dữ liệu để cung cấp
-          dịch vụ cho chúng tôi.
+          trên và các công cụ AI chúng tôi dùng để xem dịch vụ được sử dụng ra
+          sao. Họ chỉ được dùng dữ liệu để cung cấp dịch vụ cho chúng tôi.
+        </li>
+        <li>
+          <strong>Google</strong>, khi chủ tiệm kết nối Google Calendar. Mục 7
+          giải thích những gì được gửi đi.
         </li>
         <li>
           <strong>Cơ quan nhà nước có thẩm quyền</strong>, khi pháp luật Việt Nam
@@ -222,42 +219,32 @@ export default function Privacy() {
         liệu cá nhân.
       </p>
 
-      <h2>7. Các tính năng AI</h2>
-      <p>
-        pleasebookme đang xây dựng các tính năng AI. Chúng đang được phát triển
-        và có thể thay đổi.
-      </p>
+      <h2>7. Đăng nhập bằng Google và Google Calendar</h2>
       <ul>
         <li>
-          <strong>Trợ lý đặt lịch.</strong> Khách có thể trò chuyện với một trợ
-          lý để hỏi giờ và đặt lịch. Trợ lý hoạt động thông qua hệ thống đặt lịch
-          của chúng tôi: nó kiểm tra lịch trống thật của cửa hàng, giữ một khung
-          giờ và tạo lịch hẹn. Khách được thông báo rằng họ đang trò chuyện với
-          một trợ lý tự động. Nội dung bạn nhắn cho trợ lý, và câu trả lời của
-          nó, được một nhà cung cấp dịch vụ AI xử lý để trợ lý có thể trả lời,
-          và được lưu cùng với lịch hẹn.
+          <strong>Đăng nhập.</strong> Chủ tiệm có thể đăng nhập bằng tài khoản
+          Google. Khi đó chúng tôi nhận họ tên và địa chỉ email mà Google chia
+          sẻ cho việc đăng nhập.
         </li>
         <li>
-          <strong>Ảnh bảng giá.</strong> Chủ tiệm có thể tải lên ảnh chụp bảng
-          giá hoặc thực đơn dịch vụ. Một nhà cung cấp dịch vụ AI đọc ảnh và soạn
-          ra danh sách dịch vụ nháp, và chủ tiệm kiểm tra bản nháp trước khi sử
-          dụng. Vui lòng chỉ tải lên bảng giá, không tải ảnh có người.
+          <strong>Kết nối lịch.</strong> Chủ tiệm có thể kết nối tài khoản Google
+          để mỗi lịch hẹn được thêm vào Google Calendar của mình. Sự kiện trên
+          lịch gồm dịch vụ, thời gian, địa điểm, ghi chú của lịch hẹn (nếu có),
+          và họ tên, địa chỉ email, số điện thoại của khách. Khi lịch hẹn thay
+          đổi hoặc bị huỷ, chúng tôi cập nhật sự kiện đó.
         </li>
         <li>
-          <strong>Hiểu cách pleasebookme được sử dụng.</strong> Chúng tôi dùng
-          các công cụ AI để xem dịch vụ được sử dụng ra sao, nhằm sửa lỗi và cải
-          thiện nó. Chúng tôi chủ yếu làm việc này với dữ liệu đã tổng hợp hoặc
-          đã loại bỏ thông tin nhận dạng.
+          <strong>Khi đã ở trong Google.</strong> Sự kiện khi đó nằm trong tài
+          khoản Google của chính chủ tiệm. Điều khoản quyền riêng tư của Google
+          áp dụng với nó, và chủ tiệm quyết định ai khác được xem lịch đó. Google
+          có thể lưu dữ liệu trên máy chủ ngoài Việt Nam, nên mục 6 áp dụng.
+        </li>
+        <li>
+          <strong>Bạn chọn.</strong> Chủ tiệm chọn cấp những quyền Google nào
+          khi kết nối, và có thể ngắt kết nối bất cứ lúc nào. Sau đó, chúng tôi
+          không gửi lịch hẹn vào lịch đó nữa.
         </li>
       </ul>
-      <p>
-        Trợ lý chỉ giúp mọi người đặt lịch. Nó không quyết định điều gì về một
-        người ngoài việc đề xuất và xác nhận lịch hẹn. Chúng tôi chọn những nhà
-        cung cấp AI có điều khoản không cho phép họ dùng dữ liệu chúng tôi gửi để
-        huấn luyện mô hình của họ. Các nhà cung cấp đó có thể xử lý dữ liệu trên
-        máy chủ ngoài Việt Nam, nên mục 6 áp dụng với họ. Vui lòng không nói với
-        trợ lý những thông tin nhạy cảm, chẳng hạn thông tin sức khoẻ.
-      </p>
 
       <h2>8. Chúng tôi lưu dữ liệu trong bao lâu</h2>
       <ul>
@@ -267,8 +254,8 @@ export default function Privacy() {
           trong vòng 30 ngày, trừ khi pháp luật yêu cầu chúng tôi giữ lâu hơn.
         </li>
         <li>
-          Các cuộc trò chuyện với trợ lý: cùng với lịch hẹn mà chúng thuộc về,
-          tức là trong thời gian tài khoản của cửa hàng còn mở.
+          Sự kiện lịch trong tài khoản Google của chủ tiệm: trong thời gian chủ
+          tiệm còn giữ chúng, vì chúng nằm trong lịch của chính chủ tiệm.
         </li>
         <li>
           Email gửi cho chúng tôi: trong thời gian chúng tôi cần để xử lý tin

@@ -16,7 +16,7 @@ export const vi: Dict = {
   meta: {
     homeTitle: "pleasebookme: đặt lịch cho barbershop và tiệm phun xăm thẩm mỹ",
     homeDescription:
-      "Đặt lịch cho barbershop, tiệm phun xăm thẩm mỹ và cửa hàng nhỏ ở Việt Nam. Khách chọn giờ hoặc nhắn hỏi. Giờ hẹn giữ chắc chắn, bạn thấy cả ngày của mình.",
+      "Đặt lịch cho barbershop, tiệm phun xăm thẩm mỹ và cửa hàng nhỏ ở Việt Nam. Khách chọn dịch vụ và giờ, giờ hẹn được giữ chắc chắn, và email xác nhận tự gửi đi.",
     privacyTitle: "Chính sách quyền riêng tư",
     privacyDescription:
       "pleasebookme thu thập gì, vì sao, ai được xem, lưu trong bao lâu và bạn thực hiện quyền của mình như thế nào.",
@@ -29,7 +29,7 @@ export const vi: Dict = {
     homeAria: "pleasebookme, trang chủ",
     navLabel: "Các mục",
     nav: [
-      { id: "assistant", label: "Trợ lý" },
+      { id: "confirmations", label: "Xác nhận" },
       { id: "in-use", label: "Trên website" },
       { id: "dashboard", label: "Trang quản lý" },
       { id: "questions", label: "Hỏi đáp" },
@@ -44,14 +44,14 @@ export const vi: Dict = {
     },
   },
 
-  legal: { updatedLabel: "Cập nhật lần cuối", updated: "9 tháng 10, 2026" },
+  legal: { updatedLabel: "Cập nhật lần cuối", updated: "3 tháng 11, 2026" },
 
   home: {
     hero: {
       eyebrow: "Book chắc. Book nhanh. Book me.",
       h1Lines: ["PleaseBookMe –"],
       h1Key: "Hãy đặt đi.",
-      body: "pleasebookme là tiện ích đặt lịch cho barbershop, tiệm phun xăm thẩm mỹ (PMU) và các cửa hàng nhỏ ở Việt Nam. Khách chọn dịch vụ và một khung giờ trống, hoặc chỉ cần nhắn hỏi. Khung giờ được giữ chắc chắn, bạn thấy trọn lịch trong ngày, và không còn phải trả lời đi trả lời lại những câu hỏi giống nhau trong tin nhắn.",
+      body: "pleasebookme là tiện ích đặt lịch cho barbershop, tiệm phun xăm thẩm mỹ (PMU) và các cửa hàng nhỏ ở Việt Nam. Khách chọn dịch vụ và một khung giờ trống. Khung giờ được giữ chắc chắn, email xác nhận được gửi đi, bạn thấy trọn lịch trong ngày, và không còn phải trả lời đi trả lời lại những câu hỏi giống nhau trong tin nhắn.",
       cta: "Dùng thử sớm",
       demoNote: "Thử bản demo. Bạn bấm gì cũng không được gửi đi đâu cả.",
     },
@@ -59,29 +59,28 @@ export const vi: Dict = {
       h2: "Đặt lịch qua tin nhắn mất năm câu trao đổi.",
       body: "Một lần cắt tóc, chốt qua Zalo hay Messenger, từng tin một, trong lúc tay bạn đang bận. Lỡ một tin nhắn là mất khách. Với trang đặt lịch, chỉ cần một lựa chọn và một lần chạm.",
     },
-    assistant: {
-      eyebrow: "Trợ lý cho khách",
-      pill: "Đang phát triển",
-      h2: "Khách chỉ cần nhắn hỏi.",
-      body: "Phần lớn khách đã quen đặt lịch bằng cách nhắn tin. Trợ lý của pleasebookme tiếp nhận cuộc trò chuyện đó: hiểu câu hỏi bằng tiếng Việt, kiểm tra lịch trống thật của bạn, giữ khung giờ và đặt lịch, để bạn không phải ngồi gõ.",
+    confirmations: {
+      eyebrow: "Sau khi khách đặt",
+      h2: "Ai cần biết đều được báo.",
+      body: "Khi khách đặt lịch, email xác nhận được gửi đi, viết theo đúng cách bạn vẫn nói với khách. Lịch hẹn cũng được thêm vào Google Calendar của bạn, nằm cạnh mọi việc khác trong ngày.",
       points: [
         {
-          title: "Không đoán mò.",
-          text: "Mọi giờ trống nó đưa ra đều lấy từ lịch thật của bạn, thông qua hệ thống đặt lịch của chúng tôi.",
+          title: "Bằng lời của bạn.",
+          text: "Viết email một lần, chừa chỗ cho tên khách, dịch vụ, giờ hẹn và địa điểm. Mỗi lịch hẹn tự điền vào.",
         },
         {
-          title: "Nói rõ mình là gì.",
-          text: "Khách luôn biết mình đang trò chuyện với một trợ lý tự động.",
+          title: "Trên lịch của bạn.",
+          text: "Kết nối Google Calendar, và mỗi lịch hẹn tự hiện ở đó.",
         },
         {
-          title: "Bạn thấy mọi lịch hẹn.",
-          text: "Lịch nào nó đặt cũng hiện trên lịch của bạn như mọi lịch khác.",
+          title: "Bạn quyết định.",
+          text: "Một lịch hẹn có thể chờ bạn. Chấp nhận hoặc từ chối ngay trong trang quản lý.",
         },
       ],
-      caption:
-        "Đoạn trò chuyện mẫu. Trợ lý đang được phát triển, và đây là cách chúng tôi đang xây dựng để nó hoạt động.",
+      caption: "Lịch hẹn và email mẫu. Đây là hình minh hoạ, không phải ảnh chụp màn hình.",
     },
     whole: {
+      pill: "Đang phát triển",
       h2: "Trọn vẹn từ lần chạm đầu tiên.",
       body: "Nhiều công cụ đặt lịch bắt mỗi dịch vụ một biểu mẫu riêng. Khách muốn cắt tóc và tỉa râu phải đặt hai lần, rồi hy vọng hai giờ hẹn khớp nhau. pleasebookme gom dịch vụ và giờ hẹn vào một biểu mẫu, để lịch hẹn luôn trọn vẹn từ lần chạm đầu tiên đến lúc ngồi vào ghế.",
       promises: [
@@ -125,24 +124,23 @@ export const vi: Dict = {
       caption:
         "Dữ liệu mẫu. Hình minh hoạ trang quản lý trong lúc chúng tôi hoàn thiện nó.",
     },
-    menu: {
-      eyebrow: "Thiết lập",
+    ownQuestions: {
+      eyebrow: "Biểu mẫu đặt lịch",
       pill: "Đang phát triển",
-      h2: "Chụp bảng giá. Chúng tôi soạn sẵn danh sách dịch vụ.",
-      body: "Thiết lập không nên là việc gõ lại cả bảng giá. Hãy chụp ảnh bảng giá bạn đang có, và pleasebookme sẽ đọc tên dịch vụ cùng giá thành một danh sách nháp. Bạn kiểm tra từng dòng và đặt thời lượng cho từng dịch vụ. Không có gì được đăng cho đến khi bạn đồng ý.",
-      caption:
-        "Bảng giá và giá tiền mẫu. Tính năng đọc ảnh bảng giá đang được phát triển.",
+      h2: "Hỏi điều tiệm bạn cần biết.",
+      body: "Tiệm nào cũng cần biết thêm một điều về khách. Tiệm PMU hỏi về dị ứng, trường dạy lái xe hỏi hạng bằng, chỗ cho thuê xe hỏi nơi giao nhận. Thêm câu hỏi của riêng bạn vào biểu mẫu đặt lịch, dạng lựa chọn, con số hay một dòng chữ, và câu trả lời đến cùng lịch hẹn.",
+      caption: "Câu hỏi mẫu. Tính năng thêm câu hỏi riêng vào biểu mẫu đặt lịch đang được phát triển.",
     },
     steps: {
       h2: "Ba bước. Chỉ một bước là của bạn.",
       items: [
         {
           title: "Thiết lập tiệm của bạn",
-          body: "Thêm dịch vụ, thời lượng từng dịch vụ và giờ mở cửa, hoặc chụp ảnh bảng giá rồi kiểm tra bản nháp của chúng tôi. Lần đầu, chúng tôi làm cùng bạn.",
+          body: "Thêm dịch vụ, thời lượng từng dịch vụ và giờ mở cửa. Lần đầu, chúng tôi làm cùng bạn.",
         },
         {
           title: "Khách chọn giờ",
-          body: "Họ chọn dịch vụ và một khung giờ trống, hoặc chỉ cần hỏi trợ lý. Những giờ đã kín đã được gạch sẵn.",
+          body: "Họ chọn dịch vụ và một khung giờ trống. Những giờ đã kín đã được gạch sẵn, và email xác nhận được gửi giúp bạn.",
         },
         {
           title: "Bạn thấy cả ngày của mình",
@@ -182,12 +180,12 @@ export const vi: Dict = {
           a: "Danh sách dịch vụ, thời lượng từng dịch vụ và giờ mở cửa. Chỉ vậy thôi, và lần đầu chúng tôi làm cùng bạn.",
         },
         {
-          q: "Trợ lý có nhầm không?",
-          a: "Có thể có, nên nó không bao giờ đoán mò. Nó kiểm tra lịch trống thật của bạn qua hệ thống đặt lịch của chúng tôi trước khi đưa ra một giờ, và một lịch hẹn chỉ được tính khi hệ thống xác nhận. Mọi lịch nó đặt đều hiện trên lịch của bạn.",
+          q: "Có dùng được với Google Calendar không?",
+          a: "Có. Kết nối một lần, và mỗi lịch hẹn mới được thêm vào Google Calendar của bạn. Chiều ngược lại (bạn sửa trong Google Calendar và pleasebookme cập nhật theo) đang được phát triển.",
         },
         {
-          q: "Nó có đọc đúng ảnh bảng giá không?",
-          a: "Thường là đúng, nhưng không phải lúc nào cũng vậy: chữ viết tay và chữ nhỏ rất khó đọc. Vì vậy bạn kiểm tra từng dòng, và đặt thời lượng cho từng dịch vụ, trước khi có gì được đăng.",
+          q: "Tôi có thể hỏi khách câu hỏi riêng không?",
+          a: "Chưa. Tính năng thêm câu hỏi riêng vào biểu mẫu đặt lịch đang được phát triển: dạng lựa chọn, con số hoặc một dòng chữ, và câu trả lời được lưu cùng lịch hẹn.",
         },
         {
           q: "Ai nhìn thấy thông tin khách của tôi?",
@@ -234,12 +232,15 @@ export const vi: Dict = {
     caption: "Năm tin nhắn cho một lần cắt tóc.",
   },
 
-  assistantDemo: {
-    shop: "Barbershop mẫu",
-    badge: "Trợ lý AI",
-    aria: "Cuộc trò chuyện mẫu: khách hỏi giờ và trợ lý đặt lịch",
-    callChecked: "Đã kiểm tra lịch trống · 15:30 đã kín",
-    callBooked: "Đã giữ 16:00 · Đã đặt",
+  confirmDemo: {
+    aria: "Ví dụ: khách đặt cắt tóc lúc 16:00 ngày mai. Email xác nhận viết bằng lời của tiệm được gửi cho khách, và lịch hẹn hiện trong Google Calendar của chủ tiệm.",
+    booked: "Lịch hẹn mới · Cắt tóc, 16:00 ngày mai",
+    emailLabel: "Email gửi anh Minh",
+    subject: "Lịch hẹn của anh đã được xác nhận",
+    body: ["Chào anh {name},", "Hẹn gặp anh lúc {time} để {service} tại {place}.", "Cần đổi giờ? Anh cứ trả lời email này."],
+    fill: { name: "Minh", service: "cắt tóc", time: "16:00 ngày mai", place: "Barbershop mẫu" },
+    calendarLabel: "Google Calendar · Ngày mai",
+    event: "Cắt tóc · Minh",
   },
 
   mocks: {
@@ -265,18 +266,20 @@ export const vi: Dict = {
       confirm: "Xác nhận ngày mai, 16:00",
       caps: false,
     },
-    menu: {
-      aria: "Ví dụ: ảnh bảng giá in bên trái trở thành danh sách dịch vụ nháp bên phải. Chủ tiệm kiểm tra từng dòng và đặt thời lượng còn thiếu.",
-      listTitle: "Dịch vụ của bạn",
-      draft: "Bản nháp",
-      setLength: "Đặt thời lượng",
-      rows: [
-        { name: "Cắt tóc", gloss: "", price: "80.000₫", len: "30 phút" },
-        { name: "Cắt + cạo râu", gloss: "", price: "110.000₫", len: "45 phút" },
-        { name: "Cạo mặt", gloss: "", price: "40.000₫", len: "" },
+    form: {
+      aria: "Ví dụ: chủ tiệm PMU thêm hai câu hỏi vào biểu mẫu đặt lịch, và khách trả lời khi đặt phun mày.",
+      editorTitle: "Câu hỏi của bạn",
+      add: "Thêm câu hỏi",
+      items: [
+        { q: "Có dị ứng gì không?", type: "Dòng chữ" },
+        { q: "Lần đầu đến tiệm?", type: "Lựa chọn" },
       ],
-      footer: "Đã đọc 3 dịch vụ. Kiểm tra từng dòng trước khi đăng.",
-      publish: "Đăng",
+      formTitle: "Đặt lịch hẹn",
+      service: "Phun mày · 120 phút",
+      time: "Ngày mai, 14:00",
+      answer: "Thuốc tê",
+      choices: ["Có", "Không"],
+      confirm: "Xác nhận",
     },
   },
 

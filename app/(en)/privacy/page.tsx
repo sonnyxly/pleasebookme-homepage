@@ -16,14 +16,17 @@ export const metadata: Metadata = pageMetadata({
 
 /*
   DRAFT BASELINE. Not reviewed by a Vietnamese lawyer. Before launch, confirm:
-  - the retention periods in section 7 (30 days after closure, 12 months for emails);
-  - the 2 working day acknowledgement in section 9;
+  - the retention periods in section 8 (30 days after closure, 12 months for emails);
+  - the 2 working day acknowledgement in section 10;
   - the named providers once hosting and messaging are decided (currently generic);
   - who "we" is once the household business (HKD) is registered;
   - that the Vietnamese version (app/vi/privacy) is kept in step with this one;
-  - the AI section (7): that the chosen AI providers really do not train on our data,
-    where they process it, and how long assistant chats are kept;
-  - the Vietnamese rules on AI and on automated processing, which were not checked.
+  - the Google section (7): the app asks for Calendar, Sheets and Drive file access by
+    default, and copies the customer's name, email and phone into the owner's calendar;
+    confirm that is what we want, and that sharing it with Google needs no extra consent;
+  - that any AI tools used to look at usage (section 5) do not train on our data.
+  The booking assistant and menu reader were removed on 3 November 2026: they were
+  never built.
   Legal references: Law on Personal Data Protection No. 91/2025/QH15 and
   Decree 356/2025/ND-CP, both in force from 1 January 2026.
 */
@@ -60,8 +63,9 @@ export default function Privacy() {
           For shop owners, we process the data needed to run your account.
         </li>
         <li>
-          Our booking assistant and menu reader are AI features in development.
-          They work through our booking system, and section 7 explains them.
+          If a shop connects Google Calendar, its bookings, with the
+          customer&apos;s name and contact details, are copied into that calendar.
+          Section 7 explains.
         </li>
         <li>
           For customers who book through a shop, the shop decides what is
@@ -126,17 +130,6 @@ export default function Privacy() {
             </td>
           </tr>
           <tr>
-            <td>Customers who use the booking assistant</td>
-            <td>
-              What you type, the assistant&apos;s replies, and the booking that
-              results. Please do not share sensitive details in the chat.
-            </td>
-          </tr>
-          <tr>
-            <td>Shop owners who upload a menu photo</td>
-            <td>The photo, and the list of services read from it.</td>
-          </tr>
-          <tr>
             <td>Customers who book</td>
             <td>
               The details the shop asks for, usually your name and phone number
@@ -161,9 +154,9 @@ export default function Privacy() {
           bookings, and to keep shop schedules correct.
         </li>
         <li>
-          <strong>To run the AI features:</strong> to understand a
-          customer&apos;s message and reply, to check availability and make the
-          booking, and to read a menu photo into a draft list of services.
+          <strong>To keep a connected calendar up to date:</strong> when a shop
+          owner connects Google Calendar, to add each booking to it and update
+          the event when the booking changes.
         </li>
         <li>
           <strong>To send booking messages:</strong> confirmations and reminders,
@@ -172,7 +165,10 @@ export default function Privacy() {
         </li>
         <li>
           <strong>To keep the service safe and improve it:</strong> to prevent
-          abuse, find faults, fix them, and see how pleasebookme is used.
+          abuse, find faults, fix them, and see how pleasebookme is used. We may
+          use AI tools for this, mostly with combined or de-identified data, and
+          only from providers whose terms do not allow them to train their
+          models on it.
         </li>
         <li>
           <strong>To answer you:</strong> when you write to us.
@@ -198,9 +194,13 @@ export default function Privacy() {
         </li>
         <li>
           <strong>Service providers</strong> that help us run pleasebookme:
-          cloud hosting, security, email, the messaging channels above and the
-          AI services in section 7. They
-          may only use the data to provide their service to us.
+          cloud hosting, security, email, the messaging channels above and any
+          AI tools we use to see how the service is used. They may only use the
+          data to provide their service to us.
+        </li>
+        <li>
+          <strong>Google</strong>, when a shop owner connects Google Calendar.
+          Section 7 explains what is sent.
         </li>
         <li>
           <strong>Authorities</strong>, where Vietnamese law requires it.
@@ -212,41 +212,32 @@ export default function Privacy() {
         do not sell personal data.
       </p>
 
-      <h2>7. AI features</h2>
-      <p>
-        pleasebookme is building AI features. They are in development and may
-        change.
-      </p>
+      <h2>7. Google sign-in and Google Calendar</h2>
       <ul>
         <li>
-          <strong>The booking assistant.</strong> Customers can chat with an
-          assistant to ask about times and book. It works through our booking
-          system: it checks the shop&apos;s real availability, holds a slot and
-          creates the booking. Customers are told they are talking to an
-          automated assistant. What you type to it, and its replies, are
-          processed by an AI service provider so that it can answer, and are
-          kept with the booking.
+          <strong>Signing in.</strong> Shop owners can sign in with their Google
+          account. We receive the name and email address Google shares for
+          that.
         </li>
         <li>
-          <strong>Menu photos.</strong> A shop owner can upload a photo of a
-          menu or price list. An AI service provider reads it and drafts a list
-          of services, and the owner checks the draft before it is used. Please
-          upload only the menu, not photos of people.
+          <strong>Connecting a calendar.</strong> A shop owner can connect a
+          Google account so that each booking is added to their Google
+          Calendar. The event carries the service, the time, the place, any note
+          on the booking, and the customer&apos;s name, email address and phone
+          number. When the booking changes or is cancelled, we update the event.
         </li>
         <li>
-          <strong>Understanding how pleasebookme is used.</strong> We use AI
-          tools to look at how the service is used, so we can fix problems and
-          improve it. We do this mostly with combined or de-identified data.
+          <strong>Once it is in Google.</strong> The event then sits in the shop
+          owner&apos;s own Google account. Google&apos;s privacy terms apply to
+          it there, and the shop owner decides who else can see that calendar.
+          Google may keep data on servers outside Vietnam, so section 6 applies.
+        </li>
+        <li>
+          <strong>Your choice.</strong> The shop owner chooses which Google
+          permissions to give when connecting, and can disconnect at any time.
+          After that, we no longer send bookings to that calendar.
         </li>
       </ul>
-      <p>
-        The assistant only helps people book. It does not decide anything about
-        a person beyond offering and confirming a booking. We choose AI
-        providers whose terms do not allow them to train their models on the
-        data we send them. Those providers may process data on servers outside
-        Vietnam, so section 6 applies to them. Please do not tell the assistant
-        sensitive details, such as health information.
-      </p>
 
       <h2>8. How long we keep it</h2>
       <ul>
@@ -256,8 +247,9 @@ export default function Privacy() {
           the law requires us to keep something longer.
         </li>
         <li>
-          Chats with the assistant: with the booking they belong to, so for as
-          long as the shop&apos;s account is open.
+          Calendar events in a shop owner&apos;s Google account: for as long as
+          the shop owner keeps them, since they are in the owner&apos;s own
+          calendar.
         </li>
         <li>
           Emails to us: for as long as we need to deal with your message, and up
