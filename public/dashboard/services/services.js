@@ -1,13 +1,17 @@
-/* Dịch vụ: the shop's menu as large tiles, and the window that edits one
-   service. The data is the sample shop in assets/sample.js; nothing is sent
-   anywhere, and a photo picked here stays in this browser tab.
+/* Dịch vụ: the shop's menu as large tiles, and the editor that opens one
+   service on the stage (shell.js). The data is the sample shop in
+   assets/sample.js, kept in this browser by assets/store.js; nothing is sent
+   anywhere.
 
    The logic this page draws is a first draft (Sonny, 2026-10-13):
      - Customers book through one widget. A service is an item on its menu,
        not a booking page of its own.
      - A customer may put several services in one booking.
-     - Rules (notice, confirmation, opening days) are set once for the shop.
-       A service follows them unless it is given a rule of its own.
+     - Rules live on the service (Sonny, 4 November, after Trung's proposal
+       on 3 November): its hours, notice, how far ahead, buffers and
+       confirmation. The shop no longer sets them for every service.
+     - Whether a service shows on the booking page is up to each widget,
+       not the service (3 November).
      - Each service lists who can do it. The customer may pick a person or
        leave it to the shop.
      - How several services are staffed is a shop setting: one person for the
@@ -16,7 +20,7 @@
   "use strict";
 
   const { t, icon, toast } = PBM;
-  const { OPEN, CLOSE, SHOP, STAFF, SERVICES, SERVICE_ORDER, SCHEDULES } = PBM_SAMPLE;
+  const { SHOP, STAFF, SERVICES, SERVICE_ORDER, SCHEDULES, BRANCHES, RESOURCES, RESOURCE_TYPES } = PBM_SAMPLE;
 
   const plural = (n, one, many) => (n === 1 ? one : many);
 
@@ -27,7 +31,6 @@
       lede: ({ n, h }) =>
         `${n} dịch vụ trên trang đặt lịch${h ? `, ${h} đang ẩn` : ""}. Khách có thể chọn nhiều dịch vụ trong một lần đặt.`,
       "lede.none": "Dịch vụ là thứ khách chọn khi đặt lịch, như cắt tóc hay uốn.",
-      "shop.hours.none": "Chưa đặt giờ làm việc",
       "blank.title": "Chưa có dịch vụ nào",
       "blank.text": "Khách chưa đặt lịch được, vì chưa có gì để chọn. Thêm dịch vụ đầu tiên của tiệm: tên, thời lượng và giá.",
       "blank.go": "Thêm dịch vụ đầu tiên",
@@ -44,23 +47,10 @@
       "col.price": "Giá",
       "col.who": "Người làm",
       "col.rules": "Quy định",
-      "col.shown": "Hiện cho khách",
-      "rules.shop": "Theo tiệm",
-      "shown.label": ({ name }) => `Hiện ${name} cho khách`,
       "move.up": "Đưa {name} lên trên",
       "move.down": "Đưa {name} xuống dưới",
       "move.prev": "Đưa {name} lên trước",
       "move.next": "Đưa {name} ra sau",
-      "shop.title": "Thiết lập chung của tiệm",
-      "shop.sub": "Mọi dịch vụ dùng các thiết lập này, trừ khi dịch vụ có quy định riêng.",
-      "shop.edit": "Sửa thiết lập chung",
-      "shop.hours": "Giờ mở cửa",
-      "shop.notice": "Báo trước tối thiểu",
-      "shop.confirm": "Xác nhận lịch",
-      "shop.staff": "Khách chọn nhân viên",
-      "shop.staff.yes": "Sau khi chọn giờ, không bắt buộc",
-      "confirm.manual": "Tiệm xác nhận từng lịch",
-      "confirm.auto": "Tự xác nhận",
       "basket.label": "Khi khách chọn nhiều dịch vụ",
       "basket.one": "Một người làm hết",
       "basket.split": "Chia theo người làm",
@@ -72,19 +62,13 @@
       "ex.total": "Tổng",
       who: ({ names }) => `Người làm: ${names}`,
       "who.all": "tất cả nhân viên",
-      hidden: "Đang ẩn",
       from: ({ p }) => `từ ${p}`,
       "tile.rules": ({ list }) => `Quy định riêng: ${list}`,
-      "rule.auto": "tự xác nhận",
       "rule.manual": "tiệm xác nhận",
-      "rule.notice": ({ d }) => `báo trước ${d}`,
       "rule.solo": "chỉ đặt riêng",
-      "rule.weekdays": "chỉ ngày thường",
-      "rule.weekend": "chỉ cuối tuần",
       min: ({ n }) => `${n} phút`,
       hours: ({ n }) => `${n} giờ`,
       days: ({ n }) => `${n} ngày`,
-      "w.new": "Dịch vụ mới",
       "w.close": "Đóng",
       "f.name": "Tên dịch vụ",
       "f.name.empty": "Tên dịch vụ",
@@ -98,7 +82,7 @@
       "f.photo": "Ảnh và màu nền",
       "f.photo.pick": "Chọn ảnh",
       "f.photo.remove": "Bỏ ảnh",
-      "f.photo.hint": "Ảnh của tiệm làm nền cho ô dịch vụ; chưa có ảnh thì ô dùng màu nền. Trong bản mẫu, ảnh không được lưu lại.",
+      "f.photo.hint": "Ảnh của tiệm làm nền cho ô dịch vụ; chưa có ảnh thì ô dùng màu nền. Trong bản mẫu, ảnh chỉ được lưu trong trình duyệt này.",
       "f.tint": "Màu nền",
       "tint.glacier": "Xanh băng",
       "tint.black": "Đen",
@@ -107,23 +91,8 @@
       "f.staff": "Ai làm dịch vụ này",
       "f.staff.error": "Chọn ít nhất một người.",
       "f.staff.hint": "Khách chọn giờ trước. Sau đó, nếu muốn, khách chọn một người đang rảnh vào giờ ấy.",
-      "f.visible": "Hiện trên trang đặt lịch",
-      "f.rules": "Quy định riêng cho dịch vụ này",
-      "f.rules.hint": "Để “Theo tiệm” thì dịch vụ dùng thiết lập chung.",
-      "r.confirm": "Xác nhận lịch",
-      "r.notice": "Báo trước tối thiểu",
-      "r.combine": "Đặt cùng dịch vụ khác",
-      "r.days": "Ngày nhận khách",
-      "opt.shop": ({ v }) => `Theo tiệm (${v})`,
-      "opt.combine.yes": "Được",
-      "opt.combine.solo": "Chỉ đặt riêng",
-      "opt.days.all": "mọi ngày",
-      "opt.days.weekdays": "Chỉ ngày thường",
-      "opt.days.weekend": "Chỉ cuối tuần",
-      "f.link": "Link mở thẳng dịch vụ này",
       "f.link.copy": "Sao chép",
       "f.link.copied": "Đã sao chép",
-      preview: "Xem trước",
       save: "Lưu",
       cancel: "Huỷ",
       delete: "Xoá dịch vụ",
@@ -139,7 +108,6 @@
       lede: ({ n, h }) =>
         `${n} ${plural(n, "service", "services")} on the booking page${h ? `, ${h} hidden` : ""}. A customer can pick several services in one booking.`,
       "lede.none": "A service is what customers pick when they book, like a haircut.",
-      "shop.hours.none": "No working hours yet",
       "blank.title": "No services yet",
       "blank.text": "Customers cannot book yet, because there is nothing to choose. Add the shop's first service: a name, a length and a price.",
       "blank.go": "Add the first service",
@@ -156,23 +124,10 @@
       "col.price": "Price",
       "col.who": "Staff",
       "col.rules": "Rules",
-      "col.shown": "Visible",
-      "rules.shop": "Follows the shop",
-      "shown.label": ({ name }) => `Show ${name} to customers`,
       "move.up": "Move {name} up",
       "move.down": "Move {name} down",
       "move.prev": "Move {name} earlier",
       "move.next": "Move {name} later",
-      "shop.title": "Shop settings",
-      "shop.sub": "Every service uses these, unless the service has a rule of its own.",
-      "shop.edit": "Edit shop settings",
-      "shop.hours": "Opening hours",
-      "shop.notice": "Minimum notice",
-      "shop.confirm": "Confirmation",
-      "shop.staff": "Customers choose staff",
-      "shop.staff.yes": "After the time, if they wish",
-      "confirm.manual": "Requires confirmation",
-      "confirm.auto": "Confirmed automatically",
       "basket.label": "When a customer picks several services",
       "basket.one": "One person does all",
       "basket.split": "Split across staff",
@@ -184,19 +139,13 @@
       "ex.total": "Total",
       who: ({ names }) => `Done by: ${names}`,
       "who.all": "all staff",
-      hidden: "Hidden",
       from: ({ p }) => `from ${p}`,
       "tile.rules": ({ list }) => `Own rules: ${list}`,
-      "rule.auto": "confirmed automatically",
       "rule.manual": "requires confirmation",
-      "rule.notice": ({ d }) => `${d} notice`,
       "rule.solo": "booked on its own",
-      "rule.weekdays": "weekdays only",
-      "rule.weekend": "weekends only",
       min: ({ n }) => `${n} min`,
       hours: ({ n }) => `${n} ${plural(n, "hour", "hours")}`,
       days: ({ n }) => `${n} ${plural(n, "day", "days")}`,
-      "w.new": "New service",
       "w.close": "Close",
       "f.name": "Service name",
       "f.name.empty": "Service name",
@@ -210,7 +159,7 @@
       "f.photo": "Photo and background",
       "f.photo.pick": "Choose a photo",
       "f.photo.remove": "Remove photo",
-      "f.photo.hint": "Your photo fills the tile; without one the tile uses the background color. In this mockup the photo is not saved.",
+      "f.photo.hint": "Your photo fills the tile; without one the tile uses the background color. In this mockup the photo is kept in this browser only.",
       "f.tint": "Background color",
       "tint.glacier": "Glacier",
       "tint.black": "Black",
@@ -219,23 +168,8 @@
       "f.staff": "Who does this service",
       "f.staff.error": "Choose at least one person.",
       "f.staff.hint": "Customers choose a time first. Then, if they wish, they choose one of the people free at that time.",
-      "f.visible": "Show on the booking page",
-      "f.rules": "Rules for this service only",
-      "f.rules.hint": "Leave “Follow the shop” and the service uses the shop settings.",
-      "r.confirm": "Confirmation",
-      "r.notice": "Minimum notice",
-      "r.combine": "Booked with other services",
-      "r.days": "Days it is offered",
-      "opt.shop": ({ v }) => `Follow the shop (${v})`,
-      "opt.combine.yes": "Allowed",
-      "opt.combine.solo": "On its own only",
-      "opt.days.all": "every day",
-      "opt.days.weekdays": "Weekdays only",
-      "opt.days.weekend": "Weekends only",
-      "f.link": "Link to this service",
       "f.link.copy": "Copy",
       "f.link.copied": "Copied",
-      preview: "Preview",
       save: "Save",
       cancel: "Cancel",
       delete: "Delete service",
@@ -244,6 +178,198 @@
       "toast.added": "Added {name}",
       "toast.deleted": "Deleted {name}",
       note: "Sample data. This is a design mockup, not connected to the system.",
+    },
+  });
+
+  // The editor on the stage, its five parts and the new staff form (4 November).
+  PBM.addStrings({
+    vi: {
+      lede: ({ n }) => `${n} dịch vụ trên menu. Khách có thể chọn nhiều dịch vụ trong một lần đặt.`,
+      "basket.sub": "Ai làm khi một lịch hẹn có nhiều dịch vụ. Mỗi dịch vụ vẫn giữ thời lượng và giá của nó.",
+      "f.photo": "Ảnh bìa và màu nền",
+      "f.photo.hint": "Ảnh ngang (16:9) làm nền cho ô dịch vụ và phần đầu trang đặt lịch; chưa có ảnh thì dùng màu nền. Trong bản mẫu, ảnh chỉ lưu trong trình duyệt này.",
+      "rules.none": "Mặc định",
+      "tile.rules": ({ list }) => `Quy định: ${list}`,
+      "rule.buffer": ({ d }) => `nghỉ ${d}`,
+      "rule.nocancel": "không huỷ online",
+      "rule.noreschedule": "không đổi giờ online",
+      "delete.sure": "Bấm lần nữa. Lịch cũ và số liệu vẫn giữ dịch vụ này",
+      "toast.deleted": "Đã xoá {name}. Lịch hẹn đã đặt vẫn giữ dịch vụ này.",
+      "kind.new": "Dịch vụ mới",
+      "kind.edit": "Dịch vụ",
+      untitled: "Chưa đặt tên",
+      "tabs.label": "Các phần của dịch vụ",
+      "tab.setup": "Thiết lập",
+      "tab.availability": "Giờ nhận khách",
+      "tab.form": "Biểu mẫu đặt lịch",
+      "tab.experience": "Trải nghiệm đặt lịch",
+      "tab.policy": "Quy định",
+      "f.slug": "Đường dẫn",
+      "f.slug.hint": "Tạo từ tên. Bạn có thể đổi trước khi lưu.",
+      "f.staff.add": "Thêm nhân viên",
+      "f.staff.none": "Chưa có ai nhận lịch. Thêm nhân viên đầu tiên ngay tại đây; họ cũng hiện trong Tài nguyên.",
+      "f.preview": "Trên menu",
+      "av.lede": "Dịch vụ nhận khách theo giờ làm việc nào. Khách chỉ thấy các giờ nằm trong đó.",
+      "av.schedule": "Giờ làm việc",
+      "av.none": "Chưa có giờ làm việc",
+      "av.none.hint": "Khách chưa đặt được dịch vụ này cho đến khi tiệm có giờ làm việc.",
+      "av.make": "Đặt giờ làm việc",
+      "av.zone": "Múi giờ",
+      "bf.lede": "Những gì khách điền sau khi chọn giờ.",
+      "bf.fixed": "Luôn hỏi",
+      "bf.name": "Tên",
+      "bf.phone": "Số điện thoại",
+      "bf.email": "Email",
+      "bf.note": "Ghi chú cho tiệm",
+      "bf.required": "Bắt buộc",
+      "bf.optional": "Không bắt buộc",
+      "bf.own": "Câu hỏi riêng",
+      "bf.later": "Bản sau",
+      "bf.own.hint": "Hỏi điều tiệm cần biết, như dị ứng hay lần nhuộm gần nhất. Có trong bản sau.",
+      "bf.q": "Câu hỏi",
+      "bf.q.example": "Bạn có nhuộm tóc trong tháng qua không?",
+      "bf.type": "Kiểu trả lời",
+      "bf.type.text": "Chữ ngắn",
+      "bf.type.long": "Chữ dài",
+      "bf.type.number": "Số",
+      "bf.type.check": "Ô đánh dấu",
+      "bf.type.one": "Chọn một",
+      "bf.type.many": "Chọn nhiều",
+      "bf.options": "Các lựa chọn",
+      "bf.yes": "Có",
+      "bf.no": "Không",
+      "bf.add": "Thêm câu hỏi",
+      "be.lede": "Điều xảy ra với khách khi đặt và sau khi đặt.",
+      "be.confirm": "Cần tiệm xác nhận",
+      "be.confirm.hint": "Tiệm duyệt từng lịch trước khi chốt. Tắt thì lịch được chốt ngay.",
+      "be.combine": "Đặt được cùng dịch vụ khác",
+      "be.combine.hint": "Tắt thì khách chỉ đặt riêng dịch vụ này.",
+      "be.redirect": "Trang sau khi đặt",
+      "be.redirect.hint": "Không bắt buộc. Đưa khách tới trang của tiệm sau khi đặt, thay cho màn hình xác nhận.",
+      "po.lede": "Khi nào đặt được dịch vụ này, và khách được tự thay đổi những gì.",
+      "po.notice": "Báo trước tối thiểu",
+      "po.notice.hint": "Khách phải đặt trước giờ bắt đầu ít nhất bao lâu.",
+      "po.ahead": "Giới hạn đặt trước",
+      "po.ahead.hint": "Khách được đặt xa nhất bao nhiêu ngày tới.",
+      "po.before": "Nghỉ trước",
+      "po.after": "Nghỉ sau",
+      "po.buffer.hint": "Thời gian để trống quanh mỗi lịch. Để 0 thì lịch hẹn dài đúng bằng các dịch vụ.",
+      "po.per": "Số lịch sắp tới mỗi khách",
+      "po.per.ph": "Không giới hạn",
+      "po.nocancel": "Tắt huỷ online",
+      "po.nocancel.hint": "Khách gọi cho tiệm để huỷ.",
+      "po.noresched": "Tắt đổi giờ online",
+      "po.noresched.hint": "Khách gọi cho tiệm để đổi giờ.",
+      "unit.min": "phút",
+      "unit.hour": "giờ",
+      "unit.day": "ngày",
+      "st.kind": "Nhân viên mới",
+      "st.lede": "Người nhận lịch. Họ được thêm vào Tài nguyên (Nhân viên) và vào dịch vụ này.",
+      "st.name": "Tên",
+      "st.name.ph": "Trang",
+      "st.name.error": "Nhập tên người này.",
+      "st.note": "Ghi chú",
+      "st.note.ph": "Làm gì, như cắt và cạo",
+      "st.branch": "Chi nhánh",
+      "st.branch.none": "Không thuộc chi nhánh nào",
+      "st.code": "Màu trên lịch",
+      "st.code.n": ({ n }) => `Màu ${n}`,
+      "st.save": "Thêm nhân viên",
+      "st.added": ({ name }) => `Đã thêm ${name} vào nhân viên`,
+    },
+    en: {
+      lede: ({ n }) => `${n} ${plural(n, "service", "services")} on the menu. A customer can pick several services in one booking.`,
+      "basket.sub": "Who does the work when one booking holds several services. Each keeps its own duration and price.",
+      "f.photo": "Cover photo and background",
+      "f.photo.hint": "A landscape photo (16:9) fills the tile and the top of the booking page; without one the tile uses the background color. In this mockup the photo is kept in this browser only.",
+      "rules.none": "Standard",
+      "tile.rules": ({ list }) => `Rules: ${list}`,
+      "rule.buffer": ({ d }) => `${d} buffer`,
+      "rule.nocancel": "no online cancelling",
+      "rule.noreschedule": "no online rescheduling",
+      "delete.sure": "Click again. Past bookings and analytics keep it",
+      "toast.deleted": "Deleted {name}. Bookings already made keep it.",
+      "kind.new": "New service",
+      "kind.edit": "Service",
+      untitled: "Untitled",
+      "tabs.label": "Parts of this service",
+      "tab.setup": "Setup",
+      "tab.availability": "Availability",
+      "tab.form": "Booking form",
+      "tab.experience": "Booking experience",
+      "tab.policy": "Policy",
+      "f.slug": "Link",
+      "f.slug.hint": "Made from the name. You can change it before saving.",
+      "f.staff.add": "Add a staff member",
+      "f.staff.none": "Nobody can take bookings yet. Add the first staff member right here; they also appear in Resources.",
+      "f.preview": "On the menu",
+      "av.lede": "Which working hours this service is booked in. Customers only see times inside them.",
+      "av.schedule": "Schedule",
+      "av.none": "No working hours yet",
+      "av.none.hint": "Customers cannot book this service until the shop has working hours.",
+      "av.make": "Set working hours",
+      "av.zone": "Timezone",
+      "bf.lede": "What the customer fills in after picking a time.",
+      "bf.fixed": "Always asked",
+      "bf.name": "Name",
+      "bf.phone": "Phone number",
+      "bf.email": "Email",
+      "bf.note": "Note to the shop",
+      "bf.required": "Required",
+      "bf.optional": "Optional",
+      "bf.own": "Your own questions",
+      "bf.later": "Later",
+      "bf.own.hint": "Ask what the shop needs to know, such as an allergy or the last color. Coming in a later version.",
+      "bf.q": "Question",
+      "bf.q.example": "Have you colored your hair in the last month?",
+      "bf.type": "Answer type",
+      "bf.type.text": "Short text",
+      "bf.type.long": "Long text",
+      "bf.type.number": "Number",
+      "bf.type.check": "Checkbox",
+      "bf.type.one": "Single choice",
+      "bf.type.many": "Multiple choice",
+      "bf.options": "Options",
+      "bf.yes": "Yes",
+      "bf.no": "No",
+      "bf.add": "Add a question",
+      "be.lede": "What happens for the customer while they book, and after.",
+      "be.confirm": "Requires confirmation",
+      "be.confirm.hint": "The shop accepts each booking before it is final. Off: booked at once.",
+      "be.combine": "Can be booked with other services",
+      "be.combine.hint": "Off: customers book it on its own.",
+      "be.redirect": "Page after booking",
+      "be.redirect.hint": "Optional. Send customers to your own page once booked, instead of the confirmation screen.",
+      "po.lede": "When this service can be booked, and what a customer may change themselves.",
+      "po.notice": "Minimum notice",
+      "po.notice.hint": "How long before the start a customer must book.",
+      "po.ahead": "Limit future bookings",
+      "po.ahead.hint": "How many days ahead customers can book.",
+      "po.before": "Buffer before",
+      "po.after": "Buffer after",
+      "po.buffer.hint": "Time kept free around each booking. At 0, a booking is exactly as long as its services.",
+      "po.per": "Upcoming bookings per customer",
+      "po.per.ph": "No limit",
+      "po.nocancel": "Disable cancelling",
+      "po.nocancel.hint": "Customers call the shop to cancel.",
+      "po.noresched": "Disable rescheduling",
+      "po.noresched.hint": "Customers call the shop to move the booking.",
+      "unit.min": "minutes",
+      "unit.hour": "hours",
+      "unit.day": "days",
+      "st.kind": "New staff member",
+      "st.lede": "Someone who takes bookings. They are added to Resources as Staff, and to this service.",
+      "st.name": "Name",
+      "st.name.ph": "Trang",
+      "st.name.error": "Give them a name.",
+      "st.note": "Note",
+      "st.note.ph": "What they do, such as cuts and shaves",
+      "st.branch": "Branch",
+      "st.branch.none": "No branch",
+      "st.code": "Color on the calendar",
+      "st.code.n": ({ n }) => `Color ${n}`,
+      "st.save": "Add staff member",
+      "st.added": ({ name }) => `Added ${name} to the staff`,
     },
   });
 
@@ -269,15 +395,17 @@
   // ---------- State and helpers ----------
 
   const state = {
-    order: [...SERVICE_ORDER],
+    order: SERVICE_ORDER, // the saved menu order itself, so a move or a delete is kept
     view: "tiles", // "tiles" or "table": two ways to look at the same menu
     sorting: false,
     basket: SHOP.basket,
-    draft: null, // the service open in the window, edited as a copy until saved
+    draft: null, // the service open on the stage, edited as a copy until saved
+    tab: "setup", // which of its five parts is showing
+    slugEdited: false, // the link follows the name until the owner types one
+    staffDraft: null, // the new staff member beside it, while that form is open
     sureToDelete: false,
     entering: true,
   };
-  let made = 0;
 
   try {
     if (localStorage.getItem("pbm-svc-view") === "table") state.view = "table";
@@ -288,7 +416,6 @@
   const $ = (id) => document.getElementById(id);
   const esc = (s) =>
     String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-  const clock = (m) => String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
   const money = (n) => new Intl.NumberFormat(PBM.locale, { style: "currency", currency: "VND" }).format(n);
   const duration = (m) =>
     m % 1440 === 0 ? t("days", { n: m / 1440 }) : m % 60 === 0 ? t("hours", { n: m / 60 }) : t("min", { n: m });
@@ -305,7 +432,24 @@
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
 
-  // A service as the page shows it, in the current language. The window edits
+  // A service's rules, read the same way whatever saved them. A shop saved
+  // before 4 November says "shop" for a rule the shop set; that now reads as
+  // the shop's value, because rules live on the service. Its "days" rule is
+  // gone: the service's schedule says when it is offered.
+  const policyOf = (r = {}) => ({
+    confirm: !r.confirm || r.confirm === "shop" ? SHOP.confirm : r.confirm,
+    combine: r.combine === "solo" ? "solo" : "yes",
+    redirect: r.redirect || "",
+    notice: r.notice == null || r.notice === "shop" ? SHOP.notice : r.notice,
+    ahead: r.ahead == null || r.ahead === "shop" ? SHOP.ahead : r.ahead,
+    before: r.before || 0,
+    after: r.after || 0,
+    perCustomer: r.perCustomer || null,
+    noCancel: Boolean(r.noCancel),
+    noReschedule: Boolean(r.noReschedule),
+  });
+
+  // A service as the page shows it, in the current language. The editor edits
   // a copy in this shape and writes it back on Save.
   const view = (id) => {
     const s = SERVICES[id];
@@ -321,8 +465,9 @@
       art: s.art,
       photo: s.photo || "",
       staff: [...s.staff],
-      hidden: Boolean(s.hidden),
-      rules: { ...s.rules },
+      schedule: "schedule" in s ? s.schedule : (SCHEDULES[0]?.id ?? null),
+      timezone: s.timezone || "Asia/Saigon",
+      rules: policyOf(s.rules),
     };
   };
 
@@ -338,26 +483,29 @@
     art: "waves",
     photo: "",
     staff: STAFF.map((s) => s.id),
-    hidden: false,
-    rules: { confirm: "shop", notice: "shop", combine: "yes", days: "shop" },
+    schedule: SCHEDULES[0]?.id ?? null,
+    timezone: "Asia/Saigon",
+    // A new service starts from the server's defaults (Trung's service form):
+    // confirmed at once, two hours' notice, up to 90 days ahead, no buffers.
+    rules: policyOf({ confirm: "auto", notice: 120, ahead: 90 }),
   });
 
-  // The rules a service sets for itself, in words. A rule equal to the shop's is not "own".
+  // What a service does differently from a plain booking, in words.
   function ownRules(rules) {
     const list = [];
-    if (rules.confirm !== "shop" && rules.confirm !== SHOP.confirm) list.push(t("rule." + rules.confirm));
-    if (rules.notice !== "shop" && rules.notice !== SHOP.notice) list.push(t("rule.notice", { d: duration(rules.notice) }));
+    if (rules.confirm === "manual") list.push(t("rule.manual"));
     if (rules.combine === "solo") list.push(t("rule.solo"));
-    if (rules.days !== "shop") list.push(t("rule." + rules.days));
+    if (rules.before || rules.after) list.push(t("rule.buffer", { d: duration(Math.max(rules.before, rules.after)) }));
+    if (rules.noCancel) list.push(t("rule.nocancel"));
+    if (rules.noReschedule) list.push(t("rule.noreschedule"));
     return list;
   }
 
   // ---------- Heading ----------
 
   function renderHead() {
-    const hidden = state.order.filter((id) => SERVICES[id].hidden).length;
     $("title").textContent = t("page.title");
-    $("lede").textContent = state.order.length ? t("lede", { n: state.order.length - hidden, h: hidden }) : t("lede.none");
+    $("lede").textContent = state.order.length ? t("lede", { n: state.order.length }) : t("lede.none");
     $("note").textContent = t("note");
     document.title = t("doc.title");
     $("toolbar").innerHTML = `
@@ -375,39 +523,26 @@
       <button class="btn btn-primary" type="button" data-open="new">${icon("plus")}${t("new")}</button>`;
   }
 
-  // ---------- Shop settings ----------
+  // ---------- Several services in one booking ----------
+  // The one setting left for the whole shop on this page; the rest moved onto
+  // each service on 4 November. It decides how a booking with several
+  // services is staffed, with an example from the menu.
 
   function renderShop() {
-    // The choice about several services needs two to choose between.
-    const basket = state.order.length > 1;
-    $("shop").classList.toggle("is-single", !basket);
-    $("shop").innerHTML = `
+    const shop = $("shop");
+    shop.hidden = state.order.length < 2; // one service has nothing to combine
+    if (shop.hidden) return (shop.innerHTML = "");
+    shop.innerHTML = `
       <div class="shop-main">
-        <div class="shop-head">
-          <h2 id="shop-title">${t("shop.title")}</h2>
-          <a class="shop-edit" href="#" data-pending>${t("shop.edit")}</a>
-        </div>
-        <p class="shop-sub">${t("shop.sub")}</p>
-        <dl class="facts">
-          <div><dt>${t("shop.hours")}</dt><dd class="num">${SCHEDULES.length ? `${clock(OPEN)} – ${clock(CLOSE)}` : t("shop.hours.none")}</dd></div>
-          <div><dt>${t("shop.notice")}</dt><dd>${duration(SHOP.notice)}</dd></div>
-          <div><dt>${t("shop.confirm")}</dt><dd>${t("confirm." + SHOP.confirm)}</dd></div>
-          <div><dt>${t("shop.staff")}</dt><dd>${t("shop.staff.yes")}</dd></div>
-        </dl>
-      </div>
-      ${
-        basket
-          ? `<div class="shop-basket">
-        <h3 id="basket-label">${t("basket.label")}</h3>
-        <div class="seg" id="basketSeg" role="group" aria-labelledby="basket-label" style="--n:2;--i:${state.basket === "one" ? 0 : 1}">
+        <h2 id="shop-title">${t("basket.label")}</h2>
+        <p class="shop-sub">${t("basket.sub")}</p>
+        <div class="seg" id="basketSeg" role="group" aria-labelledby="shop-title" style="--n:2;--i:${state.basket === "one" ? 0 : 1}">
           <button type="button" data-basket="one" aria-pressed="${state.basket === "one"}">${t("basket.one")}</button>
           <button type="button" data-basket="split" aria-pressed="${state.basket === "split"}">${t("basket.split")}</button>
         </div>
-        <div class="example" id="example" aria-live="polite"></div>
-      </div>`
-          : ""
-      }`;
-    if (basket) renderExample();
+      </div>
+      <div class="shop-basket"><div class="example" id="example" aria-live="polite"></div></div>`;
+    renderExample();
   }
 
   // Shows what the setting means with two real services from the menu: by
@@ -416,7 +551,7 @@
   // added between them or after them: a booking is as long as its services.
   function renderExample() {
     if (!$("example")) return; // one service has nothing to combine, so the panel is not drawn
-    const open = state.order.map((id) => SERVICES[id]).filter((s) => !s.hidden && s.rules.combine !== "solo");
+    const open = state.order.map((id) => SERVICES[id]).filter((s) => policyOf(s.rules).combine !== "solo");
     if (open.length < 2) {
       $("example").innerHTML = "";
       return;
@@ -462,7 +597,6 @@
 
     const classes = ["tile", "tint-" + v.tint];
     if (hero) classes.push("is-hero");
-    if (v.hidden) classes.push("is-hidden");
     if (v.photo) classes.push("has-photo");
     if (preview) classes.push("is-preview");
 
@@ -486,7 +620,7 @@
     return `<article class="${classes.join(" ")}" style="${style.join(";")}">
         <div class="tile-art">${art(v.art)}</div>
         <div class="tile-top">
-          <span>${v.hidden ? `<span class="tile-flag">${t("hidden")}</span>` : ""}</span>
+          <span></span>
           <span class="tile-who" role="img" aria-label="${esc(t("who", { names }))}">${v.staff
             .map((id) => `<i>${staffName(id).charAt(0)}</i>`)
             .join("")}</span>
@@ -516,14 +650,13 @@
              </td>`
           : "";
         const thumb = v.photo ? ` style="background-image:url('${v.photo}')"` : "";
-        return `<tr class="${v.hidden ? "is-hidden" : ""}" data-open="${v.id}" style="view-transition-name:svc-${v.id}">
+        return `<tr data-open="${v.id}" style="view-transition-name:svc-${v.id}">
             ${moves}
             <td><span class="dt-name"><i class="thumb tint-${v.tint}"${thumb}></i><span><button type="button" class="row-open" data-open="${v.id}"><strong>${esc(v.name)}</strong></button><small>${esc(v.line)}</small></span></span></td>
             <td class="num">${duration(v.min)}</td>
             <td class="num">${price(v)}</td>
             <td>${esc(who)}</td>
-            <td>${rules.length ? esc(cap(rules.join(", "))) : `<span class="dt-quiet">${t("rules.shop")}</span>`}</td>
-            <td><input class="switch" type="checkbox" data-shown="${v.id}" aria-label="${esc(t("shown.label", { name: v.name }))}" ${v.hidden ? "" : "checked"} /></td>
+            <td>${rules.length ? esc(cap(rules.join(", "))) : `<span class="dt-quiet">${t("rules.none")}</span>`}</td>
           </tr>`;
       })
       .join("");
@@ -531,7 +664,7 @@
         <thead><tr>
           ${state.sorting ? `<th>${t("col.order")}</th>` : ""}
           <th>${t("col.service")}</th><th>${t("col.length")}</th><th>${t("col.price")}</th>
-          <th>${t("col.who")}</th><th>${t("col.rules")}</th><th>${t("col.shown")}</th>
+          <th>${t("col.who")}</th><th>${t("col.rules")}</th>
         </tr></thead>
         <tbody>${rows}</tbody>
       </table></div>
@@ -591,6 +724,7 @@
     if (j < 0 || j >= state.order.length) return;
     swap(() => {
       [state.order[i], state.order[j]] = [state.order[j], state.order[i]];
+      PBM.store.save("services");
       renderTiles();
       // Keep the keyboard on the tile that moved; at either end one arrow is off.
       const arrows = [...document.querySelectorAll(`[data-move][data-id="${id}"]`)];
@@ -598,175 +732,310 @@
     });
   }
 
-  // ---------- The window ----------
+  // ---------- The editor, on the stage ----------
+  // A service opens full screen, or docked at the right (shell.js), in the
+  // five parts Trung proposed on 3 November after Cal.com's event types. All
+  // five stay in the form and only the one showing is unhidden, so moving
+  // between them keeps what was typed. #new is a new service and #s/<id> one
+  // that exists; "/staff" after either slides in the form for a new staff
+  // member beside it.
+
+  const TABS = ["setup", "availability", "form", "experience", "policy"];
+  const UNIT_MIN = { min: 1, hour: 60, day: 1440 };
+  const pane = $("svc");
+  const staffPane = $("staff-new");
+  const base = () => (state.draft.id === "new" ? "#new" : "#s/" + state.draft.id);
 
   const option = (value, label, current) =>
     `<option value="${value}"${String(current) === String(value) ? " selected" : ""}>${label}</option>`;
 
-  function renderWindow() {
+  // Minutes as an amount and a unit, the way the server keeps notice.
+  const asUnit = (m) => (m && m % 1440 === 0 ? [m / 1440, "day"] : m && m % 60 === 0 ? [m / 60, "hour"] : [m || 0, "min"]);
+
+  const zones = (current) => {
+    let list = ["UTC"];
+    try {
+      list = Intl.supportedValuesOf("timeZone");
+    } catch {
+      /* an older browser: the current zone and UTC */
+    }
+    return list.includes(current) ? list : [current, ...list];
+  };
+
+  const switchLine = (name, label, hint, on) =>
+    `<label class="switch-line"><span><strong>${label}</strong><small>${hint}</small></span><input class="switch" type="checkbox" role="switch" name="${name}" ${on ? "checked" : ""} /></label>`;
+
+  function setupHTML(d) {
+    const fresh = d.id === "new";
+    return `
+      <div class="field">
+        <label for="f-name">${t("f.name")}</label>
+        <input class="input" id="f-name" name="name" value="${esc(d.name)}" autocomplete="off" aria-describedby="f-name-error" />
+        <span class="error" id="f-name-error" hidden>${t("f.name.error")}</span>
+      </div>
+      <div class="field">
+        <label for="f-line">${t("f.line")}</label>
+        <input class="input" id="f-line" name="line" value="${esc(d.line)}" maxlength="70" autocomplete="off" aria-describedby="f-line-hint" />
+        <small id="f-line-hint">${t("f.line.hint")}</small>
+      </div>
+      <div class="field">
+        <label for="f-slug">${t("f.slug")}</label>
+        <div class="slug-row">
+          <span class="slug-base">…/booking/${SHOP.slug}/</span>
+          <input class="input" id="f-slug" name="slug" value="${esc(d.slug)}" autocomplete="off" spellcheck="false" />
+          ${fresh ? "" : `<button class="btn btn-quiet btn-small" type="button" data-copy>${icon("copy")}<span aria-live="polite">${t("f.link.copy")}</span></button>`}
+        </div>
+        <small>${t("f.slug.hint")}</small>
+      </div>
+      <div class="field-pair">
+        <div class="field">
+          <label for="f-min">${t("f.min")}</label>
+          <div class="with-unit"><input class="input num" id="f-min" name="min" type="number" min="5" max="480" step="5" value="${d.min}" inputmode="numeric" /><span>${t("f.min.unit")}</span></div>
+        </div>
+        <div class="field">
+          <label for="f-price">${t("f.price")}</label>
+          <div class="with-unit"><input class="input num" id="f-price" name="price" type="number" min="0" step="5000" value="${d.price}" inputmode="numeric" /><span>₫</span></div>
+        </div>
+      </div>
+      <label class="check"><input type="checkbox" name="from" ${d.from ? "checked" : ""} /><span>${t("f.from")}</span></label>
+      <div class="field">
+        <span class="label">${t("f.photo")}</span>
+        <div class="photo-row">
+          <label class="btn btn-quiet btn-small photo-pick">${icon("image")}<span>${t("f.photo.pick")}</span><input class="visually-hidden" type="file" name="photo" accept="image/*" /></label>
+          <button class="btn btn-quiet btn-small" type="button" data-photo-remove ${d.photo ? "" : "hidden"}>${t("f.photo.remove")}</button>
+          <span class="swatches" role="radiogroup" aria-label="${t("f.tint")}">
+            ${TINTS.map(
+              (tint) =>
+                `<label class="swatch-pick" title="${t("tint." + tint)}"><input class="visually-hidden" type="radio" name="tint" value="${tint}" ${
+                  d.tint === tint ? "checked" : ""
+                } /><span class="tint-${tint}" aria-hidden="true"></span><span class="visually-hidden">${t("tint." + tint)}</span></label>`
+            ).join("")}
+          </span>
+        </div>
+        <small>${t("f.photo.hint")}</small>
+      </div>
+      <div class="field" role="group" aria-labelledby="f-staff-label">
+        <span class="label-row"><span class="label" id="f-staff-label">${t("f.staff")}</span><a class="link-btn" href="${base()}/staff">${t("f.staff.add")}</a></span>
+        ${
+          STAFF.length
+            ? `<div class="chips">
+          ${STAFF.map(
+            (person) =>
+              `<label class="chip-pick"><input class="visually-hidden" type="checkbox" name="staff" value="${person.id}" ${
+                d.staff.includes(person.id) ? "checked" : ""
+              } /><span><i aria-hidden="true">${esc(person.name.charAt(0))}</i>${esc(person.name)}</span></label>`
+          ).join("")}
+        </div>
+        <small>${t("f.staff.hint")}</small>`
+            : `<p class="peek-lede">${t("f.staff.none")}</p>`
+        }
+        <span class="error" id="f-staff-error" hidden>${t("f.staff.error")}</span>
+      </div>
+      <div class="field">
+        <span class="label">${t("f.preview")}</span>
+        <div class="svc-preview" id="preview"></div>
+      </div>`;
+  }
+
+  function availabilityHTML(d) {
+    return `
+      <p class="peek-lede">${t("av.lede")}</p>
+      ${
+        SCHEDULES.length
+          ? `<div class="field">
+        <label for="f-schedule">${t("av.schedule")}</label>
+        <select class="input" id="f-schedule" name="schedule">${SCHEDULES.map((s) => option(s.id, esc(s.title), d.schedule)).join("")}</select>
+      </div>`
+          : `<div class="notice-box">
+        <strong>${t("av.none")}</strong>
+        <p>${t("av.none.hint")}</p>
+        <a class="btn btn-quiet btn-small" href="/dashboard/availability#new">${t("av.make")}</a>
+      </div>`
+      }
+      <div class="field">
+        <label for="f-zone">${t("av.zone")}</label>
+        <select class="input" id="f-zone" name="timezone">${zones(d.timezone).map((z) => option(z, z, d.timezone)).join("")}</select>
+      </div>`;
+  }
+
+  // The four fields every booking asks, then the shop's own questions: drawn
+  // so Trung can build from them, but greyed and marked for a later version
+  // (Sonny, 4 November). Nothing in the greyed part is saved.
+  function formHTML() {
+    const row = (key, required) =>
+      `<li><span>${t("bf." + key)}</span><span class="bf-tag">${t(required ? "bf.required" : "bf.optional")}</span></li>`;
+    return `
+      <p class="peek-lede">${t("bf.lede")}</p>
+      <div class="field">
+        <span class="label">${t("bf.fixed")}</span>
+        <ul class="bf-fixed">${row("name", true)}${row("phone", true)}${row("email", false)}${row("note", false)}</ul>
+      </div>
+      <fieldset class="bf-own" disabled aria-describedby="bf-own-hint">
+        <legend><span>${t("bf.own")}</span><span class="tag-later">${t("bf.later")}</span></legend>
+        <p class="peek-lede" id="bf-own-hint">${t("bf.own.hint")}</p>
+        <div class="bf-q">
+          <div class="field-pair">
+            <div class="field"><label for="q-label">${t("bf.q")}</label><input class="input" id="q-label" value="${esc(t("bf.q.example"))}" /></div>
+            <div class="field"><label for="q-type">${t("bf.type")}</label><select class="input" id="q-type">${["text", "long", "number", "check", "one", "many"]
+              .map((k) => option(k, t("bf.type." + k), "one"))
+              .join("")}</select></div>
+          </div>
+          <div class="field"><span class="label">${t("bf.options")}</span><div class="chips"><span class="chip-static">${t("bf.yes")}</span><span class="chip-static">${t("bf.no")}</span></div></div>
+          <label class="check"><input type="checkbox" checked /><span>${t("bf.required")}</span></label>
+        </div>
+        <button class="btn btn-quiet btn-small bf-add" type="button">${icon("plus")}${t("bf.add")}</button>
+      </fieldset>`;
+  }
+
+  function experienceHTML(d) {
+    const r = d.rules;
+    return `
+      <p class="peek-lede">${t("be.lede")}</p>
+      ${switchLine("confirm", t("be.confirm"), t("be.confirm.hint"), r.confirm === "manual")}
+      ${switchLine("combine", t("be.combine"), t("be.combine.hint"), r.combine !== "solo")}
+      <div class="field">
+        <label for="f-redirect">${t("be.redirect")}</label>
+        <input class="input" id="f-redirect" name="redirect" type="url" placeholder="https://" value="${esc(r.redirect)}" autocomplete="off" />
+        <small>${t("be.redirect.hint")}</small>
+      </div>`;
+  }
+
+  function policyHTML(d) {
+    const r = d.rules;
+    const [noticeN, noticeU] = asUnit(r.notice);
+    const minutes = (name, value) =>
+      `<div class="with-unit"><input class="input num" id="f-${name}" name="${name}" type="number" min="0" step="5" value="${value}" inputmode="numeric" /><span>${t("f.min.unit")}</span></div>`;
+    return `
+      <p class="peek-lede">${t("po.lede")}</p>
+      <div class="field-pair">
+        <div class="field">
+          <label for="f-notice">${t("po.notice")}</label>
+          <div class="amount-unit">
+            <input class="input num" id="f-notice" name="notice" type="number" min="0" value="${noticeN}" inputmode="numeric" />
+            <select class="input" name="notice-unit" aria-label="${t("po.notice")}">${["min", "hour", "day"].map((u) => option(u, t("unit." + u), noticeU)).join("")}</select>
+          </div>
+          <small>${t("po.notice.hint")}</small>
+        </div>
+        <div class="field">
+          <label for="f-ahead">${t("po.ahead")}</label>
+          <div class="with-unit"><input class="input num" id="f-ahead" name="ahead" type="number" min="1" value="${r.ahead}" inputmode="numeric" /><span>${t("unit.day")}</span></div>
+          <small>${t("po.ahead.hint")}</small>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-pair">
+          <div class="field"><label for="f-before">${t("po.before")}</label>${minutes("before", r.before)}</div>
+          <div class="field"><label for="f-after">${t("po.after")}</label>${minutes("after", r.after)}</div>
+        </div>
+        <small>${t("po.buffer.hint")}</small>
+      </div>
+      <div class="field">
+        <label for="f-per">${t("po.per")}</label>
+        <input class="input num" id="f-per" name="perCustomer" type="number" min="1" placeholder="${t("po.per.ph")}" value="${r.perCustomer ?? ""}" inputmode="numeric" />
+      </div>
+      ${switchLine("noCancel", t("po.nocancel"), t("po.nocancel.hint"), r.noCancel)}
+      ${switchLine("noReschedule", t("po.noresched"), t("po.noresched.hint"), r.noReschedule)}`;
+  }
+
+  const PARTS = { setup: setupHTML, availability: availabilityHTML, form: formHTML, experience: experienceHTML, policy: policyHTML };
+
+  function renderEditor() {
     const d = state.draft;
     const fresh = d.id === "new";
-    const own = ownRules(d.rules).length;
-    const shopConfirm = t("confirm." + SHOP.confirm);
-
-    $("window").innerHTML = `
-      <form class="window-form" id="form" novalidate>
-        <header class="window-head">
-          <h2 id="window-title">${fresh ? t("w.new") : esc(d.name)}</h2>
-          <button class="icon-btn" type="button" data-close aria-label="${t("w.close")}">${icon("x")}</button>
-        </header>
-
-        <div class="window-body">
-          <div class="window-fields">
-            <div class="field">
-              <label for="f-name">${t("f.name")}</label>
-              <input class="input" id="f-name" name="name" value="${esc(d.name)}" autocomplete="off" aria-describedby="f-name-error" autofocus />
-              <span class="error" id="f-name-error" hidden>${t("f.name.error")}</span>
-            </div>
-
-            <div class="field">
-              <label for="f-line">${t("f.line")}</label>
-              <input class="input" id="f-line" name="line" value="${esc(d.line)}" maxlength="70" autocomplete="off" aria-describedby="f-line-hint" />
-              <small id="f-line-hint">${t("f.line.hint")}</small>
-            </div>
-
-            <div class="field-pair">
-              <div class="field">
-                <label for="f-min">${t("f.min")}</label>
-                <div class="with-unit"><input class="input num" id="f-min" name="min" type="number" min="5" max="480" step="5" value="${d.min}" inputmode="numeric" /><span>${t("f.min.unit")}</span></div>
-              </div>
-              <div class="field">
-                <label for="f-price">${t("f.price")}</label>
-                <div class="with-unit"><input class="input num" id="f-price" name="price" type="number" min="0" step="5000" value="${d.price}" inputmode="numeric" /><span>₫</span></div>
-              </div>
-            </div>
-            <label class="check"><input type="checkbox" name="from" ${d.from ? "checked" : ""} /><span>${t("f.from")}</span></label>
-
-            <div class="field">
-              <span class="label">${t("f.photo")}</span>
-              <div class="photo-row">
-                <label class="btn btn-quiet btn-small photo-pick">${icon("image")}<span>${t("f.photo.pick")}</span><input class="visually-hidden" type="file" name="photo" accept="image/*" /></label>
-                <button class="btn btn-quiet btn-small" type="button" data-photo-remove ${d.photo ? "" : "hidden"}>${t("f.photo.remove")}</button>
-                <span class="swatches" role="radiogroup" aria-label="${t("f.tint")}">
-                  ${TINTS.map(
-                    (tint) =>
-                      `<label class="swatch-pick" title="${t("tint." + tint)}"><input class="visually-hidden" type="radio" name="tint" value="${tint}" ${
-                        d.tint === tint ? "checked" : ""
-                      } /><span class="tint-${tint}" aria-hidden="true"></span><span class="visually-hidden">${t("tint." + tint)}</span></label>`
-                  ).join("")}
-                </span>
-              </div>
-              <small>${t("f.photo.hint")}</small>
-            </div>
-
-            <div class="field" role="group" aria-labelledby="f-staff-label">
-              <span class="label" id="f-staff-label">${t("f.staff")}</span>
-              <div class="chips">
-                ${STAFF.map(
-                  (person) =>
-                    `<label class="chip-pick"><input class="visually-hidden" type="checkbox" name="staff" value="${person.id}" ${
-                      d.staff.includes(person.id) ? "checked" : ""
-                    } /><span><i aria-hidden="true">${person.name.charAt(0)}</i>${person.name}</span></label>`
-                ).join("")}
-              </div>
-              <small>${t("f.staff.hint")}</small>
-              <span class="error" id="f-staff-error" hidden>${t("f.staff.error")}</span>
-            </div>
-
-            <label class="switch-row"><span>${t("f.visible")}</span><input class="switch" type="checkbox" role="switch" name="visible" ${d.hidden ? "" : "checked"} /></label>
-
-            <details class="rules" ${own ? "open" : ""}>
-              <summary><span>${t("f.rules")}</span><span class="pill num" id="rules-count" ${own ? "" : "hidden"}>${own}</span></summary>
-              <p class="rules-hint">${t("f.rules.hint")}</p>
-              <div class="field-pair">
-                <div class="field">
-                  <label for="r-confirm">${t("r.confirm")}</label>
-                  <select class="input" id="r-confirm" name="confirm">
-                    ${option("shop", t("opt.shop", { v: shopConfirm.toLowerCase() }), d.rules.confirm)}
-                    ${option("auto", t("confirm.auto"), d.rules.confirm)}
-                    ${option("manual", t("confirm.manual"), d.rules.confirm)}
-                  </select>
-                </div>
-                <div class="field">
-                  <label for="r-notice">${t("r.notice")}</label>
-                  <select class="input" id="r-notice" name="notice">
-                    ${option("shop", t("opt.shop", { v: duration(SHOP.notice) }), d.rules.notice)}
-                    ${[30, 120, 1440, 2880].map((m) => option(m, duration(m), d.rules.notice)).join("")}
-                  </select>
-                </div>
-                <div class="field">
-                  <label for="r-combine">${t("r.combine")}</label>
-                  <select class="input" id="r-combine" name="combine">
-                    ${option("yes", t("opt.combine.yes"), d.rules.combine)}
-                    ${option("solo", t("opt.combine.solo"), d.rules.combine)}
-                  </select>
-                </div>
-                <div class="field">
-                  <label for="r-days">${t("r.days")}</label>
-                  <select class="input" id="r-days" name="days">
-                    ${option("shop", t("opt.shop", { v: t("opt.days.all") }), d.rules.days)}
-                    ${option("weekdays", t("opt.days.weekdays"), d.rules.days)}
-                    ${option("weekend", t("opt.days.weekend"), d.rules.days)}
-                  </select>
-                </div>
-              </div>
-            </details>
-
-            ${
-              fresh
-                ? ""
-                : `<div class="field">
-              <span class="label">${t("f.link")}</span>
-              <div class="link-row"><code>pleasebookme.app/booking/${SHOP.slug}/${d.slug}</code><button class="btn btn-quiet btn-small" type="button" data-copy>${icon("copy")}<span aria-live="polite">${t("f.link.copy")}</span></button></div>
-            </div>`
-            }
-          </div>
-
-          <aside class="window-side">
-            <p class="label">${t("preview")}</p>
-            <div id="preview"></div>
-          </aside>
+    document.title = `${d.name || t(fresh ? "kind.new" : "kind.edit")} | pleasebookme`;
+    pane.innerHTML = `
+      <header class="sheet-head peek-head">
+        <div>
+          <p class="peek-kind">${icon(fresh ? "plus" : "scissors")}${t(fresh ? "kind.new" : "kind.edit")}</p>
+          <h2 id="svc-title" ${d.name ? "" : "data-empty"}>${esc(d.name || t("untitled"))}</h2>
         </div>
-
-        <footer class="window-foot">
-          ${fresh ? "" : `<button class="btn btn-quiet btn-danger" type="button" data-delete>${icon("trash")}<span>${t("delete")}</span></button>`}
-          <span class="spacer"></span>
-          <button class="btn btn-quiet" type="button" data-close>${t("cancel")}</button>
-          <button class="btn btn-primary" type="submit">${icon("check")}${t("save")}</button>
-        </footer>
-      </form>`;
+        <div class="pane-tools">
+          ${PBM.stage.toggle()}
+          <a class="icon-btn" href="#" aria-label="${t("w.close")}" title="${t("w.close")}">${icon("x")}</a>
+        </div>
+      </header>
+      <div class="pane-tabs" role="tablist" aria-label="${t("tabs.label")}">
+        ${TABS.map(
+          (id) =>
+            `<button type="button" role="tab" id="tab-${id}" aria-controls="part-${id}" aria-selected="${state.tab === id}" tabindex="${state.tab === id ? 0 : -1}" data-tab="${id}">${t("tab." + id)}</button>`
+        ).join("")}
+      </div>
+      <form class="peek-body" id="form" novalidate>
+        ${TABS.map(
+          (id) =>
+            `<section class="peek-sec" role="tabpanel" id="part-${id}" aria-labelledby="tab-${id}" ${state.tab === id ? "" : "hidden"}>${PARTS[id](d)}</section>`
+        ).join("")}
+      </form>
+      <footer class="sheet-actions peek-actions">
+        ${fresh ? "" : `<button class="btn btn-quiet btn-danger" type="button" data-delete>${icon("trash")}<span>${t("delete")}</span></button>`}
+        <span class="pane-spacer"></span>
+        <a class="btn btn-quiet" href="#">${t("cancel")}</a>
+        <button class="btn btn-primary" type="submit" form="form">${icon("check")}${t("save")}</button>
+      </footer>`;
     renderPreview();
+  }
+
+  function showTab(id) {
+    state.tab = id;
+    pane.querySelectorAll("[data-tab]").forEach((tab) => {
+      tab.setAttribute("aria-selected", String(tab.dataset.tab === id));
+      tab.tabIndex = tab.dataset.tab === id ? 0 : -1;
+    });
+    pane.querySelectorAll("[role=tabpanel]").forEach((part) => (part.hidden = part.id !== "part-" + id));
+    pane.querySelector(".peek-body").scrollTop = 0;
+    $("tab-" + id).scrollIntoView({ block: "nearest", inline: "nearest" }); // on a phone the strip scrolls
   }
 
   function renderPreview() {
     $("preview").innerHTML = tileHTML(state.draft, { preview: true });
   }
 
-  // Copies what is in the form into the draft.
+  // Copies what is in the form, all five parts, into the draft.
   function readDraft() {
     const d = state.draft;
     const data = new FormData($("form"));
+    const whole = (name, least = 0) => Math.max(least, Math.round(Number(data.get(name)) || 0));
     d.name = data.get("name").trim();
     d.line = data.get("line").trim();
-    d.min = Math.max(5, Number(data.get("min")) || 0);
-    d.price = Math.max(0, Number(data.get("price")) || 0);
+    d.slug = data.get("slug").trim();
+    d.min = Math.max(5, whole("min"));
+    d.price = whole("price");
     d.from = data.has("from");
     d.tint = data.get("tint");
     d.staff = data.getAll("staff").map(Number);
-    d.hidden = !data.has("visible");
+    d.schedule = data.has("schedule") ? Number(data.get("schedule")) : d.schedule;
+    d.timezone = data.get("timezone");
     d.rules = {
-      confirm: data.get("confirm"),
-      notice: data.get("notice") === "shop" ? "shop" : Number(data.get("notice")),
-      combine: data.get("combine"),
-      days: data.get("days"),
+      confirm: data.has("confirm") ? "manual" : "auto",
+      combine: data.has("combine") ? "yes" : "solo",
+      redirect: data.get("redirect").trim(),
+      notice: whole("notice") * UNIT_MIN[data.get("notice-unit")],
+      ahead: whole("ahead", 1),
+      before: whole("before"),
+      after: whole("after"),
+      perCustomer: whole("perCustomer") || null,
+      noCancel: data.has("noCancel"),
+      noReschedule: data.has("noReschedule"),
     };
   }
 
-  function openWindow(id) {
+  function openEditor(id) {
     state.draft = id === "new" ? blank() : view(id);
+    state.tab = "setup";
     state.sureToDelete = false;
-    renderWindow();
-    $("window").showModal();
+    state.slugEdited = id !== "new"; // a link already shared does not change by itself
+    renderEditor();
+    pane.hidden = false;
+    PBM.stage.sync();
+  }
+
+  function closeEditor() {
+    closeStaff(true);
+    state.draft = null;
+    pane.hidden = true;
+    pane.innerHTML = ""; // the preview tile must not linger beside the real ones
+    document.title = t("doc.title");
+    PBM.stage.sync();
   }
 
   function save() {
@@ -774,56 +1043,211 @@
     const d = state.draft;
     const named = Boolean(d.name);
     const staffed = d.staff.length > 0;
-    $("f-name").setAttribute("aria-invalid", String(!named));
-    $("f-name-error").hidden = named;
-    $("f-staff-error").hidden = staffed;
-    if (!named) return $("f-name").focus();
-    if (!staffed) return document.querySelector('[name="staff"]').focus();
+    if (!named || !staffed) {
+      showTab("setup");
+      $("f-name").setAttribute("aria-invalid", String(!named));
+      $("f-name-error").hidden = named;
+      $("f-staff-error").hidden = staffed;
+      if (!named) return $("f-name").focus();
+      return (pane.querySelector('[name="staff"]') || pane.querySelector('[href$="/staff"]')).focus();
+    }
 
     const fresh = d.id === "new";
-    const id = fresh ? "new" + ++made : d.id;
-    if (fresh) {
-      SERVICES[id] = { vi: d.name, en: d.name, line: { vi: d.line, en: d.line }, slug: slugify(d.name), art: d.art };
-    }
+    const id = fresh ? PBM.store.newId("svc", Object.keys(SERVICES)) : d.id;
+    if (fresh) SERVICES[id] = { vi: d.name, en: d.name, line: { vi: d.line, en: d.line }, art: d.art };
     const service = SERVICES[id];
     service[PBM.lang] = d.name;
     service.line[PBM.lang] = d.line;
     Object.assign(service, {
+      slug: slugify(d.slug || d.name),
       min: d.min,
       price: d.price,
       from: d.from,
       tint: d.tint,
       photo: d.photo,
       staff: d.staff,
-      hidden: d.hidden,
+      schedule: d.schedule,
+      timezone: d.timezone,
       rules: d.rules,
     });
-
-    $("window").close();
-    swap(() => {
-      if (fresh) state.order.push(id);
-      renderAll();
-    });
+    delete service.hidden; // whether it shows is each widget's choice now (3 November)
+    if (fresh) {
+      state.order.push(id);
+      PBM.store.joined("services", id);
+    }
+    PBM.store.save("services");
+    location.hash = "";
+    swap(renderAll);
     toast(t(fresh ? "toast.added" : "toast.saved", { name: d.name }));
   }
 
   function remove() {
     const d = state.draft;
-    $("window").close();
-    swap(() => {
-      state.order = state.order.filter((id) => id !== d.id);
-      renderAll();
-    });
+    // Off the menu, but kept, so bookings already made for it still have a
+    // name and a price (Trung's soft delete, 3 November).
+    state.order.splice(state.order.indexOf(d.id), 1);
+    SERVICES[d.id].removed = true;
+    PBM.store.save("services");
+    location.hash = "";
+    swap(renderAll);
     toast(t("toast.deleted", { name: d.name }));
+  }
+
+  // ---------- A new staff member, beside the service ----------
+  // Trung's ask on 3 November: when nobody can do a service yet, add the
+  // person from inside it. They become a Staff resource, as if added on
+  // Resources, and are ticked on this service.
+
+  // The Staff type; a shop that deleted it gets it back.
+  function peopleType() {
+    let type = RESOURCE_TYPES.find((x) => x.id === "people");
+    if (!type) {
+      type = { id: "people", vi: "Nhân viên", en: "Staff", icon: "users", asks: "who" };
+      RESOURCE_TYPES.push(type);
+    }
+    return type;
+  }
+
+  function openStaff() {
+    if (state.tab !== "setup") showTab("setup");
+    if (!state.staffDraft) {
+      const used = new Set(RESOURCES.filter((r) => r.type === "people").map((r) => r.code));
+      state.staffDraft = { name: "", note: "", branch: BRANCHES.length === 1 ? BRANCHES[0].id : "", code: [1, 2, 3, 4, 5, 6, 7, 8].find((n) => !used.has(n)) || 1 };
+      renderStaff();
+    }
+    PBM.stage.split(staffPane, true);
+    $("st-name").focus();
+  }
+
+  function closeStaff(atOnce) {
+    if (!state.staffDraft) return;
+    state.staffDraft = null;
+    if (!atOnce) return PBM.stage.split(staffPane, false);
+    staffPane.hidden = true;
+    staffPane.classList.remove("is-leaving");
+    $("pane-stage").classList.remove("is-split");
+  }
+
+  function renderStaff() {
+    const d = state.staffDraft;
+    staffPane.innerHTML = `
+      <header class="sheet-head peek-head">
+        <div>
+          <p class="peek-kind">${icon("plus")}${t("st.kind")}</p>
+          <h2 id="staff-title" ${d.name ? "" : "data-empty"}>${esc(d.name || t("untitled"))}</h2>
+        </div>
+        <div class="pane-tools">
+          <a class="icon-btn" href="${base()}" aria-label="${t("w.close")}" title="${t("w.close")}">${icon("x")}</a>
+        </div>
+      </header>
+      <form class="peek-body" id="staff-form" novalidate>
+        <section class="peek-sec">
+          <p class="peek-lede">${t("st.lede")}</p>
+          <div class="field">
+            <label for="st-name">${t("st.name")}</label>
+            <input class="input" id="st-name" name="name" value="${esc(d.name)}" placeholder="${t("st.name.ph")}" autocomplete="off" aria-describedby="st-name-error" />
+            <span class="error" id="st-name-error" hidden>${t("st.name.error")}</span>
+          </div>
+          <div class="field">
+            <label for="st-note">${t("st.note")}</label>
+            <input class="input" id="st-note" name="note" value="${esc(d.note)}" placeholder="${t("st.note.ph")}" autocomplete="off" />
+          </div>
+          ${
+            BRANCHES.length
+              ? `<div class="field">
+            <label for="st-branch">${t("st.branch")}</label>
+            <select class="input" id="st-branch" name="branch">${option("", t("st.branch.none"), d.branch)}${BRANCHES.map((b) => option(b.id, esc(b.name), d.branch)).join("")}</select>
+          </div>`
+              : ""
+          }
+          <div class="field">
+            <span class="label" id="st-code-label">${t("st.code")}</span>
+            <div class="code-picks" role="radiogroup" aria-labelledby="st-code-label">
+              ${[1, 2, 3, 4, 5, 6, 7, 8]
+                .map(
+                  (n) =>
+                    `<label class="code-pick"><input class="visually-hidden" type="radio" name="code" value="${n}" ${d.code === n ? "checked" : ""} /><i class="code-${n}" aria-hidden="true"></i><span class="visually-hidden">${t("st.code.n", { n })}</span></label>`
+                )
+                .join("")}
+            </div>
+          </div>
+        </section>
+      </form>
+      <footer class="sheet-actions peek-actions">
+        <span class="pane-spacer"></span>
+        <a class="btn btn-quiet" href="${base()}">${t("cancel")}</a>
+        <button class="btn btn-primary" type="submit" form="staff-form">${t("st.save")}</button>
+      </footer>`;
+  }
+
+  function saveStaff() {
+    const d = state.staffDraft;
+    const data = new FormData($("staff-form"));
+    d.name = data.get("name").trim();
+    d.note = data.get("note").trim();
+    d.branch = data.get("branch") || "";
+    d.code = Number(data.get("code")) || d.code;
+    if (!d.name) {
+      $("st-name").setAttribute("aria-invalid", "true");
+      $("st-name-error").hidden = false;
+      return $("st-name").focus();
+    }
+    const type = peopleType();
+    const slugs = RESOURCES.map((r) => r.slug);
+    const root = slugify(d.name) || "staff";
+    let slug = root;
+    for (let n = 2; slugs.includes(slug); n++) slug = `${root}-${n}`;
+    const person = {
+      id: PBM.store.newId("r", RESOURCES.map((r) => r.id)),
+      type: type.id,
+      name: d.name,
+      slug,
+      description: d.note,
+      capacity: null,
+      status: "ACTIVE",
+      code: d.code,
+      branch: d.branch || undefined,
+      does: [],
+      bookable: true,
+      hours: null,
+      off: [],
+      member: "",
+      price: null,
+    };
+    readDraft(); // what the service form holds now, before it is drawn again
+    RESOURCES.push(person);
+    PBM.store.joined(person.type, person.id);
+    PBM.store.save("resources"); // gives them a staff number and puts them in STAFF
+    state.draft.staff.push(person.staffId);
+    renderEditor();
+    location.hash = base().slice(1); // the side form slides out
+    toast(t("st.added", { name: d.name }));
+    pane.querySelector(`[name="staff"][value="${person.staffId}"]`)?.focus();
+  }
+
+  // ---------- Which service is open ----------
+
+  function route() {
+    const asked = location.hash.slice(1).match(/^(new|s\/([^/]+))(\/staff)?$/);
+    const id = asked && (asked[2] ? decodeURIComponent(asked[2]) : "new");
+    if (!asked || (id !== "new" && !state.order.includes(id))) {
+      if (asked) history.replaceState(null, "", location.pathname); // a service that is not on the menu
+      if (state.draft) closeEditor();
+      return;
+    }
+    if (!state.draft || state.draft.id !== id) openEditor(id);
+    if (asked[3]) return openStaff();
+    closeStaff();
+    if (!pane.contains(document.activeElement)) $("f-name").focus();
   }
 
   // ---------- Events ----------
 
   document.addEventListener("click", (event) => {
     const target = event.target.closest("[data-open],[data-sort],[data-move],[data-basket],[data-view]");
-    if (!target || target.closest("dialog")) return;
+    if (!target || target.closest(".pane-stage")) return;
     // In the table the whole row opens the service, except its own controls.
-    if (target.matches("tr") && event.target.closest(".switch, td:last-child")) return;
+    if (target.matches("tr") && event.target.closest(".cell-move")) return;
 
     if (target.dataset.view) {
       if (target.dataset.view === state.view) return;
@@ -842,7 +1266,7 @@
       return swap(renderTiles);
     }
 
-    if (target.dataset.open) return openWindow(target.dataset.open);
+    if (target.dataset.open) return (location.hash = target.dataset.open === "new" ? "new" : "s/" + target.dataset.open);
     if (target.dataset.move) return move(target.dataset.id, Number(target.dataset.move));
     if ("sort" in target.dataset) {
       state.sorting = !state.sorting;
@@ -862,56 +1286,50 @@
     }
   });
 
-  // The switch in the table shows or hides a service without opening it.
-  $("table").addEventListener("change", (event) => {
-    const id = event.target.dataset.shown;
-    if (!id) return;
-    SERVICES[id].hidden = !event.target.checked;
-    event.target.closest("tr").classList.toggle("is-hidden", SERVICES[id].hidden);
-    renderHead();
-    renderExample();
-  });
-
-  const dialog = $("window");
-
-  dialog.addEventListener("input", (event) => {
-    if (event.target.type === "file") return;
+  pane.addEventListener("input", (event) => {
+    const el = event.target;
+    if (el.type === "file") return;
+    if (el.id === "f-slug") state.slugEdited = true;
+    if (el.id === "f-name" && !state.slugEdited) $("f-slug").value = slugify(el.value);
     readDraft();
-    const d = state.draft;
-    if (d.id !== "new" || d.name) $("window-title").textContent = d.name || t("w.new");
-    const own = ownRules(d.rules).length;
-    $("rules-count").textContent = own;
-    $("rules-count").hidden = !own;
+    const title = $("svc-title");
+    title.textContent = state.draft.name || t("untitled");
+    title.toggleAttribute("data-empty", !state.draft.name);
     renderPreview();
   });
 
-  dialog.addEventListener("change", (event) => {
+  pane.addEventListener("change", (event) => {
     if (event.target.type !== "file") return;
     const file = event.target.files[0];
     if (!file) return;
-    // Shown from memory only: the photo never leaves this browser tab.
-    state.draft.photo = URL.createObjectURL(file);
-    dialog.querySelector("[data-photo-remove]").hidden = false;
-    renderPreview();
+    // Made small and kept in this browser with the rest of the shop. The
+    // photo never leaves the browser.
+    const draft = state.draft;
+    PBM.store
+      .picture(file, 1600)
+      .then((photo) => {
+        draft.photo = photo;
+        if (state.draft !== draft) return;
+        pane.querySelector("[data-photo-remove]").hidden = false;
+        renderPreview();
+      })
+      .catch(() => {});
   });
 
-  dialog.addEventListener("click", (event) => {
-    // A click on the dimmed page behind the window closes it.
-    if (event.target === dialog) return dialog.close();
-    const target = event.target.closest("[data-close],[data-photo-remove],[data-copy],[data-delete]");
+  pane.addEventListener("click", (event) => {
+    const target = event.target.closest("[data-tab],[data-photo-remove],[data-copy],[data-delete]");
     if (!target) return;
 
-    if ("close" in target.dataset) return dialog.close();
+    if (target.dataset.tab) return showTab(target.dataset.tab);
     if ("photoRemove" in target.dataset) {
       state.draft.photo = "";
-      dialog.querySelector('[name="photo"]').value = "";
+      pane.querySelector('[name="photo"]').value = "";
       target.hidden = true;
       renderPreview();
-      return dialog.querySelector(".photo-pick input").focus();
+      return pane.querySelector(".photo-pick input").focus();
     }
     if ("copy" in target.dataset) {
       navigator.clipboard?.writeText(`https://pleasebookme.app/booking/${SHOP.slug}/${state.draft.slug}`).catch(() => {});
-      // A toast would sit under the window, so the button itself says it worked.
       target.querySelector("span").textContent = t("f.link.copied");
       return;
     }
@@ -924,20 +1342,54 @@
     }
   });
 
-  dialog.addEventListener("submit", (event) => {
+  // The tabs move with the arrow keys, as a tab list should.
+  pane.addEventListener("keydown", (event) => {
+    const tab = event.target.closest?.("[data-tab]");
+    if (!tab || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const at = TABS.indexOf(tab.dataset.tab);
+    const next =
+      event.key === "Home" ? 0 : event.key === "End" ? TABS.length - 1 : (at + (event.key === "ArrowRight" ? 1 : -1) + TABS.length) % TABS.length;
+    showTab(TABS[next]);
+    $("tab-" + TABS[next]).focus();
+  });
+
+  pane.addEventListener("submit", (event) => {
     event.preventDefault();
     save();
   });
 
-  dialog.addEventListener("close", () => {
-    state.draft = null;
-    dialog.innerHTML = ""; // the preview tile must not linger beside the real ones
+  staffPane.addEventListener("input", (event) => {
+    if (event.target.id !== "st-name") return;
+    const title = $("staff-title");
+    title.textContent = event.target.value.trim() || t("untitled");
+    title.toggleAttribute("data-empty", !event.target.value.trim());
   });
 
-  PBM.onChange(renderAll);
+  staffPane.addEventListener("submit", (event) => {
+    event.preventDefault();
+    saveStaff();
+  });
 
+  // Escape closes the staff form first, then the service.
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || !state.draft || event.target.closest?.("select")) return;
+    location.hash = state.staffDraft ? base().slice(1) : "";
+  });
+
+  PBM.onChange(() => {
+    renderAll();
+    if (state.draft) {
+      readDraft();
+      renderEditor();
+    }
+    if (state.staffDraft) renderStaff();
+  });
+
+  addEventListener("hashchange", route);
   PBM.mount("services");
   renderAll();
+  route();
 
   // The settle animation is for the first paint only.
   setTimeout(() => {

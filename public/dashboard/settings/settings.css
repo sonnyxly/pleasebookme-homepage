@@ -158,3 +158,32 @@
     width: 100%;
   }
 }
+
+/* ---------- Reset sample shop: a button dressed as an entry ---------- */
+
+.item-reset {
+  width: calc(100% + 24px);
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.item-reset:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.item-reset:disabled:hover {
+  background: none;
+}
+
+.item-reset.is-sure strong,
+.item-reset.is-sure .tile {
+  color: var(--signal);
+}
+
+.item-reset.is-sure .tile {
+  border-color: var(--signal);
+}

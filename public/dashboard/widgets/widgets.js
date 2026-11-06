@@ -11,15 +11,18 @@
      - The same widget can sit in several places: its own link (with a QR
        code), inside a page of a website, or behind a pop-up button. The shop's
        main link is simply its default widget.
-     - A widget can also differ in its look, the dates it runs, its booking
-       rules and its prices. Anything left alone follows the shop.
+     - A widget can also differ in its look and the dates it runs. Its own
+       booking rules and prices are drawn but greyed for a later version
+       (Sonny, 4 November): until then each service's own Policy and price
+       decide. Which services a widget offers is also what decides whether a
+       service shows to customers at all (3 November).
      - For each list, the owner decides whether things added to the shop later
        join the widget by themselves. */
 (function () {
   "use strict";
 
   const { t, icon, toast } = PBM;
-  const { TODAY, OPEN, CLOSE, SHOP, SERVICES, SERVICE_ORDER, BRANCHES, RESOURCE_TYPES, RESOURCES, WIDGETS } = PBM_SAMPLE;
+  const { TODAY, OPEN, CLOSE, SHOP, STAFF, SERVICES, SERVICE_ORDER, SCHEDULES, BRANCHES, RESOURCE_TYPES, RESOURCES, WIDGETS } = PBM_SAMPLE;
 
   const plural = (n, one, many) => (n === 1 ? one : many);
 
@@ -350,6 +353,86 @@
     },
   });
 
+  // Later, the stage and the side forms (4 November).
+  PBM.addStrings({
+    vi: {
+      later: "Bản sau",
+      "later.rules": "Chưa có trong bản đầu. Trong lúc chờ, phần Quy định của từng dịch vụ quyết định báo trước, đặt xa nhất và cách xác nhận.",
+      "later.price": "Chưa có trong bản đầu. Trong lúc chờ, khách trả đúng giá của từng dịch vụ.",
+      "rules.lede": "Để “Theo từng dịch vụ” thì widget dùng quy định của từng dịch vụ.",
+      "opt.shop": () => "Theo từng dịch vụ",
+      "price.none": "Giá của từng dịch vụ",
+      "scope.lede.svc": "Chỉ các dịch vụ được chọn ở đây mới hiện cho khách đặt qua widget này.",
+      "new.service": "Dịch vụ mới",
+      "new.resource": "Tài nguyên mới",
+      untitled: "Chưa đặt tên",
+      close: "Đóng",
+      cancel: "Huỷ",
+      "ns.kind": "Dịch vụ mới",
+      "ns.lede": "Thêm vào menu của tiệm và vào widget này. Ảnh, giờ nhận khách và quy định đặt sau trong Dịch vụ.",
+      "ns.name": "Tên dịch vụ",
+      "ns.name.error": "Đặt tên cho dịch vụ.",
+      "ns.min": "Thời lượng",
+      "ns.min.unit": "phút",
+      "ns.price": "Giá",
+      "ns.staff": "Ai làm dịch vụ này",
+      "ns.staff.none": "Chưa có ai nhận lịch. Thêm nhân viên bằng “Tài nguyên mới”, rồi thêm dịch vụ.",
+      "ns.staff.error": "Chọn ít nhất một người.",
+      "ns.save": "Thêm dịch vụ",
+      "ns.added": ({ name }) => `Đã thêm ${name} vào menu và vào widget này`,
+      "nr.kind": "Tài nguyên mới",
+      "nr.lede": "Thêm vào Tài nguyên và vào widget này. Giờ làm, ngày nghỉ và tài khoản đặt sau trong Tài nguyên.",
+      "nr.type": "Loại",
+      "nr.name": "Tên",
+      "nr.name.error": "Đặt tên cho tài nguyên.",
+      "nr.branch": "Thuộc về",
+      "nr.branch.none": "Cả tiệm",
+      "nr.does": "Làm mọi dịch vụ trên menu",
+      "nr.code": "Màu trên lịch",
+      "nr.code.n": ({ n }) => `Màu ${n}`,
+      "nr.save": "Thêm tài nguyên",
+      "nr.added": ({ name }) => `Đã thêm ${name} vào Tài nguyên và vào widget này`,
+    },
+    en: {
+      later: "Later",
+      "later.rules": "Not in the first version. Until then each service's own Policy decides notice, how far ahead and confirmation.",
+      "later.price": "Not in the first version. Until then customers pay each service's own price.",
+      "rules.lede": "Leave “Follow each service” and the widget uses each service's own rules.",
+      "opt.shop": () => "Follow each service",
+      "price.none": "Each service's price",
+      "scope.lede.svc": "Only the services ticked here show to customers who book through this widget.",
+      "new.service": "New service",
+      "new.resource": "New resource",
+      untitled: "Untitled",
+      close: "Close",
+      cancel: "Cancel",
+      "ns.kind": "New service",
+      "ns.lede": "Added to the shop's menu and to this widget. A photo, availability and policy are set later on Services.",
+      "ns.name": "Service name",
+      "ns.name.error": "Give the service a name.",
+      "ns.min": "Duration",
+      "ns.min.unit": "min",
+      "ns.price": "Price",
+      "ns.staff": "Who does this service",
+      "ns.staff.none": "Nobody can take bookings yet. Add staff with “New resource” first.",
+      "ns.staff.error": "Choose at least one person.",
+      "ns.save": "Add service",
+      "ns.added": ({ name }) => `Added ${name} to the menu and to this widget`,
+      "nr.kind": "New resource",
+      "nr.lede": "Added to Resources and to this widget. Working hours, time off and a login are set later on Resources.",
+      "nr.type": "Type",
+      "nr.name": "Name",
+      "nr.name.error": "Give it a name.",
+      "nr.branch": "Belongs to",
+      "nr.branch.none": "The whole shop",
+      "nr.does": "Does every service on the menu",
+      "nr.code": "Color on the calendar",
+      "nr.code.n": ({ n }) => `Color ${n}`,
+      "nr.save": "Add resource",
+      "nr.added": ({ name }) => `Added ${name} to Resources and to this widget`,
+    },
+  });
+
   // What the customer reads inside the widget. Kept apart from the dashboard's
   // strings because a widget has its own language setting.
   const PV = {
@@ -457,12 +540,15 @@
     ["rules", "sliders"],
     ["price", "tag"],
   ];
+  // Drawn for the design, greyed until a later version (Sonny, 4 November).
+  const LATER = ["rules", "price"];
   const ACCENTS = ["burgundy", "glacier", "black"];
 
   const state = {
     draft: null, // the widget open in the editor, edited as a copy until saved
     tab: "scope",
     sureToDelete: false,
+    side: null, // the new service or resource form beside the editor: { kind, draft }
     pv: null, // where the preview's pretend customer has got to
     openedAs: null, // the id the editor was opened with ("new" stays "new" after the first save)
   };
@@ -735,12 +821,13 @@
       <h2>${t("tab.scope")}</h2>
       <p class="tab-lede">${t("scope.lede")}</p>
       <div class="group" role="group" aria-label="${t("g.services")}">
-        <div class="group-head"><h3>${icon("scissors")}${t("g.services")}</h3><button class="link-btn" type="button" data-all="services">${t("all")}</button></div>
+        <div class="group-head"><h3>${icon("scissors")}${t("g.services")}</h3><span class="group-links"><a class="link-btn" href="#${esc(w.id)}/new-service">${t("new.service")}</a><button class="link-btn" type="button" data-all="services">${t("all")}</button></span></div>
+        <p class="hint">${t("scope.lede.svc")}</p>
         <div class="svc-list">${services}</div>
         ${flag("services.auto", t("auto.services"), w.services.auto)}
       </div>
       <div class="layer">
-        <h3>${t("g.resources")}</h3>
+        <div class="group-head"><h3>${t("g.resources")}</h3><a class="link-btn" href="#${esc(w.id)}/new-resource">${t("new.resource")}</a></div>
         <p>${t("g.resources.lede")}</p>
       </div>
       ${resources}`;
@@ -942,7 +1029,9 @@
 
   function tabRules(w) {
     return `
-      <h2>${t("tab.rules")}</h2>
+      <h2 class="later-head">${t("tab.rules")}<span class="tag-later">${t("later")}</span></h2>
+      <p class="later-note">${t("later.rules")}</p>
+      <fieldset class="later-box" disabled>
       <p class="tab-lede">${t("rules.lede")}</p>
       <div class="field-pair">
         <div class="field">
@@ -967,7 +1056,8 @@
             ${[7, 14, 30, 60].map((d) => option(d, t("days", { n: d }), w.rules.ahead)).join("")}
           </select>
         </div>
-      </div>`;
+      </div>
+      </fieldset>`;
   }
 
   // A reduction shown on the widget's first service.
@@ -979,7 +1069,9 @@
   function tabPrice(w) {
     const reducing = w.price.mode !== "none";
     return `
-      <h2>${t("tab.price")}</h2>
+      <h2 class="later-head">${t("tab.price")}<span class="tag-later">${t("later")}</span></h2>
+      <p class="later-note">${t("later.price")}</p>
+      <fieldset class="later-box" disabled>
       <p class="tab-lede">${t("price.lede")}</p>
       <div class="group-row"><span class="label">${t("price.mode")}</span>${seg(
         "price.mode",
@@ -1001,7 +1093,8 @@
       </div>
       <p class="hint" id="price-example">${esc(priceExample(w))}</p>`
           : ""
-      }`;
+      }
+      </fieldset>`;
   }
 
   const TAB_BODY = { scope: tabScope, where: tabWhere, look: tabLook, dates: tabDates, rules: tabRules, price: tabPrice };
@@ -1311,7 +1404,8 @@
     const w = state.draft;
     const isNew = !WIDGETS.some((item) => item.id === w.id);
     document.title = t("doc.title");
-    $("view").innerHTML = `
+    const scroll = editorEl.querySelector(".wd-scroll")?.scrollTop || 0;
+    editorEl.innerHTML = `<div class="wd-scroll">
       <header class="ed-head">
         <button class="btn btn-quiet btn-small" type="button" data-back>${icon("left")}${t("back")}</button>
         <div class="ed-name">
@@ -1324,7 +1418,12 @@
       </header>
       <div class="ed">
         <nav class="panel ed-tabs" aria-label="${t("tabs.label")}">
-          ${TABS.map(([id, glyph]) => `<button type="button" data-tab="${id}" data-focus="tab:${id}">${icon(glyph)}<span>${t("tab." + id)}</span></button>`).join("")}
+          ${TABS.map(
+            ([id, glyph]) =>
+              `<button type="button" data-tab="${id}" data-focus="tab:${id}">${icon(glyph)}<span>${t("tab." + id)}</span>${
+                LATER.includes(id) ? `<span class="tag-later">${t("later")}</span>` : ""
+              }</button>`
+          ).join("")}
         </nav>
         <section class="panel ed-form" id="tab"></section>
         <aside class="ed-side">
@@ -1335,7 +1434,9 @@
           <div class="panel path" id="path"></div>
         </aside>
       </div>
-      <p class="note">${t("note")}</p>`;
+      <p class="note">${t("note")}</p>
+      </div>`;
+    editorEl.querySelector(".wd-scroll").scrollTop = scroll;
     renderTab();
     renderPath();
     renderPreview();
@@ -1360,16 +1461,22 @@
     state.pv = freshPreview();
     state.openedAs = state.draft.id;
     history.replaceState(null, "", "#" + state.draft.id);
+    closeSide(true);
+    editorEl.innerHTML = "";
     renderEditor();
-    scrollTo(0, 0);
-    (source ? document.querySelector("[data-tab]") : $("w-name")).focus();
+    editorEl.hidden = false;
+    PBM.stage.sync();
+    (source ? editorEl.querySelector("[data-tab]") : $("w-name")).focus();
   }
 
   function closeEditor() {
+    closeSide(true);
     state.draft = null;
     history.replaceState(null, "", location.pathname);
+    editorEl.hidden = true;
+    editorEl.innerHTML = "";
+    PBM.stage.sync();
     renderList();
-    scrollTo(0, 0);
   }
 
   function save() {
@@ -1382,14 +1489,17 @@
     const at = WIDGETS.findIndex((item) => item.id === w.id);
     if (at < 0) {
       w.path = slugify(w.name);
-      w.id = w.path || "widget-" + (WIDGETS.length + 1);
+      const taken = WIDGETS.map((item) => item.id);
+      w.id = w.path && !taken.includes(w.path) ? w.path : PBM.store.newId("widget-", taken);
       WIDGETS.push(clone(w));
+      PBM.store.save();
       history.replaceState(null, "", "#" + w.id);
       publish();
       renderEditor();
       return toast(t("added", { name: w.name }));
     }
     WIDGETS[at] = clone(w);
+    PBM.store.save();
     toast(t("saved", { name: w.name }));
   }
 
@@ -1469,9 +1579,277 @@
 
   // ---------- Events ----------
 
-  const view = $("view");
+  // ---------- A new service or resource, beside the widget ----------
+  // "New service" and "New resource" in What it offers slide a short form in
+  // beside the editor (#<widget>/new-service, #<widget>/new-resource). What
+  // is made is real: it joins the shop's menu or Resources, every widget that
+  // takes new ones by itself, and this widget, ticked. The rest of it is set
+  // later on its own page.
 
-  view.addEventListener("click", (event) => {
+  const editorEl = $("wd");
+  const sidePane = $("wd-side");
+  const CODES = [1, 2, 3, 4, 5, 6, 7, 8];
+  const back = () => "#" + encodeURIComponent(state.draft.id);
+
+  const uniqueSlug = (name, taken) => {
+    const root = slugify(name) || "item";
+    let slug = root;
+    for (let n = 2; taken.includes(slug); n++) slug = `${root}-${n}`;
+    return slug;
+  };
+
+  function sideHead(kind) {
+    const d = state.side.draft;
+    return `
+      <header class="sheet-head peek-head">
+        <div>
+          <p class="peek-kind">${icon("plus")}${t(kind)}</p>
+          <h2 id="side-title" ${d.name ? "" : "data-empty"}>${esc(d.name || t("untitled"))}</h2>
+        </div>
+        <div class="pane-tools"><a class="icon-btn" href="${back()}" aria-label="${t("close")}" title="${t("close")}">${icon("x")}</a></div>
+      </header>`;
+  }
+
+  const sideFoot = (label) => `
+      <footer class="sheet-actions peek-actions">
+        <span class="pane-spacer"></span>
+        <a class="btn btn-quiet" href="${back()}">${t("cancel")}</a>
+        <button class="btn btn-primary" type="submit" form="side-form">${label}</button>
+      </footer>`;
+
+  const codePicks = (current) => `
+          <div class="field">
+            <span class="label" id="side-code-label">${t("nr.code")}</span>
+            <div class="code-picks" role="radiogroup" aria-labelledby="side-code-label">
+              ${CODES.map(
+                (n) =>
+                  `<label class="code-pick"><input class="visually-hidden" type="radio" name="code" value="${n}" ${current === n ? "checked" : ""} /><i class="code-${n}" aria-hidden="true"></i><span class="visually-hidden">${t("nr.code.n", { n })}</span></label>`
+              ).join("")}
+            </div>
+          </div>`;
+
+  function renderSide() {
+    const { kind, draft: d } = state.side;
+    if (kind === "new-service") {
+      sidePane.innerHTML = `${sideHead("ns.kind")}
+      <form class="peek-body" id="side-form" novalidate>
+        <section class="peek-sec">
+          <p class="peek-lede">${t("ns.lede")}</p>
+          <div class="field">
+            <label for="ns-name">${t("ns.name")}</label>
+            <input class="input" id="ns-name" name="name" value="${esc(d.name)}" autocomplete="off" aria-describedby="ns-name-error" />
+            <span class="error" id="ns-name-error" hidden>${t("ns.name.error")}</span>
+          </div>
+          <div class="field-pair">
+            <div class="field">
+              <label for="ns-min">${t("ns.min")}</label>
+              <div class="with-unit"><input class="input num" id="ns-min" name="min" type="number" min="5" step="5" value="${d.min}" inputmode="numeric" /><span>${t("ns.min.unit")}</span></div>
+            </div>
+            <div class="field">
+              <label for="ns-price">${t("ns.price")}</label>
+              <div class="with-unit"><input class="input num" id="ns-price" name="price" type="number" min="0" step="5000" value="${d.price}" inputmode="numeric" /><span>₫</span></div>
+            </div>
+          </div>
+          <div class="field" role="group" aria-labelledby="ns-staff-label">
+            <span class="label" id="ns-staff-label">${t("ns.staff")}</span>
+            ${
+              STAFF.length
+                ? `<div class="chips">${STAFF.map(
+                    (person) =>
+                      `<label class="chip-pick"><input class="visually-hidden" type="checkbox" name="staff" value="${person.id}" ${
+                        d.staff.includes(person.id) ? "checked" : ""
+                      } /><span><i aria-hidden="true">${esc(person.name.charAt(0))}</i>${esc(person.name)}</span></label>`
+                  ).join("")}</div>`
+                : `<p class="peek-lede">${t("ns.staff.none")}</p>`
+            }
+            <span class="error" id="ns-staff-error" hidden>${t("ns.staff.error")}</span>
+          </div>
+        </section>
+      </form>${sideFoot(t("ns.save"))}`;
+      return;
+    }
+    const type = RESOURCE_TYPES.find((x) => x.id === d.type);
+    const homes = type?.asks === "where" ? [] : BRANCHES;
+    sidePane.innerHTML = `${sideHead("nr.kind")}
+      <form class="peek-body" id="side-form" novalidate>
+        <section class="peek-sec">
+          <p class="peek-lede">${t("nr.lede")}</p>
+          <div class="field">
+            <label for="nr-type">${t("nr.type")}</label>
+            <select class="input" id="nr-type" name="type">${RESOURCE_TYPES.map((x) => option(x.id, esc(x[PBM.lang] || x.vi), d.type)).join("")}</select>
+          </div>
+          <div class="field">
+            <label for="nr-name">${t("nr.name")}</label>
+            <input class="input" id="nr-name" name="name" value="${esc(d.name)}" autocomplete="off" aria-describedby="nr-name-error" />
+            <span class="error" id="nr-name-error" hidden>${t("nr.name.error")}</span>
+          </div>
+          ${
+            homes.length
+              ? `<div class="field">
+            <label for="nr-branch">${t("nr.branch")}</label>
+            <select class="input" id="nr-branch" name="branch">${option("", t("nr.branch.none"), d.branch)}${homes.map((b) => option(b.id, esc(b.name), d.branch)).join("")}</select>
+          </div>`
+              : ""
+          }
+          <label class="check"><input type="checkbox" name="does" ${d.does ? "checked" : ""} /><span>${t("nr.does")}</span></label>
+          ${codePicks(d.code)}
+        </section>
+      </form>${sideFoot(t("nr.save"))}`;
+  }
+
+  function openSide(kind) {
+    if (state.side?.kind !== kind) {
+      const people = RESOURCE_TYPES.find((x) => x.id === "people") || RESOURCE_TYPES[0];
+      const used = (type) => new Set(RESOURCES.filter((r) => r.type === type).map((r) => r.code));
+      state.side = {
+        kind,
+        draft:
+          kind === "new-service"
+            ? { name: "", min: 30, price: 0, staff: STAFF.map((person) => person.id) }
+            : { type: people?.id || "", name: "", branch: BRANCHES.length === 1 ? BRANCHES[0].id : "", does: true, code: CODES.find((n) => !used(people?.id).has(n)) || 1 },
+      };
+      renderSide();
+    }
+    PBM.stage.split(sidePane, true);
+    sidePane.querySelector("[name=name]").focus();
+  }
+
+  function closeSide(atOnce) {
+    if (!state.side) return;
+    state.side = null;
+    if (!atOnce) return PBM.stage.split(sidePane, false);
+    sidePane.hidden = true;
+    sidePane.classList.remove("is-leaving");
+    $("pane-stage").classList.remove("is-split");
+  }
+
+  // Ticks what was made on the widget being edited, and tells it to redraw.
+  function tickOnDraft(list, id) {
+    const w = state.draft;
+    if (!w[list]) w[list] = { ids: [], pick: "customer", auto: true };
+    if (!w[list].ids.includes(id)) w[list].ids.push(id);
+  }
+
+  function saveSide() {
+    const { kind, draft: d } = state.side;
+    const data = new FormData($("side-form"));
+    d.name = data.get("name").trim();
+    const fail = (field) => {
+      $(field).setAttribute("aria-invalid", "true");
+      $(field + "-error").hidden = false;
+      $(field).focus();
+    };
+
+    if (kind === "new-service") {
+      d.min = Math.max(5, Number(data.get("min")) || 0);
+      d.price = Math.max(0, Number(data.get("price")) || 0);
+      d.staff = data.getAll("staff").map(Number);
+      if (!d.name) return fail("ns-name");
+      if (!d.staff.length) {
+        $("ns-staff-error").hidden = false;
+        return sidePane.querySelector("[name=staff]")?.focus();
+      }
+      const id = PBM.store.newId("svc", Object.keys(SERVICES));
+      // The same defaults as a new service on Services (Trung's server defaults).
+      SERVICES[id] = {
+        vi: d.name,
+        en: d.name,
+        line: { vi: "", en: "" },
+        slug: uniqueSlug(d.name, Object.values(SERVICES).map((x) => x.slug)),
+        min: d.min,
+        price: d.price,
+        from: false,
+        tint: "glacier",
+        art: "waves",
+        photo: "",
+        staff: d.staff,
+        schedule: SCHEDULES[0]?.id ?? null,
+        timezone: "Asia/Saigon",
+        rules: { confirm: "auto", combine: "yes", redirect: "", notice: 120, ahead: 90, before: 0, after: 0, perCustomer: null, noCancel: false, noReschedule: false },
+      };
+      SERVICE_ORDER.push(id);
+      PBM.store.joined("services", id);
+      PBM.store.save("services");
+      tickOnDraft("services", id);
+      toast(t("ns.added", { name: d.name }));
+    } else {
+      d.type = data.get("type");
+      d.branch = data.get("branch") || "";
+      d.does = data.has("does");
+      d.code = Number(data.get("code")) || d.code;
+      if (!d.name) return fail("nr-name");
+      const id = PBM.store.newId("r", RESOURCES.map((r) => r.id));
+      RESOURCES.push({
+        id,
+        type: d.type,
+        name: d.name,
+        slug: uniqueSlug(d.name, RESOURCES.map((r) => r.slug)),
+        description: "",
+        capacity: null,
+        status: "ACTIVE",
+        code: d.code,
+        branch: d.branch || undefined,
+        does: d.does ? [...SERVICE_ORDER] : [],
+        bookable: true,
+        hours: null,
+        off: [],
+        member: "",
+        price: null,
+      });
+      PBM.store.joined(d.type, id);
+      PBM.store.save("resources"); // a person gets a staff number and joins the services they do
+      tickOnDraft(d.type, id);
+      toast(t("nr.added", { name: d.name }));
+    }
+    changed(true, true);
+    location.hash = back().slice(1); // the side form slides out
+  }
+
+  function route() {
+    if (!state.draft) return;
+    const side = decodeURIComponent(location.hash.slice(1)).split("/")[1];
+    if (side === "new-service" || side === "new-resource") openSide(side);
+    else closeSide();
+  }
+
+  sidePane.addEventListener("input", (event) => {
+    if (event.target.name !== "name") return;
+    state.side.draft.name = event.target.value;
+    const title = $("side-title");
+    title.textContent = event.target.value.trim() || t("untitled");
+    title.toggleAttribute("data-empty", !event.target.value.trim());
+  });
+
+  // Changing the type redraws the form: a branch belongs to no branch.
+  sidePane.addEventListener("change", (event) => {
+    if (event.target.name !== "type") return;
+    const d = state.side.draft;
+    d.type = event.target.value;
+    d.name = $("nr-name").value;
+    if (RESOURCE_TYPES.find((x) => x.id === d.type)?.asks === "where") d.branch = "";
+    renderSide();
+    $("nr-type").focus();
+  });
+
+  sidePane.addEventListener("submit", (event) => {
+    event.preventDefault();
+    saveSide();
+  });
+
+  addEventListener("hashchange", route);
+
+  // Escape closes the side form first, then leaves the editor.
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || !state.draft || event.target.closest?.("select")) return;
+    if (state.side) location.hash = back().slice(1);
+  });
+
+  const view = $("view");
+  // The list lives in the page; the editor and its side forms on the stage.
+  // Both answer the same clicks and typing.
+  const listen = (type, fn) => [view, editorEl].forEach((el) => el.addEventListener(type, fn));
+
+  listen("click", (event) => {
     const el = event.target.closest(
       "[data-edit],[data-new],[data-copy],[data-back],[data-save],[data-delete],[data-tab],[data-pick],[data-all],[data-copy-link],[data-copy-code],[data-window]," +
         "[data-pv-date],[data-pv-month],[data-pv-branch],[data-pv-slot],[data-pv-next],[data-pv-back],[data-pv-lang],[data-pv-live],[data-pv-restart]"
@@ -1501,6 +1879,7 @@
         return;
       }
       WIDGETS.splice(WIDGETS.findIndex((item) => item.id === w.id), 1);
+      PBM.store.save();
       toast(t("deleted", { name: w.name }));
       return closeEditor();
     }
@@ -1541,7 +1920,7 @@
     keepFocus(renderPreview);
   });
 
-  view.addEventListener("change", (event) => {
+  listen("change", (event) => {
     const el = event.target;
     const d = el.dataset;
 
@@ -1579,7 +1958,7 @@
   });
 
   // Typed values: kept as they are typed, without redrawing the field itself.
-  view.addEventListener("input", (event) => {
+  listen("input", (event) => {
     const el = event.target;
     const path = el.dataset.text;
     if (!path || !state.draft) return;
@@ -1605,8 +1984,13 @@
   if (inWindow !== null) showWindow(inWindow);
   else {
     PBM.mount("widgets");
-    const asked = decodeURIComponent(location.hash.slice(1));
-    if (WIDGETS.some((w) => w.id === asked)) openEditor(asked);
-    else renderList();
+    const full = location.hash;
+    const asked = decodeURIComponent(full.slice(1)).split("/")[0];
+    renderList();
+    if (WIDGETS.some((w) => w.id === asked)) {
+      openEditor(asked); // sets the address to the widget alone
+      history.replaceState(null, "", full); // so a side form asked for opens too
+      route();
+    }
   }
 })();

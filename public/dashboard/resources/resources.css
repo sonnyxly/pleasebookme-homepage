@@ -277,29 +277,6 @@ td > .state.is-retired {
   line-height: 1.5;
 }
 
-.label-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.label-row label {
-  font-size: var(--text-ui);
-  font-weight: var(--fw-semibold);
-}
-
-.link-btn {
-  font-size: var(--text-small);
-  font-weight: var(--fw-semibold);
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.link-btn:hover {
-  text-decoration: underline;
-}
-
 /* The eight colour codes, as a row of round choices. */
 .swatches,
 .icon-picks {
@@ -590,120 +567,8 @@ td > .state.is-retired {
   border-radius: var(--r-control);
 }
 
-/* ---------- The side peek ---------- */
-/* The booking side panel (shell.css), wider, because everything in it can be
-   changed. The body scrolls; the head and the save line stay put. */
-
-.peek {
-  --sheet-w: 460px;
-  padding: 0;
-}
-
-@media (min-width: 1200px) {
-  body:has(#peek:not([hidden])) .page {
-    padding-right: calc(460px + var(--gap) * 2 + var(--space-1));
-  }
-}
-
-.peek-head {
-  padding: var(--space-5) var(--space-5) var(--space-3);
-  border-bottom: 1px solid var(--line);
-}
-
-.peek-kind {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin: 0;
-  font-size: var(--text-small);
-  color: var(--muted);
-}
-
-.peek-kind .icon {
-  width: 14px;
-  height: 14px;
-}
-
-.peek-head h2 {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2-5);
-  margin-top: var(--space-1-5);
-  font-size: var(--text-h3);
-  overflow-wrap: anywhere;
-}
-
-.peek-head h2 .code-dot {
-  flex: none;
-  width: 12px;
-  height: 12px;
-}
-
-.peek-head h2 .icon {
-  flex: none;
-  width: 20px;
-  height: 20px;
-}
-
-.peek-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0 var(--space-5);
-}
-
-.peek-sec {
-  display: grid;
-  gap: var(--space-3-5);
-  padding: var(--space-5) 0;
-}
-
-.peek-sec + .peek-sec {
-  border-top: 1px solid var(--line);
-}
-
-.peek-sec h3 {
-  margin: 0;
-  font-size: var(--text-ui);
-  font-weight: var(--fw-semibold);
-}
-
-.peek-sec-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.peek-lede {
-  margin: calc(var(--space-2) * -1) 0 0;
-  font-size: var(--text-small);
-  color: var(--muted);
-}
-
-.field .peek-lede {
-  margin: 0;
-}
-
-.switch-line {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  cursor: pointer;
-}
-
-.switch-line strong {
-  display: block;
-  font-size: var(--text-ui);
-  font-weight: var(--fw-semibold);
-}
-
-.switch-line small {
-  display: block;
-  margin-top: var(--space-0-5);
-  font-size: var(--text-small);
-  color: var(--muted);
-}
+/* ---------- A pane on the stage ---------- */
+/* Its head, body, sections and save line are shared (shell.css). */
 
 /* Services: chips that carry a tick when chosen. */
 .svc-picks {
@@ -832,31 +697,6 @@ td > .state.is-retired {
   background: color-mix(in srgb, var(--signal) 12%, transparent);
   font-size: var(--text-ui);
   line-height: 1.5;
-}
-
-.peek-actions {
-  align-items: center;
-  padding: var(--space-3) var(--space-5);
-}
-
-.peek-actions .btn {
-  flex: none;
-  height: 40px;
-}
-
-.peek-dirty {
-  flex: 1;
-  font-size: var(--text-small);
-  color: var(--muted);
-  text-align: right;
-}
-
-.peek-actions .btn-primary {
-  margin-left: auto;
-}
-
-.peek-dirty:not([hidden]) + .btn-primary {
-  margin-left: 0;
 }
 
 /* ---------- Narrower rooms ---------- */
@@ -1040,3 +880,4 @@ td > .state.is-retired {
     transition: none;
   }
 }
+

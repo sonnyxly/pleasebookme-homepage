@@ -378,7 +378,7 @@
               </tr></thead>
               <tbody>${body.join("")}</tbody>
             </table></div>`
-          : state.list === "today" && !Object.keys(SERVICES).length
+          : state.list === "today" && !PBM_SAMPLE.SERVICE_ORDER.length
           ? `<div class="list-empty">
               <p>${t("e.setup")}</p>
               <div class="blank-actions"><a class="btn btn-primary" href="/dashboard/services">${icon("plus")}${t("setup.services")}</a><a class="btn btn-quiet" href="/dashboard/availability">${t("setup.hours")}</a></div>
@@ -510,6 +510,7 @@
       b.outcome = null;
       b.noShow = false;
     } else b.status = NEXT_STATUS[action];
+    PBM.store.save();
     toast(t("toast." + action, { name: b.customer }));
 
     // Answered from the panel and gone from the list: the panel moves on to the

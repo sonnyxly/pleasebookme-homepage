@@ -59,6 +59,7 @@
       "page.of": ({ p, n }) => `Trang ${p} / ${n}`,
       back: "Quay lại Tài nguyên",
       "form.title": "Thêm tài nguyên",
+      untitled: "Chưa đặt tên",
       "form.lede": "Thêm một thứ có thể gán cho một hoặc nhiều dịch vụ.",
       cancel: "Huỷ",
       "basic": "Thông tin cơ bản",
@@ -198,6 +199,7 @@
       "page.of": ({ p, n }) => `Page ${p} of ${n}`,
       back: "Back to Resources",
       "form.title": "Add resource",
+      untitled: "Untitled",
       "form.lede": "Add something that can be assigned to one or more services.",
       cancel: "Cancel",
       "basic": "Basic information",
@@ -351,7 +353,11 @@
   // ---------- State ----------
 
   const state = {
-    view: "list", // "list", "new" or "new-type"
+    // On the stage (shell.js), over the list: the form for a new resource
+    // (#new), the form for a new type beside it (#new/type) or on its own
+    // (#new-type), or the peek of one that exists (#r/<id>, #t/<id>).
+    adding: false,
+    typing: "", // "", "split" (beside the add form) or "solo"
     // The side peek: { kind: "resource" | "type", id, draft, errors, sure, offDraft }.
     peek: null,
     menu: "", // the type whose "…" menu is open
@@ -363,7 +369,6 @@
     slugEdited: false,
     errors: {},
   };
-  let made = 0;
 
   const blankResource = () => ({
     name: "",
@@ -564,19 +569,33 @@
     `<span class="error" id="${id}-error" ${state.errors[key] ? "" : "hidden"}>${state.errors[key] ? t(state.errors[key]) : ""}</span>`;
   const invalid = (key, id) => (state.errors[key] ? `aria-invalid="true" aria-describedby="${id}-error"` : "");
 
-  function renderResourceForm() {
+  // The head of a pane on the stage: what it is, its title (which follows the
+  // name as it is typed), and its tools. Only the first pane switches between
+  // full screen and the side peek; every pane can close.
+  const paneHead = ({ kind, titleId, title, close, toggle = true }) => `
+      <header class="sheet-head peek-head">
+        <div>
+          <p class="peek-kind">${icon("plus")}${kind}</p>
+          <h2 id="${titleId}" data-title ${title ? "" : "data-empty"}>${esc(title || t("untitled"))}</h2>
+        </div>
+        <div class="pane-tools">
+          ${toggle ? PBM.stage.toggle() : ""}
+          <a class="icon-btn" href="${close}" aria-label="${t("close")}" title="${t("close")}">${icon("x")}</a>
+        </div>
+      </header>`;
+
+  function renderAdd() {
     const d = state.draft;
     document.title = `${t("form.title")} | pleasebookme`;
+    const scroll = $("add").querySelector(".peek-body")?.scrollTop || 0;
+    const head = paneHead({ kind: t("form.title"), titleId: "add-title", title: d.name, close: "#" });
 
     if (!RESOURCE_TYPES.length) {
-      $("view").innerHTML = `
-        <header class="head">
-          <a class="icon-btn back" href="#" aria-label="${t("back")}" title="${t("back")}">${icon("left")}</a>
-          <h1>${t("form.title")}</h1>
-          <p>${t("form.lede")}</p>
-        </header>
-        <section class="empty is-left"><h2>${t("notype.title")}</h2><p>${t("notype.text")}</p>
-          <a class="btn btn-primary" href="#new-type">${icon("plus")}${t("type.title")}</a></section>`;
+      $("add").innerHTML = `${head}
+        <div class="peek-body">
+          <section class="peek-sec"><h3>${t("notype.title")}</h3><p class="peek-lede">${t("notype.text")}</p>
+            <p><a class="btn btn-primary" href="#new/type">${icon("plus")}${t("type.title")}</a></p></section>
+        </div>`;
       return;
     }
 
@@ -585,19 +604,11 @@
       items: RESOURCES.filter((r) => r.type === type.id && r.status !== "RETIRED"),
     })).filter((group) => group.items.length);
 
-    $("view").innerHTML = `
-      <header class="head">
-        <a class="icon-btn back" href="#" aria-label="${t("back")}" title="${t("back")}">${icon("left")}</a>
-        <h1>${t("form.title")}</h1>
-        <div class="head-actions">
-          <a class="btn btn-quiet" href="#">${t("cancel")}</a>
-          <button class="btn btn-primary" type="submit" form="form">${t("new")}</button>
-        </div>
-        <p>${t("form.lede")}</p>
-      </header>
-      <form class="form" id="form" data-form="resource" novalidate>
-        <section class="panel card" aria-labelledby="basic-title">
-          <h2 id="basic-title">${t("basic")}</h2>
+    $("add").innerHTML = `${head}
+      <form class="peek-body" id="form" data-form="resource" novalidate>
+        <section class="peek-sec" aria-labelledby="basic-title">
+          <h3 id="basic-title">${t("basic")}</h3>
+          <p class="peek-lede">${t("form.lede")}</p>
           <div class="field">
             <label for="f-name">${t("f.name")}</label>
             <input class="input" id="f-name" data-key="name" maxlength="255" value="${esc(d.name)}" placeholder="${t("f.name.ph")}" autocomplete="off" ${invalid("name", "f-name")} />
@@ -614,7 +625,7 @@
             <textarea class="input area" id="f-desc" data-key="description" rows="4" placeholder="${t("f.desc.ph")}">${esc(d.description)}</textarea>
           </div>
           <div class="field">
-            <span class="label-row"><label for="f-rtype">${t("f.type")}</label><a class="link-btn" href="#new-type">${t("f.type.new")}</a></span>
+            <span class="label-row"><label for="f-rtype">${t("f.type")}</label><a class="link-btn" href="#new/type">${t("f.type.new")}</a></span>
             <select class="input" id="f-rtype" data-key="type" ${invalid("type", "f-rtype")}>
               <option value="">${t("f.type.pick")}</option>
               ${RESOURCE_TYPES.map((type) => `<option value="${type.id}" ${d.type === type.id ? "selected" : ""}>${esc(typeName(type))}</option>`).join("")}
@@ -622,8 +633,8 @@
             ${fieldError("type", "f-rtype")}
           </div>
         </section>
-        <section class="panel card" aria-labelledby="specs-title">
-          <h2 id="specs-title">${t("specs")}</h2>
+        <section class="peek-sec" aria-labelledby="specs-title">
+          <h3 id="specs-title">${t("specs")}</h3>
           <div class="field-pair">
             <div class="field">
               <label for="f-capacity">${t("f.capacity")}</label>
@@ -638,8 +649,8 @@
             </div>
           </div>
         </section>
-        <section class="panel card" aria-labelledby="links-title">
-          <h2 id="links-title">${t("links")}</h2>
+        <section class="peek-sec" aria-labelledby="links-title">
+          <h3 id="links-title">${t("links")}</h3>
           <div class="field">
             <span class="label" id="f-code-label">${t("f.code")}</span>
             <div class="swatches" role="radiogroup" aria-labelledby="f-code-label">
@@ -668,7 +679,11 @@
           </div>
         </section>
       </form>
-      <p class="note">${t("note")}</p>`;
+      <footer class="sheet-actions peek-actions">
+        <a class="btn btn-quiet" href="#">${t("cancel")}</a>
+        <button class="btn btn-primary" type="submit" form="form">${t("new")}</button>
+      </footer>`;
+    $("add").querySelector(".peek-body").scrollTop = scroll;
   }
 
   function checkResource(d) {
@@ -687,11 +702,12 @@
     state.errors = checkResource(d);
     const firstBad = ["name", "slug", "type", "capacity"].find((key) => state.errors[key]);
     if (firstBad) {
-      renderResourceForm();
+      renderAdd();
       return $({ name: "f-name", slug: "f-slug", type: "f-rtype", capacity: "f-capacity" }[firstBad]).focus();
     }
+    const id = PBM.store.newId("r", RESOURCES.map((r) => r.id));
     RESOURCES.push({
-      id: "r" + ++made,
+      id,
       type: d.type,
       name: d.name.trim(),
       slug: d.slug.trim(),
@@ -707,8 +723,12 @@
       member: "",
       price: null,
     });
-    state.draft = null;
-    location.hash = "";
+    PBM.store.joined(d.type, id);
+    PBM.store.save("resources");
+    // It opens straight away, where the rest of it (hours, time off, the
+    // staff login, a price) is set without leaving the screen.
+    refreshResults();
+    location.hash = "r/" + id;
     toast(t("added", { name: d.name.trim() }));
   }
 
@@ -716,22 +736,13 @@
 
   function renderTypeForm() {
     const d = state.typeDraft;
-    // Opened from the resource form, it goes back there; from the list, to the list.
-    const back = state.typeFrom === "new" ? "#new" : "#";
-    const backLabel = state.typeFrom === "new" ? t("form.title") : t("back");
-    document.title = `${t("type.title")} | pleasebookme`;
-    $("view").innerHTML = `
-      <header class="head">
-        <a class="icon-btn back" href="${back}" aria-label="${backLabel}" title="${backLabel}">${icon("left")}</a>
-        <h1>${t("type.title")}</h1>
-        <div class="head-actions">
-          <a class="btn btn-quiet" href="${back}">${t("cancel")}</a>
-          <button class="btn btn-primary" type="submit" form="form">${t("type.save")}</button>
-        </div>
-        <p>${t("type.lede")}</p>
-      </header>
-      <form class="form" id="form" data-form="type" novalidate>
-        <section class="panel card">
+    // Beside the add form it goes back there; on its own, to the list.
+    const back = state.typing === "split" ? "#new" : "#";
+    if (state.typing === "solo") document.title = `${t("type.title")} | pleasebookme`;
+    $("add-type").innerHTML = `${paneHead({ kind: t("type.title"), titleId: "type-title", title: d.name, close: back, toggle: state.typing === "solo" })}
+      <form class="peek-body" id="type-form" data-form="type" novalidate>
+        <section class="peek-sec">
+          <p class="peek-lede">${t("type.lede")}</p>
           <div class="field">
             <label for="t-name">${t("type.name")}</label>
             <input class="input" id="t-name" data-key="name" maxlength="100" value="${esc(d.name)}" placeholder="${t("type.name.ph")}" autocomplete="off" ${invalid("typeName", "t-name")} />
@@ -752,7 +763,10 @@
           </div>
         </section>
       </form>
-      <p class="note">${t("note")}</p>`;
+      <footer class="sheet-actions peek-actions">
+        <a class="btn btn-quiet" href="${back}">${t("cancel")}</a>
+        <button class="btn btn-primary" type="submit" form="type-form">${t("type.save")}</button>
+      </footer>`;
   }
 
   function saveType() {
@@ -763,12 +777,12 @@
       return $("t-name").focus();
     }
     const name = d.name.trim();
-    const type = { id: "t" + ++made, vi: name, en: name, description: d.description.trim(), icon: d.icon, asks: "which" };
+    const type = { id: PBM.store.newId("t", RESOURCE_TYPES.map((x) => x.id)), vi: name, en: name, description: d.description.trim(), icon: d.icon, asks: "which" };
     RESOURCE_TYPES.push(type);
-    state.typeDraft = null;
-    if (state.typeFrom === "new") {
+    PBM.store.save("resources");
+    if (state.typing === "split") {
       // Back to the resource being added, with the new type already chosen.
-      state.draft = { ...(state.draft || blankResource()), type: type.id };
+      state.draft.type = type.id;
       location.hash = "new";
     } else {
       // Back to the list, showing the new (empty) type.
@@ -808,10 +822,11 @@
     const source = kind === "resource" ? RESOURCES.find((r) => r.id === id) : typeOf(id);
     if (!source) return closePeek();
     if (!state.peek) lastFocus = document.activeElement;
+    closeForms(); // a row picked beside the side peek replaces a form there
     state.peek = { kind, id, draft: clone(source), errors: {}, sure: false, offDraft: null };
     state.menu = "";
     renderPeek();
-    if (state.view === "list") refreshResults();
+    refreshResults();
     peekEl.querySelector("[data-close]").focus();
   }
 
@@ -820,7 +835,7 @@
     const id = state.peek.id;
     state.peek = null;
     renderPeek();
-    if (state.view === "list") refreshResults();
+    refreshResults();
     if (location.hash.startsWith("#r/") || location.hash.startsWith("#t/")) history.replaceState(null, "", location.pathname);
     const row = document.querySelector(`[data-open="${id}"]`);
     (row || (lastFocus && document.contains(lastFocus) ? lastFocus : null))?.focus();
@@ -852,7 +867,10 @@
           <p class="peek-kind">${icon(type?.icon || "box")}${esc(type ? typeName(type) : "")}</p>
           <h2 id="peek-title"><i class="code-dot code-${d.code}" aria-hidden="true"></i>${esc(d.name || "…")}</h2>
         </div>
-        <button class="icon-btn" type="button" data-close aria-label="${t("close")}" title="${t("close")}">${icon("x")}</button>
+        <div class="pane-tools">
+          ${PBM.stage.toggle()}
+          <button class="icon-btn" type="button" data-close aria-label="${t("close")}" title="${t("close")}">${icon("x")}</button>
+        </div>
       </header>
       <form class="peek-body" id="peek-form" novalidate>
         <section class="peek-sec" aria-labelledby="ps-details">
@@ -1024,7 +1042,10 @@
           <p class="peek-kind">${t("type.edit")}</p>
           <h2 id="peek-title">${icon(d.icon || "box")}${esc(d[PBM.lang] || d.vi || "…")}</h2>
         </div>
-        <button class="icon-btn" type="button" data-close aria-label="${t("close")}" title="${t("close")}">${icon("x")}</button>
+        <div class="pane-tools">
+          ${PBM.stage.toggle()}
+          <button class="icon-btn" type="button" data-close aria-label="${t("close")}" title="${t("close")}">${icon("x")}</button>
+        </div>
       </header>
       <form class="peek-body" id="peek-form" novalidate>
         <section class="peek-sec">
@@ -1069,6 +1090,7 @@
 
   function renderPeek() {
     peekEl.hidden = !state.peek;
+    PBM.stage.sync();
     if (!state.peek) return (peekEl.innerHTML = "");
     const scroll = peekEl.querySelector(".peek-body")?.scrollTop || 0;
     peekEl.innerHTML = state.peek.kind === "resource" ? resourcePeekHTML() : typePeekHTML();
@@ -1098,6 +1120,7 @@
       p.errors = name ? {} : { typeName: "type.name.error" };
       if (!name) return renderPeek(), $("pt-name").focus();
       Object.assign(typeOf(p.id), d, { vi: d.vi.trim(), en: d.en.trim(), description: (d.description || "").trim() });
+      PBM.store.save("resources");
       toast(t("type.saved", { name }));
     } else {
       p.errors = {};
@@ -1118,6 +1141,7 @@
         hours: d.hours ? Number(d.hours) : null,
         branch: d.branch || undefined,
       });
+      PBM.store.save("resources");
       toast(t("saved", { name: d.name.trim() }));
     }
     p.draft = clone(p.kind === "resource" ? RESOURCES.find((r) => r.id === p.id) : typeOf(p.id));
@@ -1136,6 +1160,7 @@
       else if (!p.sure) p.sure = true;
       else {
         RESOURCES.splice(RESOURCES.indexOf(r), 1);
+        PBM.store.save("resources");
         toast(t("deleted", { name: r.name }));
         return closePeek();
       }
@@ -1145,6 +1170,7 @@
       else if (!p.sure) p.sure = true;
       else {
         RESOURCE_TYPES.splice(RESOURCE_TYPES.indexOf(type), 1);
+        PBM.store.save("resources");
         if (state.type === type.id) state.type = "";
         toast(t("type.deleted", { name: typeName(type) }));
         return closePeek();
@@ -1193,6 +1219,7 @@
       p.draft.status = "RETIRED";
       p.draft.bookable = false;
       Object.assign(RESOURCES.find((r) => r.id === p.id), { status: "RETIRED", bookable: false });
+      PBM.store.save("resources");
       p.sure = false;
       toast(t("retired", { name: p.draft.name }));
       renderPeek();
@@ -1254,51 +1281,87 @@
       $("rail").innerHTML = railHTML();
       return document.querySelector(`[data-menu="${id}"]`)?.focus();
     }
-    if (state.peek && !event.target.closest?.("select")) closePeek();
+    if (event.target.closest?.("select")) return;
+    if (state.typing === "split") return (location.hash = "new");
+    if (state.adding || state.typing) return (location.hash = "");
+    if (state.peek) closePeek();
   });
 
   // ---------- Which view ----------
 
+  // The form for a new type: beside the add form, or on its own.
+  function openType(mode) {
+    const pane = $("add-type");
+    if (state.typing !== mode || !state.typeDraft) state.typeDraft = blankType();
+    state.typing = mode;
+    renderTypeForm();
+    if (mode === "split") return PBM.stage.split(pane, true);
+    pane.classList.add("is-solo");
+    pane.hidden = false;
+    PBM.stage.sync();
+  }
+
+  // `at once` skips the slide out, when everything closes together.
+  function closeType(atOnce) {
+    const pane = $("add-type");
+    const was = state.typing;
+    state.typing = "";
+    state.typeDraft = null;
+    if (was === "split" && !atOnce) return PBM.stage.split(pane, false);
+    pane.hidden = true;
+    pane.classList.remove("is-solo", "is-leaving");
+    PBM.stage.sync();
+  }
+
+  function closeForms() {
+    closeType(true);
+    state.adding = false;
+    state.draft = null;
+    $("add").hidden = true;
+    document.title = t("doc.title");
+    PBM.stage.sync();
+  }
+
   function route() {
     const asked = location.hash.slice(1);
+    const fromType = state.typing === "split";
+    if (!$("results")) renderList();
+    state.errors = {};
     // #r/<id> and #t/<id> open a resource or a type over the list, so a peek
     // can be linked to. Opening one from the page keeps the scroll.
     const peekAsked = asked.match(/^([rt])\/(.+)$/);
-    if (peekAsked) {
-      if (state.view !== "list" || !$("results")) {
-        state.view = "list";
-        state.draft = null;
-        render();
-      }
-      return openPeek(peekAsked[1] === "r" ? "resource" : "type", decodeURIComponent(peekAsked[2]));
-    }
+    if (peekAsked) return openPeek(peekAsked[1] === "r" ? "resource" : "type", decodeURIComponent(peekAsked[2]));
     if (state.peek) closePeek();
-    state.errors = {};
-    if (asked === "new") {
-      state.view = "new";
+
+    if (asked === "new" || asked === "new/type") {
       // Coming back from "add a type" keeps what was already typed.
-      if (!state.draft) {
+      if (!state.adding) {
         state.draft = blankResource();
         state.slugEdited = false;
       }
-    } else if (asked === "new-type") {
-      if (state.view !== "new-type") state.typeFrom = state.view;
-      state.view = "new-type";
-      state.typeDraft = blankType();
-    } else {
-      state.view = "list";
-      state.draft = null;
+      state.adding = true;
+      renderAdd();
+      $("add").hidden = false;
+      if (asked === "new/type") {
+        openType("split");
+        return $("t-name").focus();
+      }
+      closeType();
+      return (fromType ? $("f-rtype") : $("f-name"))?.focus();
     }
-    render();
-    if (state.view === "new") $("f-name")?.focus();
-    if (state.view === "new-type") $("t-name").focus();
-    scrollTo(0, 0);
+    if (asked === "new-type") {
+      closeForms();
+      openType("solo");
+      return $("t-name").focus();
+    }
+    closeForms();
   }
 
   function render() {
-    if (state.view === "new") renderResourceForm();
-    else if (state.view === "new-type") renderTypeForm();
-    else renderList();
+    renderList();
+    if (state.adding) renderAdd();
+    if (state.typing) renderTypeForm();
+    if (state.peek) renderPeek();
   }
 
   // ---------- Events ----------
@@ -1312,10 +1375,20 @@
       state.page = 0;
       return refreshResults();
     }
+  });
+
+  // The add form and the type form, wherever they are on the stage.
+  function formInput(event) {
+    const el = event.target;
     const form = el.closest("[data-form]");
     if (!form || !el.dataset.key) return;
     const d = form.dataset.form === "type" ? state.typeDraft : state.draft;
     d[el.dataset.key] = el.value;
+    if (el.dataset.key === "name") {
+      const title = form.closest(".pane").querySelector("[data-title]");
+      title.textContent = el.value.trim() || t("untitled");
+      title.toggleAttribute("data-empty", !el.value.trim());
+    }
     if (form.dataset.form === "resource") {
       if (el.id === "f-slug") state.slugEdited = true;
       // The slug follows the name until the owner types one of their own.
@@ -1324,6 +1397,24 @@
         $("f-slug").value = d.slug;
       }
     }
+  }
+
+  function formChange(event) {
+    const el = event.target;
+    if (el.name === "code") state.draft.code = Number(el.value);
+    if (el.name === "icon") state.typeDraft.icon = el.value;
+  }
+
+  function formSubmit(event) {
+    event.preventDefault();
+    if (event.target.dataset.form === "resource") saveResource();
+    else if (event.target.dataset.form === "type") saveType();
+  }
+
+  [$("add"), $("add-type")].forEach((host) => {
+    host.addEventListener("input", formInput);
+    host.addEventListener("change", formChange);
+    host.addEventListener("submit", formSubmit);
   });
 
   view.addEventListener("change", (event) => {
@@ -1333,8 +1424,6 @@
       state.page = 0;
       return refreshResults();
     }
-    if (el.name === "code") state.draft.code = Number(el.value);
-    if (el.name === "icon") state.typeDraft.icon = el.value;
   });
 
   view.addEventListener("click", (event) => {
@@ -1394,11 +1483,8 @@
     }
   });
 
-  view.addEventListener("submit", (event) => {
-    event.preventDefault();
-    if (event.target.dataset.form === "resource") saveResource();
-    else if (event.target.dataset.form === "type") saveType();
-  });
+  // The search box is a form; Enter must not reload the page.
+  view.addEventListener("submit", (event) => event.preventDefault());
 
   addEventListener("hashchange", route);
   PBM.onChange(render);

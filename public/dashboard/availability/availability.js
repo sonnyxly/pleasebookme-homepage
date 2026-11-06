@@ -5,7 +5,13 @@
    and rules: a schedule has a name, a timezone and one start and end per
    working day; at least one day must be on; an end must come after its start.
    What the server cannot do yet (turning a schedule off, different hours on one
-   date) is shown as it is there: present, and marked as not ready. */
+   date) is shown as it is there: present, and marked as not ready.
+
+   Since 4 November a schedule opens on the stage (shell.js), full screen or
+   docked at the right, over the list. Its date overrides can be added in a
+   form beside it (#<id>/override); the server does not keep them yet, so
+   that part carries a "Later" tag, but the mockup keeps them with the
+   schedule. */
 (function () {
   "use strict";
 
@@ -54,11 +60,31 @@
       "pic.total": ({ h, d }) => `${h} giờ mỗi tuần, ${d} ngày làm việc.`,
       "pic.none": "Chưa có ngày làm việc nào.",
       "adv.title": "Quy định đặt lịch",
-      "adv.text": "Thời gian báo trước và hạn đặt trước không nằm ở đây. Chúng được đặt cho tiệm và cho từng dịch vụ.",
+      "adv.text": "Thời gian báo trước và hạn đặt trước không nằm ở đây. Mỗi dịch vụ tự đặt trong phần Quy định của nó.",
       "adv.link": "Mở Dịch vụ",
       "over.title": "Giờ riêng cho một ngày",
-      "over.text": "Chưa đặt được giờ khác cho một ngày cụ thể, ví dụ ngày lễ.",
+      "over.text": "Những ngày giờ làm khác với lịch tuần, như ngày lễ. Máy chủ chưa lưu được, nên phần này để cho bản sau.",
       soon: "Sắp có",
+      later: "Bản sau",
+      "over.add": "Thêm ngày riêng",
+      "over.none": "Chưa có ngày riêng nào.",
+      "over.closed": "Nghỉ cả ngày",
+      "over.remove": ({ when }) => `Bỏ ngày riêng ${when}`,
+      "kind.new": "Lịch làm việc mới",
+      "kind.edit": "Lịch làm việc",
+      close: "Đóng",
+      "ov.kind": "Ngày riêng",
+      "ov.title": "Ngày riêng mới",
+      "ov.lede": "Những ngày tiệm nghỉ hoặc làm giờ khác với lịch tuần.",
+      "ov.from": "Từ ngày",
+      "ov.to": "Đến ngày",
+      "ov.closed": "Nghỉ cả ngày",
+      "ov.start": "Bắt đầu",
+      "ov.end": "Kết thúc",
+      "ov.reason": "Lý do",
+      "ov.reason.ph": "Ví dụ: Quốc khánh",
+      "ov.error": "Ngày kết thúc phải từ ngày bắt đầu trở đi, và giờ kết thúc phải sau giờ bắt đầu.",
+      "ov.save": "Thêm ngày riêng",
       note: "Dữ liệu mẫu. Đây là bản thiết kế, chưa nối với hệ thống.",
     },
     en: {
@@ -103,11 +129,31 @@
       "pic.total": ({ h, d }) => `${h} hours a week over ${d} working ${d === 1 ? "day" : "days"}.`,
       "pic.none": "No working days yet.",
       "adv.title": "Limits",
-      "adv.text": "Minimum notice and how far ahead customers can book are not set here. They are set for the shop and for each service.",
+      "adv.text": "Minimum notice and how far ahead customers can book are not set here. Each service sets them, in its Policy.",
       "adv.link": "Open Services",
       "over.title": "Date overrides",
-      "over.text": "Add dates when your availability changes from your weekly hours, such as a public holiday. Not available yet.",
+      "over.text": "Dates when your hours differ from the week, such as a public holiday. The server cannot keep them yet, so this part is for a later version.",
       soon: "Coming soon",
+      later: "Later",
+      "over.add": "Add a date override",
+      "over.none": "No date overrides yet.",
+      "over.closed": "Closed all day",
+      "over.remove": ({ when }) => `Remove the override on ${when}`,
+      "kind.new": "New schedule",
+      "kind.edit": "Schedule",
+      close: "Close",
+      "ov.kind": "Date override",
+      "ov.title": "New date override",
+      "ov.lede": "Days the shop is closed, or works other hours than its week.",
+      "ov.from": "From",
+      "ov.to": "To",
+      "ov.closed": "Closed all day",
+      "ov.start": "Start",
+      "ov.end": "End",
+      "ov.reason": "Reason",
+      "ov.reason.ph": "For example: National Day",
+      "ov.error": "The last day must not come before the first, and the end must come after the start.",
+      "ov.save": "Add override",
       note: "Sample data. This is a design mockup, not connected to the system.",
     },
   });
@@ -160,8 +206,8 @@
     draft: null, // the schedule in the form, or null on the list
     sure: null, // the schedule whose delete button was pressed once
     tried: false, // save was pressed, so every error shows
+    override: null, // the date override being added beside the schedule
   };
-  let made = 0;
 
   const blank = () => {
     const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -171,9 +217,10 @@
       timezone: zones().includes(detected) ? detected : "Asia/Saigon",
       // Monday to Friday, 09:00 to 17:00: the same starting point as the app.
       days: WEEK.map((value) => ({ value, enabled: value !== 0 && value !== 6, start: "09:00", end: "17:00" })),
+      overrides: [],
     };
   };
-  const copy = (s) => ({ ...s, days: s.days.map((d) => ({ ...d })) });
+  const copy = (s) => ({ ...s, days: s.days.map((d) => ({ ...d })), overrides: (s.overrides || []).map((o) => ({ ...o })) });
 
   // ---------- Reading a week ----------
 
@@ -314,16 +361,20 @@
     const noDays = state.tried && !d.days.some((day) => day.enabled);
     const zoneList = zones().includes(d.timezone) ? zones() : [d.timezone, ...zones()];
     document.title = `${t(fresh ? "form.new" : "form.edit")} | pleasebookme`;
+    const scroll = pane.querySelector(".peek-body")?.scrollTop || 0;
 
-    $("view").innerHTML = `
-      <header class="head">
-        <a class="icon-btn back" href="#" aria-label="${t("back")}" title="${t("back")}">${icon("left")}</a>
-        <h1>${t(fresh ? "form.new" : "form.edit")}</h1>
-        <div class="head-actions">
-          <a class="btn btn-quiet" href="#">${t("cancel")}</a>
-          <button class="btn btn-primary" type="submit" form="form">${t(fresh ? "save.new" : "save.edit")}</button>
+    pane.innerHTML = `
+      <header class="sheet-head peek-head">
+        <div>
+          <p class="peek-kind">${icon(fresh ? "plus" : "clock")}${t(fresh ? "kind.new" : "kind.edit")}</p>
+          <h2 id="av-title">${t(fresh ? "form.new" : "form.edit")}</h2>
+        </div>
+        <div class="pane-tools">
+          ${PBM.stage.toggle()}
+          <a class="icon-btn" href="#" aria-label="${t("close")}" title="${t("close")}">${icon("x")}</a>
         </div>
       </header>
+      <div class="peek-body av-body">
       <form class="form" id="form" novalidate>
         <div class="form-main">
           <p class="alert" id="days-error" role="alert" ${noDays ? "" : "hidden"}>${t("days.error")}</p>
@@ -358,17 +409,21 @@
             <p>${t("adv.text")}</p>
             <a class="link-btn" href="/dashboard/services">${t("adv.link")}</a>
           </section>
-          <section class="reserved">
-            <h2>${t("over.title")}<span class="tag">${t("soon")}</span></h2>
-            <p>${t("over.text")}</p>
-          </section>
+          <section class="reserved" id="overrides">${overridesHTML(d)}</section>
         </aside>
       </form>
-      <p class="note">${t("note")}</p>`;
+      <p class="note">${t("note")}</p>
+      </div>
+      <footer class="sheet-actions peek-actions">
+        <span class="pane-spacer"></span>
+        <a class="btn btn-quiet" href="#">${t("cancel")}</a>
+        <button class="btn btn-primary" type="submit" form="form">${t(fresh ? "save.new" : "save.edit")}</button>
+      </footer>`;
+    pane.querySelector(".peek-body").scrollTop = scroll;
 
     // One list of times serves every select; each then takes its own value.
     d.days.forEach((day) => {
-      const row = $("view").querySelector(`[data-day="${day.value}"]`);
+      const row = pane.querySelector(`[data-day="${day.value}"]`);
       row.querySelector('[data-time="start"]').value = day.start;
       row.querySelector('[data-time="end"]').value = day.end;
     });
@@ -399,36 +454,190 @@
       const first = noName
         ? $("f-name")
         : noDays
-          ? $("view").querySelector("[data-on]")
-          : $("view").querySelector(`[data-day="${badDay.value}"] [data-time="end"]`);
+          ? pane.querySelector("[data-on]")
+          : pane.querySelector(`[data-day="${badDay.value}"] [data-time="end"]`);
       return first.focus();
     }
-    const saved = { ...copy(d), title: d.title.trim(), id: d.id === "new" ? 100 + ++made : d.id };
+    const saved = { ...copy(d), title: d.title.trim(), id: d.id === "new" ? PBM.store.newNumber(SCHEDULES.map((s) => s.id)) : d.id };
     const at = SCHEDULES.findIndex((s) => s.id === saved.id);
     if (at >= 0) SCHEDULES[at] = saved;
     else SCHEDULES.push(saved);
+    PBM.store.save();
     location.hash = "";
     toast(t("saved", { name: saved.title }));
   }
 
   // ---------- Which view ----------
 
+  // #new or #<id> opens a schedule over the list; "/override" after either
+  // slides in the form for a date override beside it.
   function route() {
-    const asked = decodeURIComponent(location.hash.slice(1));
+    const [asked, side] = decodeURIComponent(location.hash.slice(1)).split("/");
     const found = SCHEDULES.find((s) => String(s.id) === asked);
-    state.tried = false;
-    state.sure = null;
-    state.draft = asked === "new" ? blank() : found ? copy(found) : null;
-    render();
-    if (state.draft) $("f-name").focus();
-    scrollTo(0, 0);
+    const id = asked === "new" ? "new" : found ? found.id : null;
+    if (id === null) {
+      closeOverride(true);
+      state.draft = null;
+      pane.hidden = true;
+      pane.innerHTML = "";
+      PBM.stage.sync();
+      return renderList();
+    }
+    if (!state.draft || state.draft.id !== id) {
+      state.tried = false;
+      state.sure = null;
+      state.draft = id === "new" ? blank() : copy(found);
+      renderForm();
+      pane.hidden = false;
+      PBM.stage.sync();
+      $("f-name").focus();
+    }
+    if (side === "override") openOverride();
+    else closeOverride();
   }
 
-  const render = () => (state.draft ? renderForm() : renderList());
+  function render() {
+    renderList();
+    if (state.draft) renderForm();
+    if (state.override) renderOverride();
+  }
+
+  // ---------- Date overrides, and the form beside the schedule ----------
+
+  const pane = $("av");
+  const sidePane = $("av-side");
+  const base = () => "#" + encodeURIComponent(state.draft.id);
+  const fmtDate = (iso) =>
+    new Date(iso + "T00:00").toLocaleDateString(PBM.locale, { day: "numeric", month: "short", year: "numeric" });
+  const isoToday = () => {
+    const d = new Date(PBM_SAMPLE.TODAY);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  };
+  const whenOf = (o) => (o.from === o.to ? fmtDate(o.from) : `${fmtDate(o.from)} – ${fmtDate(o.to)}`);
+
+  function overridesHTML(d) {
+    const list = d.overrides || [];
+    return `
+      <h2>${t("over.title")}<span class="tag-later">${t("later")}</span></h2>
+      <p>${t("over.text")}</p>
+      ${
+        list.length
+          ? `<ul class="ov-list">${list
+              .map(
+                (o, i) => `<li>
+              <span><strong>${esc(whenOf(o))}</strong><small>${o.closed ? t("over.closed") : `${o.start} – ${o.end}`}${o.reason ? ` · ${esc(o.reason)}` : ""}</small></span>
+              <button class="icon-btn" type="button" data-ov-remove="${i}" aria-label="${esc(t("over.remove", { when: whenOf(o) }))}" title="${esc(t("over.remove", { when: whenOf(o) }))}">${icon("x")}</button>
+            </li>`
+              )
+              .join("")}</ul>`
+          : `<p class="ov-none">${t("over.none")}</p>`
+      }
+      <a class="link-btn" href="${base()}/override">${t("over.add")}</a>`;
+  }
+
+  function renderOverride() {
+    const o = state.override;
+    sidePane.innerHTML = `
+      <header class="sheet-head peek-head">
+        <div>
+          <p class="peek-kind">${icon("plus")}${t("ov.kind")}</p>
+          <h2 id="ov-title">${t("ov.title")}</h2>
+        </div>
+        <div class="pane-tools"><a class="icon-btn" href="${base()}" aria-label="${t("close")}" title="${t("close")}">${icon("x")}</a></div>
+      </header>
+      <form class="peek-body" id="ov-form" novalidate>
+        <section class="peek-sec">
+          <p class="peek-lede">${t("ov.lede")}</p>
+          <div class="field-pair">
+            <div class="field"><label for="ov-from">${t("ov.from")}</label><input class="input" id="ov-from" name="from" type="date" value="${o.from}" /></div>
+            <div class="field"><label for="ov-to">${t("ov.to")}</label><input class="input" id="ov-to" name="to" type="date" value="${o.to}" /></div>
+          </div>
+          <label class="switch-line"><span><strong>${t("ov.closed")}</strong></span><input class="switch" type="checkbox" role="switch" name="closed" ${o.closed ? "checked" : ""} /></label>
+          <div class="field-pair" ${o.closed ? "hidden" : ""} id="ov-hours">
+            <div class="field"><label for="ov-start">${t("ov.start")}</label><select class="input time" id="ov-start" name="start">${TIME_OPTIONS}</select></div>
+            <div class="field"><label for="ov-end">${t("ov.end")}</label><select class="input time" id="ov-end" name="end">${TIME_OPTIONS}</select></div>
+          </div>
+          <div class="field">
+            <label for="ov-reason">${t("ov.reason")}</label>
+            <input class="input" id="ov-reason" name="reason" value="${esc(o.reason)}" placeholder="${t("ov.reason.ph")}" autocomplete="off" />
+          </div>
+          <p class="error" id="ov-error" hidden>${t("ov.error")}</p>
+        </section>
+      </form>
+      <footer class="sheet-actions peek-actions">
+        <span class="pane-spacer"></span>
+        <a class="btn btn-quiet" href="${base()}">${t("cancel")}</a>
+        <button class="btn btn-primary" type="submit" form="ov-form">${t("ov.save")}</button>
+      </footer>`;
+    $("ov-start").value = o.start;
+    $("ov-end").value = o.end;
+  }
+
+  function openOverride() {
+    if (!state.override) {
+      state.override = { from: isoToday(), to: isoToday(), closed: true, start: "09:00", end: "12:00", reason: "" };
+      renderOverride();
+    }
+    PBM.stage.split(sidePane, true);
+    $("ov-from").focus();
+  }
+
+  function closeOverride(atOnce) {
+    if (!state.override) return;
+    state.override = null;
+    if (!atOnce) return PBM.stage.split(sidePane, false);
+    sidePane.hidden = true;
+    sidePane.classList.remove("is-leaving");
+    $("pane-stage").classList.remove("is-split");
+  }
+
+  function saveOverride() {
+    const data = new FormData($("ov-form"));
+    const o = {
+      from: data.get("from"),
+      to: data.get("to"),
+      closed: data.has("closed"),
+      start: data.get("start"),
+      end: data.get("end"),
+      reason: data.get("reason").trim(),
+    };
+    if (!o.from || !o.to || o.to < o.from || (!o.closed && minutesOf(o.end) <= minutesOf(o.start))) {
+      $("ov-error").hidden = false;
+      return $("ov-to").focus();
+    }
+    // Kept with the schedule's draft; saved with the schedule.
+    state.draft.overrides = [...state.draft.overrides, o].sort((a, b) => a.from.localeCompare(b.from));
+    $("overrides").innerHTML = overridesHTML(state.draft);
+    location.hash = base().slice(1); // the side form slides out
+  }
+
+  sidePane.addEventListener("change", (event) => {
+    if (event.target.name === "closed") $("ov-hours").hidden = event.target.checked;
+  });
+
+  sidePane.addEventListener("submit", (event) => {
+    event.preventDefault();
+    saveOverride();
+  });
+
+  // Escape closes the side form first, then the schedule.
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || !state.draft || event.target.closest?.("select")) return;
+    location.hash = state.override ? base().slice(1) : "";
+  });
 
   // ---------- Events ----------
 
   const view = $("view");
+  const listen = (type, fn) => [view, pane].forEach((el) => el.addEventListener(type, fn));
+
+  pane.addEventListener("click", (event) => {
+    const gone = event.target.closest("[data-ov-remove]");
+    if (!gone) return;
+    state.draft.overrides.splice(Number(gone.dataset.ovRemove), 1);
+    $("overrides").innerHTML = overridesHTML(state.draft);
+    $("overrides").querySelector("a")?.focus();
+  });
 
   view.addEventListener("click", (event) => {
     if (event.target.closest("[data-keep]")) {
@@ -445,12 +654,13 @@
     }
     const at = SCHEDULES.findIndex((s) => s.id === id);
     const [gone] = SCHEDULES.splice(at, 1);
+    PBM.store.save();
     state.sure = null;
     renderList();
     toast(t("del.done", { name: gone.title }));
   });
 
-  view.addEventListener("input", (event) => {
+  listen("input", (event) => {
     const d = state.draft;
     if (!d) return;
     if (event.target.id === "f-name") {
@@ -463,7 +673,7 @@
     }
   });
 
-  view.addEventListener("change", (event) => {
+  listen("change", (event) => {
     const d = state.draft;
     if (!d) return;
     if (event.target.id === "f-zone") d.timezone = event.target.value;
@@ -475,14 +685,15 @@
     refreshDay(row, day);
   });
 
-  view.addEventListener("submit", (event) => {
+  listen("submit", (event) => {
     event.preventDefault();
-    save();
+    if (event.target.id === "form") save();
   });
 
   addEventListener("hashchange", route);
   PBM.onChange(render);
 
   PBM.mount("availability");
+  renderList();
   route();
 })();

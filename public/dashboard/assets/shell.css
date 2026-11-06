@@ -1435,6 +1435,403 @@ select.input-small {
   }
 }
 
+/* ---------- The stage: what is opened, over the page ---------- */
+/* One pane, or two side by side (shell.js says how it works). "full" fills
+   the room right of the sidebar and under the bar; "side" docks at the right
+   like the booking panel above, and the page stays usable beside it. */
+
+.pane-stage {
+  --pane-w: 460px; /* one pane docked at the right */
+  --pane-col: 760px; /* the widest a form reads well, when it has the room */
+  position: fixed;
+  z-index: 40;
+  top: calc(var(--edge) + var(--bar-h));
+  right: 0;
+  bottom: 0;
+  left: calc(var(--edge) + var(--side));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0fr);
+  grid-template-rows: minmax(0, 1fr);
+  column-gap: 0;
+  padding: var(--gap);
+  background: var(--paper);
+  transition:
+    left 0.36s var(--ease-out),
+    width 0.36s var(--ease-out),
+    grid-template-columns 0.36s var(--ease-out),
+    column-gap 0.36s var(--ease-out);
+}
+
+.pane-stage[hidden] {
+  display: none;
+}
+
+/* Two forms, half and half, a fixed gap apart. */
+.pane-stage.is-split {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: var(--gap);
+}
+
+.pane-stage > * {
+  grid-row: 1;
+  grid-column: 1;
+  min-width: 0;
+}
+
+.pane-stage > .pane-side {
+  grid-column: 2;
+  /* Above anything sticky in the main pane, for when it covers it on a phone. */
+  position: relative;
+  z-index: 1;
+}
+
+/* The second form opened on its own, from the page rather than from a form. */
+.pane-stage > .pane-side.is-solo {
+  grid-column: 1;
+}
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sidebar);
+  background: var(--panel-solid);
+  overflow: hidden;
+  /* What a page stacks inside a pane stays inside it, so the side pane can
+     cover the main one on a phone. */
+  isolation: isolate;
+  animation: pane-in 0.3s var(--ease-out);
+}
+
+.pane[hidden] {
+  display: none;
+}
+
+.pane-stage > .pane-side:not(.is-solo) {
+  animation: pane-side-in 0.36s var(--ease-out);
+}
+
+.pane-stage > .pane-side.is-leaving {
+  opacity: 0;
+  transform: translateX(24px);
+  transition:
+    opacity 0.22s ease,
+    transform 0.3s var(--ease-out);
+}
+
+@keyframes pane-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes pane-side-in {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+}
+
+/* Full: each part of a pane keeps its text in one calm column, centred,
+   while the head's and the foot's lines run the whole width. */
+.pane-stage[data-as="full"] .pane > * {
+  padding-inline: max(var(--space-5), calc((100% - var(--pane-col)) / 2));
+}
+
+/* Side: docked at the right; the page is usable around it. */
+.pane-stage[data-as="side"] {
+  left: auto;
+  width: min(calc(var(--pane-w) + var(--gap) * 2), 100vw);
+  background: none;
+  pointer-events: none;
+}
+
+.pane-stage[data-as="side"].is-split {
+  width: min(calc(var(--pane-w) * 2 + var(--gap) * 3), 100vw);
+}
+
+.pane-stage[data-as="side"] > * {
+  pointer-events: auto;
+  /* The one shadow in the app, because this layer floats over the page. */
+  box-shadow: 0 16px 40px -20px rgb(0 0 0 / 0.35);
+}
+
+@keyframes pane-docked-in {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+.pane-stage[data-as="side"] > .pane {
+  animation-name: pane-docked-in;
+}
+
+@media (min-width: 1200px) {
+  body:has(.pane-stage[data-as="side"]:not([hidden])) .page {
+    padding-right: calc(var(--pane-w, 460px) + var(--gap) * 2 + var(--space-1));
+  }
+}
+
+/* A pane's parts, shared by every page that uses the stage: a head with what
+   it is and its title, a body that scrolls, sections split by a line, and a
+   save line at the foot. (First drawn for Resources' side peek.) */
+
+.peek-head {
+  padding: var(--space-5) var(--space-5) var(--space-3);
+  border-bottom: 1px solid var(--line);
+}
+
+.peek-kind {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.peek-kind .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.peek-head h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2-5);
+  margin-top: var(--space-1-5);
+  font-size: var(--text-h3);
+  overflow-wrap: anywhere;
+}
+
+.peek-head h2 .code-dot {
+  flex: none;
+  width: 12px;
+  height: 12px;
+}
+
+.peek-head h2 .icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+.peek-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 var(--space-5);
+}
+
+.peek-sec {
+  display: grid;
+  gap: var(--space-3-5);
+  padding: var(--space-5) 0;
+}
+
+.peek-sec + .peek-sec {
+  border-top: 1px solid var(--line);
+}
+
+.peek-sec h3 {
+  margin: 0;
+  font-size: var(--text-ui);
+  font-weight: var(--fw-semibold);
+}
+
+.peek-sec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.peek-lede {
+  margin: calc(var(--space-2) * -1) 0 0;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.field .peek-lede {
+  margin: 0;
+}
+
+.switch-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  cursor: pointer;
+}
+
+.switch-line strong {
+  display: block;
+  font-size: var(--text-ui);
+  font-weight: var(--fw-semibold);
+}
+
+.switch-line small {
+  display: block;
+  margin-top: var(--space-0-5);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.peek-actions {
+  align-items: center;
+  padding: var(--space-3) var(--space-5);
+}
+
+.peek-actions .btn {
+  flex: none;
+  height: 40px;
+}
+
+.peek-dirty {
+  flex: 1;
+  font-size: var(--text-small);
+  color: var(--muted);
+  text-align: right;
+}
+
+.peek-actions .btn-primary {
+  margin-left: auto;
+}
+
+.peek-dirty:not([hidden]) + .btn-primary {
+  margin-left: 0;
+}
+
+/* A new resource or type before it has a name. */
+.peek-head h2[data-empty] {
+  color: var(--muted);
+}
+
+
+/* A label with a small action at its right ("Add a new type"). */
+.label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.label-row label {
+  font-size: var(--text-ui);
+  font-weight: var(--fw-semibold);
+}
+
+.link-btn {
+  font-size: var(--text-small);
+  font-weight: var(--fw-semibold);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+button.link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+/* Tabs across the top of a pane (a service's five parts). */
+.pane-tabs {
+  display: flex;
+  gap: var(--space-1);
+  padding: 0 var(--space-5);
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pane-tabs button {
+  flex: none;
+  height: 42px;
+  margin-bottom: -1px;
+  padding: 0 var(--space-2-5);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font: inherit;
+  font-size: var(--text-ui);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.pane-tabs button:hover {
+  color: var(--ink);
+}
+
+.pane-tabs button[aria-selected="true"] {
+  border-bottom-color: var(--ink);
+  font-weight: var(--fw-semibold);
+  color: var(--ink);
+}
+
+/* Pushes the buttons after it to the right of a save line. */
+.pane-spacer {
+  flex: 1;
+}
+
+/* Drawn, but not in this version yet. */
+.tag-later {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font-size: var(--text-small);
+  font-weight: var(--fw-medium);
+  color: var(--muted);
+}
+
+/* A colour code picked from eight round choices (a new staff member, a new
+   resource). */
+.code-picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.code-pick {
+  cursor: pointer;
+}
+
+.code-pick i {
+  display: block;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--code);
+  box-shadow: inset 0 0 0 1px var(--st-pending-edge);
+}
+
+.code-pick input:checked + i {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.code-pick input:focus-visible + i {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* The pane's own tools beside its title: full or side, and close. */
+.pane-tools {
+  display: flex;
+  gap: var(--space-2);
+}
+
 /* ---------- Page area ---------- */
 
 .page {
@@ -1589,5 +1986,38 @@ select.input-small {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- The stage on narrow screens ---------- */
+/* No sidebar beside it, no room to dock: it always fills the screen under
+   the bar, and a second form covers the first instead of sharing. */
+
+@media (max-width: 1000px) {
+  .pane-stage,
+  .pane-stage[data-as="side"],
+  .pane-stage[data-as="side"].is-split {
+    left: var(--edge);
+    width: auto;
+    background: var(--paper);
+    pointer-events: auto;
+  }
+
+  .pane-stage.is-split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0fr);
+    column-gap: 0;
+  }
+
+  .pane-stage > .pane-side {
+    grid-column: 1;
+  }
+
+  .pane-stage[data-as="side"] > * {
+    box-shadow: none;
+  }
+
+  /* Full screen is the only way here, so there is nothing to switch. */
+  [data-stage-as] {
+    display: none;
   }
 }

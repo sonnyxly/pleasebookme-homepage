@@ -294,7 +294,7 @@
 
   // ---------- Sample data (shared with Tổng quan) ----------
 
-  const { TODAY, NOW, OPEN, CLOSE, STAFF, SERVICES, SERVICE_ORDER, BOOKINGS, BRANCHES, WIDGETS, CLOSURES } = PBM_SAMPLE;
+  const { TODAY, NOW, OPEN, CLOSE, STAFF, SERVICES, SERVICE_ORDER, SCHEDULES, BOOKINGS, BRANCHES, WIDGETS, CLOSURES, RESOURCES, RESOURCE_TYPES } = PBM_SAMPLE;
 
   // What a booking's colour can stand for. Status is always there; the others
   // appear only when the shop has more than one of the thing to tell apart.
@@ -309,6 +309,7 @@
   // ---------- State and helpers ----------
 
   const state = {
+    side: null, // a new service or staff member beside the booking form: { kind, draft }
     view: "calendar",
     range: "day",
     date: TODAY,
@@ -970,12 +971,18 @@
     const warnings = warningsFor(f);
     const noName = f.tried && !clean(f.customer);
     return `
-      <form class="dialog-form" id="bk-form" data-kind="booking" novalidate>
-        <header class="dialog-head">
-          <h2 id="dialog-title">${t(moving ? "form.move" : "form.add")}</h2>
-          <button class="icon-btn" type="button" data-dialog-close aria-label="${t("act.close")}">${icon("x")}</button>
+        <header class="sheet-head peek-head">
+          <div>
+            <p class="peek-kind">${icon(moving ? "clock" : "plus")}${t("pane.booking")}</p>
+            <h2 id="dialog-title">${t(moving ? "form.move" : "form.add")}</h2>
+          </div>
+          <div class="pane-tools">
+            ${PBM.stage.toggle()}
+            <button class="icon-btn" type="button" data-dialog-close aria-label="${t("act.close")}" title="${t("act.close")}">${icon("x")}</button>
+          </div>
         </header>
-        <div class="dialog-body">
+        <form class="peek-body" id="bk-form" data-kind="booking" novalidate>
+        <section class="peek-sec">
           <div class="field-pair">
             <div class="field">
               <label for="bk-customer">${t("form.customer")}</label>
@@ -989,13 +996,13 @@
           </div>
           <div class="field-pair">
             <div class="field">
-              <label for="bk-svc">${t("form.service")}</label>
+              <span class="label-row"><label for="bk-svc">${t("form.service")}</label><button class="link-btn" type="button" data-side="service">${t("side.service")}</button></span>
               <select class="input" id="bk-svc" data-f="svc">${SERVICE_ORDER.map(
                 (id) => `<option value="${id}" ${id === f.svc ? "selected" : ""}>${SERVICES[id][PBM.lang]}, ${t("minutes", { n: SERVICES[id].min })}</option>`
               ).join("")}</select>
             </div>
             <div class="field">
-              <label for="bk-staff">${t("form.staff")}</label>
+              <span class="label-row"><label for="bk-staff">${t("form.staff")}</label><button class="link-btn" type="button" data-side="staff">${t("side.staff")}</button></span>
               <select class="input" id="bk-staff" data-f="staff">
                 <option value="any" ${f.staff === "any" ? "selected" : ""}>${t("form.staff.any")}</option>
                 ${able
@@ -1023,12 +1030,13 @@
               ? `<div class="warn" role="status"><strong>${t("warn.title")}</strong><ul>${warnings.map((w) => `<li>${w}</li>`).join("")}</ul></div>`
               : ""
           }
-        </div>
-        <footer class="dialog-foot">
+        </section>
+        </form>
+        <footer class="sheet-actions peek-actions">
+          <span class="pane-spacer"></span>
           <button class="btn btn-quiet" type="button" data-dialog-close>${t("form.cancel")}</button>
-          <button class="btn btn-primary" type="submit">${t(warnings.length ? "form.save.anyway" : moving ? "form.save.move" : "form.save.add")}</button>
-        </footer>
-      </form>`;
+          <button class="btn btn-primary" type="submit" form="bk-form">${t(warnings.length ? "form.save.anyway" : moving ? "form.save.move" : "form.save.add")}</button>
+        </footer>`;
   }
 
   // The bookings already inside a period that is about to be blocked.
@@ -1049,12 +1057,18 @@
     const inside = insideBlock(f);
     const branches = BRANCHES.filter((b) => PBM.branches.has(b.id));
     return `
-      <form class="dialog-form" id="bk-form" data-kind="block" novalidate>
-        <header class="dialog-head">
-          <h2 id="dialog-title">${t(editing ? "block.edit" : "block.title")}</h2>
-          <button class="icon-btn" type="button" data-dialog-close aria-label="${t("act.close")}">${icon("x")}</button>
+        <header class="sheet-head peek-head">
+          <div>
+            <p class="peek-kind">${icon("lock")}${t("pane.block")}</p>
+            <h2 id="dialog-title">${t(editing ? "block.edit" : "block.title")}</h2>
+          </div>
+          <div class="pane-tools">
+            ${PBM.stage.toggle()}
+            <button class="icon-btn" type="button" data-dialog-close aria-label="${t("act.close")}" title="${t("act.close")}">${icon("x")}</button>
+          </div>
         </header>
-        <div class="dialog-body">
+        <form class="peek-body" id="bk-form" data-kind="block" novalidate>
+        <section class="peek-sec">
           <div class="field">
             <label for="bl-who">${t("block.who")}</label>
             <select class="input" id="bl-who" data-f="who">
@@ -1089,25 +1103,30 @@
           </div>
           <span class="error" ${bad ? "" : "hidden"}>${t("block.error")}</span>
           ${inside ? `<div class="warn" role="status"><ul><li>${t("block.inside", { n: inside })}</li></ul></div>` : ""}
-        </div>
-        <footer class="dialog-foot">
+        </section>
+        </form>
+        <footer class="sheet-actions peek-actions">
           ${editing ? `<button class="btn btn-quiet btn-danger" type="button" data-block-open>${t("block.open")}</button>` : ""}
-          <span class="spacer"></span>
+          <span class="pane-spacer"></span>
           <button class="btn btn-quiet" type="button" data-dialog-close>${t("form.cancel")}</button>
-          <button class="btn btn-primary" type="submit">${t(editing ? "block.update" : "block.save")}</button>
-        </footer>
-      </form>`;
+          <button class="btn btn-primary" type="submit" form="bk-form">${t(editing ? "block.update" : "block.save")}</button>
+        </footer>`;
   }
 
   function renderDialog() {
+    const scroll = dialog.querySelector(".peek-body")?.scrollTop || 0;
     dialog.innerHTML = state.form ? bookingFormHTML() : state.block ? blockFormHTML() : "";
+    const body = dialog.querySelector(".peek-body");
+    if (body) body.scrollTop = scroll;
   }
 
+  // The form opens on the stage (shell.js): full screen, or docked at the right.
   function showDialog(focusId) {
-    lastFocus = document.activeElement;
+    if (dialog.hidden) lastFocus = document.activeElement;
     closeSheet();
     renderDialog();
-    if (!dialog.open) dialog.showModal();
+    dialog.hidden = false;
+    PBM.stage.sync();
     $(focusId)?.focus();
   }
 
@@ -1130,10 +1149,12 @@
   }
 
   function closeDialog() {
+    closeSide(true);
     state.form = null;
     state.block = null;
-    if (dialog.open) dialog.close();
+    dialog.hidden = true;
     dialog.innerHTML = "";
+    PBM.stage.sync();
     if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
   }
 
@@ -1149,10 +1170,11 @@
     let b = f.id !== null && byId(f.id);
     if (b) Object.assign(b, fields);
     else {
-      const id = BOOKINGS.length + 1;
+      const id = Math.max(0, ...BOOKINGS.map((x) => x.id)) + 1;
       b = { id, uid: "BK-" + (0x7a3f10 + id * 7919).toString(16).toUpperCase().slice(-6), cust: null, status: "ACCEPTED", noShow: false, outcome: null, widget: "hand", ...fields };
       BOOKINGS.push(b);
     }
+    PBM.store.save();
     const moved = f.id !== null;
     closeDialog();
     state.entering = false;
@@ -1179,6 +1201,7 @@
     const existing = CLOSURES.find((c) => c.id === f.id);
     if (existing) Object.assign(existing, fields);
     else CLOSURES.push({ id: Math.max(0, ...CLOSURES.map((c) => c.id)) + 1, ...fields });
+    PBM.store.save();
     closeDialog();
     change({ date: addDays(TODAY, fields.fromDay) });
     toast(t("block.saved"));
@@ -1214,19 +1237,315 @@
 
   dialog.addEventListener("click", (event) => {
     if (event.target.closest("[data-dialog-close]")) return closeDialog();
+    const side = event.target.closest("[data-side]");
+    if (side) return openSide(side.dataset.side);
     if (event.target.closest("[data-block-open]")) {
       CLOSURES.splice(CLOSURES.findIndex((c) => c.id === state.block.id), 1);
+      PBM.store.save();
       closeDialog();
       change({});
       toast(t("block.opened"));
     }
   });
 
-  // Escape closes the window; keep the drafts in step with it.
-  dialog.addEventListener("close", () => {
-    state.form = null;
-    state.block = null;
+  // ---------- A new service or staff member, beside the booking ----------
+  // A walk-in wants something not on the menu, or a new barber starts today:
+  // "New service" and "New staff member" slide a short form in beside the
+  // booking. What is made is real (the menu, Resources, and every widget that
+  // takes new ones by itself) and is picked in the booking straight away.
+
+  PBM.addStrings({
+    vi: {
+      "pane.booking": "Lịch hẹn",
+      "pane.block": "Chặn giờ",
+      "side.service": "Dịch vụ mới",
+      "side.staff": "Nhân viên mới",
+      untitled: "Chưa đặt tên",
+      "ns.lede": "Thêm vào menu của tiệm. Ảnh, giờ nhận khách và quy định đặt sau trong Dịch vụ.",
+      "ns.name": "Tên dịch vụ",
+      "ns.name.error": "Đặt tên cho dịch vụ.",
+      "ns.min": "Thời lượng",
+      "ns.min.unit": "phút",
+      "ns.price": "Giá",
+      "ns.staff": "Ai làm dịch vụ này",
+      "ns.staff.error": "Chọn ít nhất một người.",
+      "ns.save": "Thêm dịch vụ",
+      "ns.added": ({ name }) => `Đã thêm ${name} vào menu`,
+      "st.lede": "Người nhận lịch. Họ được thêm vào Tài nguyên (Nhân viên).",
+      "st.name": "Tên",
+      "st.name.error": "Nhập tên người này.",
+      "st.note": "Ghi chú",
+      "st.note.ph": "Làm gì, như cắt và cạo",
+      "st.branch": "Chi nhánh",
+      "st.branch.none": "Không thuộc chi nhánh nào",
+      "st.does": "Làm mọi dịch vụ trên menu",
+      "st.code": "Màu trên lịch",
+      "st.code.n": ({ n }) => `Màu ${n}`,
+      "st.save": "Thêm nhân viên",
+      "st.added": ({ name }) => `Đã thêm ${name} vào nhân viên`,
+    },
+    en: {
+      "pane.booking": "Booking",
+      "pane.block": "Block time",
+      "side.service": "New service",
+      "side.staff": "New staff member",
+      untitled: "Untitled",
+      "ns.lede": "Added to the shop's menu. A photo, availability and policy are set later on Services.",
+      "ns.name": "Service name",
+      "ns.name.error": "Give the service a name.",
+      "ns.min": "Duration",
+      "ns.min.unit": "min",
+      "ns.price": "Price",
+      "ns.staff": "Who does this service",
+      "ns.staff.error": "Choose at least one person.",
+      "ns.save": "Add service",
+      "ns.added": ({ name }) => `Added ${name} to the menu`,
+      "st.lede": "Someone who takes bookings. They are added to Resources as Staff.",
+      "st.name": "Name",
+      "st.name.error": "Give them a name.",
+      "st.note": "Note",
+      "st.note.ph": "What they do, such as cuts and shaves",
+      "st.branch": "Branch",
+      "st.branch.none": "No branch",
+      "st.does": "Does every service on the menu",
+      "st.code": "Color on the calendar",
+      "st.code.n": ({ n }) => `Color ${n}`,
+      "st.save": "Add staff member",
+      "st.added": ({ name }) => `Added ${name} to the staff`,
+    },
   });
+
+  const sidePane = $("bk-side");
+  const CODES = [1, 2, 3, 4, 5, 6, 7, 8];
+  const esc = (text) => String(text).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const slugify = (name) =>
+    name
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/[đĐ]/g, "d")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+  const uniqueSlug = (name, taken) => {
+    const root = slugify(name) || "item";
+    let slug = root;
+    for (let n = 2; taken.includes(slug); n++) slug = `${root}-${n}`;
+    return slug;
+  };
+
+  function renderSide() {
+    const { kind, draft: d } = state.side;
+    const head = (label) => `
+      <header class="sheet-head peek-head">
+        <div>
+          <p class="peek-kind">${icon("plus")}${label}</p>
+          <h2 id="bk-side-title" ${d.name ? "" : "data-empty"}>${esc(d.name || t("untitled"))}</h2>
+        </div>
+        <div class="pane-tools"><button class="icon-btn" type="button" data-side-close aria-label="${t("act.close")}" title="${t("act.close")}">${icon("x")}</button></div>
+      </header>`;
+    const foot = (label) => `
+      <footer class="sheet-actions peek-actions">
+        <span class="pane-spacer"></span>
+        <button class="btn btn-quiet" type="button" data-side-close>${t("form.cancel")}</button>
+        <button class="btn btn-primary" type="submit" form="bk-side-form">${label}</button>
+      </footer>`;
+    if (kind === "service") {
+      sidePane.innerHTML = `${head(t("side.service"))}
+      <form class="peek-body" id="bk-side-form" novalidate>
+        <section class="peek-sec">
+          <p class="peek-lede">${t("ns.lede")}</p>
+          <div class="field">
+            <label for="ns-name">${t("ns.name")}</label>
+            <input class="input" id="ns-name" name="name" value="${esc(d.name)}" autocomplete="off" aria-describedby="ns-name-error" />
+            <span class="error" id="ns-name-error" hidden>${t("ns.name.error")}</span>
+          </div>
+          <div class="field-pair">
+            <div class="field">
+              <label for="ns-min">${t("ns.min")}</label>
+              <div class="with-unit"><input class="input num" id="ns-min" name="min" type="number" min="5" step="5" value="${d.min}" inputmode="numeric" /><span>${t("ns.min.unit")}</span></div>
+            </div>
+            <div class="field">
+              <label for="ns-price">${t("ns.price")}</label>
+              <div class="with-unit"><input class="input num" id="ns-price" name="price" type="number" min="0" step="5000" value="${d.price}" inputmode="numeric" /><span>₫</span></div>
+            </div>
+          </div>
+          <div class="field" role="group" aria-labelledby="ns-staff-label">
+            <span class="label" id="ns-staff-label">${t("ns.staff")}</span>
+            <div class="chips">${STAFF.map(
+              (person) =>
+                `<label class="chip-pick"><input class="visually-hidden" type="checkbox" name="staff" value="${person.id}" ${
+                  d.staff.includes(person.id) ? "checked" : ""
+                } /><span><i aria-hidden="true">${esc(person.name.charAt(0))}</i>${esc(person.name)}</span></label>`
+            ).join("")}</div>
+            <span class="error" id="ns-staff-error" hidden>${t("ns.staff.error")}</span>
+          </div>
+        </section>
+      </form>${foot(t("ns.save"))}`;
+      return;
+    }
+    sidePane.innerHTML = `${head(t("side.staff"))}
+      <form class="peek-body" id="bk-side-form" novalidate>
+        <section class="peek-sec">
+          <p class="peek-lede">${t("st.lede")}</p>
+          <div class="field">
+            <label for="st-name">${t("st.name")}</label>
+            <input class="input" id="st-name" name="name" value="${esc(d.name)}" autocomplete="off" aria-describedby="st-name-error" />
+            <span class="error" id="st-name-error" hidden>${t("st.name.error")}</span>
+          </div>
+          <div class="field">
+            <label for="st-note">${t("st.note")}</label>
+            <input class="input" id="st-note" name="note" value="${esc(d.note)}" placeholder="${t("st.note.ph")}" autocomplete="off" />
+          </div>
+          ${
+            BRANCHES.length
+              ? `<div class="field">
+            <label for="st-branch">${t("st.branch")}</label>
+            <select class="input" id="st-branch" name="branch">
+              <option value="" ${d.branch ? "" : "selected"}>${t("st.branch.none")}</option>
+              ${BRANCHES.map((b) => `<option value="${b.id}" ${d.branch === b.id ? "selected" : ""}>${esc(b.name)}</option>`).join("")}
+            </select>
+          </div>`
+              : ""
+          }
+          <label class="check"><input type="checkbox" name="does" ${d.does ? "checked" : ""} /><span>${t("st.does")}</span></label>
+          <div class="field">
+            <span class="label" id="st-code-label">${t("st.code")}</span>
+            <div class="code-picks" role="radiogroup" aria-labelledby="st-code-label">
+              ${CODES.map(
+                (n) =>
+                  `<label class="code-pick"><input class="visually-hidden" type="radio" name="code" value="${n}" ${d.code === n ? "checked" : ""} /><i class="code-${n}" aria-hidden="true"></i><span class="visually-hidden">${t("st.code.n", { n })}</span></label>`
+              ).join("")}
+            </div>
+          </div>
+        </section>
+      </form>${foot(t("st.save"))}`;
+  }
+
+  function openSide(kind) {
+    if (state.side?.kind !== kind) {
+      const used = new Set(RESOURCES.filter((r) => r.type === "people").map((r) => r.code));
+      const f = state.form;
+      state.side = {
+        kind,
+        draft:
+          kind === "service"
+            ? { name: "", min: 30, price: 0, staff: f && f.staff !== "any" ? [Number(f.staff)] : STAFF.map((person) => person.id) }
+            : { name: "", note: "", branch: BRANCHES.length === 1 ? BRANCHES[0].id : "", does: true, code: CODES.find((n) => !used.has(n)) || 1 },
+      };
+      renderSide();
+    }
+    PBM.stage.split(sidePane, true);
+    sidePane.querySelector("[name=name]").focus();
+  }
+
+  // `at once` skips the slide out, when the booking closes with it.
+  function closeSide(atOnce) {
+    if (!state.side) return;
+    state.side = null;
+    if (!atOnce) {
+      PBM.stage.split(sidePane, false);
+      return dialog.querySelector("[data-side]")?.focus();
+    }
+    sidePane.hidden = true;
+    sidePane.classList.remove("is-leaving");
+    $("pane-stage").classList.remove("is-split");
+  }
+
+  function saveSide() {
+    const { kind, draft: d } = state.side;
+    const data = new FormData($("bk-side-form"));
+    d.name = clean(data.get("name"));
+    const fail = (field) => {
+      $(field).setAttribute("aria-invalid", "true");
+      $(field + "-error").hidden = false;
+      $(field).focus();
+    };
+    const f = state.form;
+
+    if (kind === "service") {
+      d.min = Math.max(5, Number(data.get("min")) || 0);
+      d.price = Math.max(0, Number(data.get("price")) || 0);
+      d.staff = data.getAll("staff").map(Number);
+      if (!d.name) return fail("ns-name");
+      if (!d.staff.length) {
+        $("ns-staff-error").hidden = false;
+        return sidePane.querySelector("[name=staff]")?.focus();
+      }
+      const id = PBM.store.newId("svc", Object.keys(SERVICES));
+      // The same defaults as a new service on Services (Trung's server defaults).
+      SERVICES[id] = {
+        vi: d.name,
+        en: d.name,
+        line: { vi: "", en: "" },
+        slug: uniqueSlug(d.name, Object.values(SERVICES).map((x) => x.slug)),
+        min: d.min,
+        price: d.price,
+        from: false,
+        tint: "glacier",
+        art: "waves",
+        photo: "",
+        staff: d.staff,
+        schedule: SCHEDULES[0]?.id ?? null,
+        timezone: "Asia/Saigon",
+        rules: { confirm: "auto", combine: "yes", redirect: "", notice: 120, ahead: 90, before: 0, after: 0, perCustomer: null, noCancel: false, noReschedule: false },
+      };
+      SERVICE_ORDER.push(id);
+      PBM.store.joined("services", id);
+      PBM.store.save("services");
+      if (f) f.svc = id;
+      toast(t("ns.added", { name: d.name }));
+    } else {
+      d.note = clean(data.get("note") || "");
+      d.branch = data.get("branch") || "";
+      d.does = data.has("does");
+      d.code = Number(data.get("code")) || d.code;
+      if (!d.name) return fail("st-name");
+      const person = {
+        id: PBM.store.newId("r", RESOURCES.map((r) => r.id)),
+        type: "people",
+        name: d.name,
+        slug: uniqueSlug(d.name, RESOURCES.map((r) => r.slug)),
+        description: d.note,
+        capacity: null,
+        status: "ACTIVE",
+        code: d.code,
+        branch: d.branch || undefined,
+        does: d.does ? [...SERVICE_ORDER] : f ? [f.svc] : [],
+        bookable: true,
+        hours: null,
+        off: [],
+        member: "",
+        price: null,
+      };
+      if (!RESOURCE_TYPES.some((x) => x.id === "people")) RESOURCE_TYPES.push({ id: "people", vi: "Nhân viên", en: "Staff", icon: "users", asks: "who" });
+      RESOURCES.push(person);
+      PBM.store.joined("people", person.id);
+      PBM.store.save("resources"); // gives them a staff number, puts them in STAFF and on the services they do
+      if (f) f.staff = String(person.staffId);
+      toast(t("st.added", { name: d.name }));
+    }
+    renderDialog();
+    closeSide();
+    renderAll();
+  }
+
+  sidePane.addEventListener("input", (event) => {
+    if (event.target.name !== "name") return;
+    state.side.draft.name = event.target.value;
+    const title = $("bk-side-title");
+    title.textContent = event.target.value.trim() || t("untitled");
+    title.toggleAttribute("data-empty", !event.target.value.trim());
+  });
+
+  sidePane.addEventListener("click", (event) => {
+    if (event.target.closest("[data-side-close]")) closeSide();
+  });
+
+  sidePane.addEventListener("submit", (event) => {
+    event.preventDefault();
+    saveSide();
+  });
+
 
   // ---------- Updates ----------
 
@@ -1286,6 +1605,7 @@
       b.outcome = null;
       b.noShow = false;
     } else b.status = NEXT_STATUS[action];
+    PBM.store.save();
     state.entering = false;
     state.changed = b.id;
     swap(renderAll);
@@ -1333,7 +1653,7 @@
   PBM.branches.onChange(() => change({}));
 
   document.addEventListener("click", (event) => {
-    if (event.target.closest("dialog")) return;
+    if (event.target.closest(".pane-stage")) return;
     const action = event.target.closest("[data-act]");
     if (action) return act(action.dataset.id, action.dataset.act);
 
@@ -1376,7 +1696,13 @@
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") return closeSheet();
+    // Escape closes the side form first, then the form, then the booking's panel.
+    if (event.key === "Escape") {
+      if (event.target.closest?.("select")) return;
+      if (state.side) return closeSide();
+      if (state.form || state.block) return closeDialog();
+      return closeSheet();
+    }
     const row = event.target.closest?.(".tr[data-bk]");
     if (row && event.target === row && (event.key === "Enter" || event.key === " ")) {
       event.preventDefault();
@@ -1387,7 +1713,8 @@
   PBM.onChange(() => {
     renderToolbar();
     renderAll();
-    if (dialog.open) renderDialog();
+    if (!dialog.hidden) renderDialog();
+    if (state.side) renderSide();
   });
 
   PBM.mount("bookings");

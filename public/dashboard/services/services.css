@@ -1,5 +1,5 @@
-/* Dịch vụ: heading, shop settings, the grid of service tiles, and the window
-   that edits one service. */
+/* Dịch vụ: heading, how several services are staffed, the grid of service
+   tiles, and the editor that opens one service on the stage. */
 
 /* The layout answers to the room the page really has, which changes when the
    sidebar opens or closes, so the breakpoints below are container queries. */
@@ -62,6 +62,10 @@
 }
 
 /* Fewer than two services: nothing to combine, so the shop's settings are one column. */
+.shop[hidden] {
+  display: none;
+}
+
 .shop.is-single {
   grid-template-columns: minmax(0, 1fr);
 }
@@ -528,119 +532,135 @@
   animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* ---------- The window ---------- */
+/* ---------- The editor on the stage ---------- */
+/* Its head, tabs, body and save line are the stage's (shell.css). What is
+   below is this page's own. */
 
-.window {
-  position: fixed;
-  inset: 0;
-  width: min(960px, calc(100vw - 24px));
-  height: fit-content;
-  max-height: min(790px, calc(100dvh - 24px));
-  margin: auto;
-  padding: 0;
-  border: 1px solid var(--panel-edge);
-  border-radius: var(--r-frame);
-  background: var(--panel-solid);
-  color: var(--ink);
-  box-shadow: 0 24px 60px -24px rgb(0 0 0 / 0.45);
-  overflow: hidden;
+.tile.is-preview {
+  min-height: 236px;
+  pointer-events: none;
 }
 
-.window[open] {
-  animation: window-in 0.36s var(--ease-out);
+.svc-preview {
+  max-width: 440px;
 }
 
-.window::backdrop {
-  background: rgb(0 0 0 / 0.42);
-  animation: backdrop-in 0.3s ease;
-}
-
-@keyframes window-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-}
-
-@keyframes backdrop-in {
-  from {
-    opacity: 0;
-  }
-}
-
-.window-form {
-  display: flex;
-  flex-direction: column;
-  max-height: min(790px, calc(100dvh - 24px));
-}
-
-.window-head {
+/* The link: the fixed start, then the part the owner can change. */
+.slug-row {
   display: flex;
   align-items: center;
+  gap: var(--space-2);
+}
+
+.slug-base {
+  flex: none;
+  max-width: 45%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.slug-row .input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* An amount beside its unit: "2" "hours". */
+.amount-unit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: var(--space-2);
+}
+
+/* No working hours yet: what that means, and where to set them. */
+.notice-box {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-1-5);
+  padding: var(--space-3-5);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-card);
+}
+
+.notice-box p {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* Booking form: the fields every booking asks. */
+.bf-fixed {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+
+.bf-fixed li {
+  display: flex;
   justify-content: space-between;
   gap: var(--space-3);
-  padding: var(--space-4) var(--space-4) var(--space-3) var(--space-5);
+  padding: var(--space-2-5) var(--space-3);
+  font-size: var(--text-ui);
 }
 
-.window-head h2 {
+.bf-fixed li + li {
+  border-top: 1px solid var(--line);
+}
+
+.bf-tag {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* The shop's own questions: drawn, greyed, for a later version. */
+.bf-own {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
   margin: 0;
-  font-family: var(--font-display);
-  font-weight: var(--fw-extrabold);
-  font-size: var(--text-h2);
-  line-height: 1.2;
+  padding: var(--space-3) var(--space-3-5) var(--space-3-5);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-card);
 }
 
-.window-head .icon-btn:hover {
-  background: var(--well);
+.bf-own > :not(legend) {
+  opacity: 0.6;
 }
 
-/* Fields on the left scroll; the preview on the right stays put. */
-.window-body {
-  flex: 1;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
-}
-
-.window-fields {
-  display: grid;
-  align-content: start;
-  gap: var(--space-4);
-  min-height: 0;
-  padding: var(--space-1) var(--space-5) var(--space-5);
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
-
-.window-side {
+.bf-own legend {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: var(--space-2);
-  padding: var(--space-1) var(--space-5) var(--space-5) var(--space-5);
-  border-left: 1px solid var(--line);
-}
-
-.window-side .label {
-  margin: 0;
+  padding: 0 var(--space-1);
   font-size: var(--text-ui);
   font-weight: var(--fw-semibold);
 }
 
-.tile.is-preview {
-  min-height: 310px;
-  pointer-events: none;
+.bf-q {
+  display: grid;
+  gap: var(--space-3);
 }
 
-.window-foot {
-  display: flex;
-  flex-wrap: wrap;
+.bf-add {
+  justify-self: start;
+}
+
+.chip-static {
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3-5) var(--space-5);
-  border-top: 1px solid var(--line);
+  height: 30px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font-size: var(--text-ui);
 }
 
-/* ---------- Fields used only in the window ---------- */
+
+/* ---------- Fields used only in the editor ---------- */
 
 .photo-row {
   display: flex;
@@ -687,54 +707,6 @@
 .swatch-pick input:focus-visible + span {
   outline: 2px solid var(--focus);
   outline-offset: 5px;
-}
-
-/* Folded by default: most services follow the shop and never open this. */
-.rules {
-  padding: 0 var(--space-3-5);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--r-control);
-}
-
-.rules summary {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: 46px;
-  font-size: var(--text-ui);
-  font-weight: var(--fw-semibold);
-  list-style: none;
-  cursor: pointer;
-}
-
-.rules summary::-webkit-details-marker {
-  display: none;
-}
-
-.rules summary::after {
-  content: "";
-  width: 8px;
-  height: 8px;
-  margin: 0 var(--space-1) 3px auto;
-  border-right: 1.75px solid currentColor;
-  border-bottom: 1.75px solid currentColor;
-  transform: rotate(45deg);
-  transition: transform 0.25s var(--ease-out);
-}
-
-.rules[open] summary::after {
-  margin-bottom: -3px;
-  transform: rotate(225deg);
-}
-
-.rules-hint {
-  margin: 0 0 var(--space-3);
-  font-size: var(--text-small);
-  color: var(--muted);
-}
-
-.rules .field-pair {
-  padding-bottom: var(--space-3-5);
 }
 
 /* ---------- Narrower pages ---------- */
@@ -792,16 +764,8 @@
   }
 }
 
-/* The window is outside the page container, so it follows the screen itself. */
+/* The stage is outside the page container, so it follows the screen itself. */
 @media (max-width: 760px) {
-  .window-body {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .window-side {
-    display: none;
-  }
-
   .field-pair {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -810,8 +774,8 @@
     margin-left: 0;
   }
 
-  /* Three buttons fit one row once Delete is only its icon; it gets its words
-     back when it asks to be pressed again. */
+  /* Delete is only its icon on a phone; it gets its words back when it
+     asks to be pressed again. */
   .btn-danger:not(.is-sure) span {
     display: none;
   }

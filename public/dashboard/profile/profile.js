@@ -72,6 +72,7 @@
 
   const { SHOP, BRANCHES } = PBM_SAMPLE;
 
+  // What the owner saved last time (kept by assets/store.js), else the sample.
   const draft = {
     name: t("org.name"),
     // A new shop has written nothing about itself yet.
@@ -80,6 +81,7 @@
     phone: SHOP.phone,
     timezone: "Asia/Saigon",
     logo: "",
+    ...SHOP.profile,
     tried: false,
   };
 
@@ -185,8 +187,13 @@
 
   view.addEventListener("change", (event) => {
     if (event.target.id !== "logo-file" || !event.target.files[0]) return;
-    draft.logo = URL.createObjectURL(event.target.files[0]);
-    render();
+    PBM.store
+      .picture(event.target.files[0], 320)
+      .then((logo) => {
+        draft.logo = logo;
+        render();
+      })
+      .catch(() => {});
   });
 
   view.addEventListener("click", (event) => {
@@ -202,6 +209,11 @@
       render();
       return $("p-name").focus();
     }
+    const { name, bio, address, phone, timezone, logo } = draft;
+    SHOP.profile = { name: name.trim(), bio, address, phone, timezone, logo };
+    SHOP.phone = phone;
+    PBM.store.save();
+    document.querySelectorAll(".account-text strong").forEach((el) => (el.textContent = SHOP.profile.name));
     toast(t("saved"));
   });
 

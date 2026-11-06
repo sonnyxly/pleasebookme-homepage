@@ -32,25 +32,30 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/dashboard/assets/tokens.css?v=a28b2197" />
-    <link rel="stylesheet" href="/dashboard/assets/shell.css?v=e7deac23" />
-    <link rel="stylesheet" href="/dashboard/resources/resources.css?v=bcfabd58" />
+    <link rel="stylesheet" href="/dashboard/assets/shell.css?v=89c17816" />
+    <link rel="stylesheet" href="/dashboard/resources/resources.css?v=991689bb" />
   </head>
   <body>
     <aside id="sidebar" class="chrome sidebar"></aside>
     <header id="topbar" class="chrome topbar"></header>
 
-    <!-- Three views share this page: the list, the form for a new resource
-         (#new) and the form for a new type of resource (#new-type). In the app
-         these are /dashboard/resources, /dashboard/resources/new and
-         /dashboard/resources/types/new. -->
+    <!-- The list. Everything else opens over it, on the stage. -->
     <main class="page" id="view"></main>
 
-    <!-- One resource or one type, opened beside the table (#r/<id>, #t/<id>).
-         In the app this is a side panel over /dashboard/resources. -->
-    <aside class="sheet panel peek" id="peek" role="dialog" aria-labelledby="peek-title" hidden></aside>
+    <!-- The stage (shell.css): full screen, or docked at the right. It holds
+         one resource or one type that exists (#r/<id>, #t/<id>), the form for
+         a new resource (#new), and the form for a new type, beside the new
+         resource (#new/type) or on its own (#new-type). In the app these are
+         /dashboard/resources/<id>, /new and /types/new. -->
+    <div class="pane-stage" id="pane-stage" hidden>
+      <aside class="pane peek" id="peek" role="dialog" aria-labelledby="peek-title" hidden></aside>
+      <aside class="pane peek" id="add" role="dialog" aria-labelledby="add-title" hidden></aside>
+      <aside class="pane pane-side peek" id="add-type" role="dialog" aria-labelledby="type-title" hidden></aside>
+    </div>
 
-    <script src="/dashboard/assets/shell.js?v=2e20a969"></script>
-    <script src="/dashboard/assets/sample.js?v=69bcba6b"></script>
-    <script src="/dashboard/resources/resources.js?v=36215efc"></script>
+    <script src="/dashboard/assets/shell.js?v=07c7cfd9"></script>
+    <script src="/dashboard/assets/sample.js?v=a2ab41de"></script>
+    <script src="/dashboard/assets/store.js?v=942b2426"></script>
+    <script src="/dashboard/resources/resources.js?v=b51c2752"></script>
   </body>
 </html>

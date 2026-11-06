@@ -36,8 +36,8 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/dashboard/assets/tokens.css?v=a28b2197" />
-    <link rel="stylesheet" href="/dashboard/assets/shell.css?v=e7deac23" />
-    <link rel="stylesheet" href="/dashboard/services/services.css?v=de13556f" />
+    <link rel="stylesheet" href="/dashboard/assets/shell.css?v=89c17816" />
+    <link rel="stylesheet" href="/dashboard/services/services.css?v=1c92259b" />
   </head>
   <body>
     <aside id="sidebar" class="chrome sidebar"></aside>
@@ -50,12 +50,9 @@
         <p id="lede"></p>
       </header>
 
-      <!-- Set once for the shop; every service follows these unless it has its own rule. -->
-      <section
-        class="panel shop"
-        id="shop"
-        aria-labelledby="shop-title"
-      ></section>
+      <!-- How a booking with several services is staffed: the one shop-wide
+           setting left here. Each service keeps its own rules (4 November). -->
+      <section class="panel shop" id="shop" aria-labelledby="shop-title" hidden></section>
 
       <!-- The menu: one tile per service, in the owner's order. The first is wide. -->
       <div class="tiles" id="tiles"></div>
@@ -66,11 +63,17 @@
       <p class="note" id="note"></p>
     </main>
 
-    <!-- The window that edits one service. -->
-    <dialog class="window" id="window" aria-labelledby="window-title"></dialog>
+    <!-- The stage (shell.css): one service in five parts (#new, #s/<id>), and
+         beside it the form for a new staff member (.../staff). In the app this
+         is /dashboard/services/<id>?tabName=... -->
+    <div class="pane-stage" id="pane-stage" hidden>
+      <aside class="pane" id="svc" role="dialog" aria-labelledby="svc-title" hidden></aside>
+      <aside class="pane pane-side" id="staff-new" role="dialog" aria-labelledby="staff-title" hidden></aside>
+    </div>
 
-    <script src="/dashboard/assets/shell.js?v=2e20a969"></script>
-    <script src="/dashboard/assets/sample.js?v=69bcba6b"></script>
-    <script src="/dashboard/services/services.js?v=e57ff77b"></script>
+    <script src="/dashboard/assets/shell.js?v=07c7cfd9"></script>
+    <script src="/dashboard/assets/sample.js?v=a2ab41de"></script>
+    <script src="/dashboard/assets/store.js?v=942b2426"></script>
+    <script src="/dashboard/services/services.js?v=f467464c"></script>
   </body>
 </html>

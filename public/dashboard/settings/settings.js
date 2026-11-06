@@ -5,7 +5,7 @@
    settings/integrations). Every other entry here is a place the design needs,
    so most of them have no page behind them yet: they open the same "not drawn
    yet" message the sidebar uses. Four entries lead to pages the design
-   already has: the shop profile, the shop's booking rules (the shared card on
+   already has: the shop profile, the booking rules (set on each service in
    Dịch vụ), the look of the booking page (on Widget đặt lịch) and Google
    Calendar (Tích hợp, drawn on 23 October). Messages are
    email only for now, so there is no Zalo or SMS entry. */
@@ -32,7 +32,7 @@
       "i.general": "Chung",
       "i.general.d": "Ngôn ngữ, múi giờ và cách hiện ngày giờ.",
       "i.rules": "Quy tắc đặt lịch",
-      "i.rules.d": "Báo trước tối thiểu, cách xác nhận lịch và ngày nhận khách cho cả tiệm.",
+      "i.rules.d": "Mỗi dịch vụ tự đặt: báo trước, đặt xa nhất, thời gian nghỉ và cách xác nhận. Mở trong Dịch vụ.",
       "i.look": "Giao diện",
       "i.look.d": "Màu và kiểu của trang đặt lịch và các widget.",
       "i.notify": "Thông báo",
@@ -53,6 +53,12 @@
       "i.plan.d": "Xem gói đang dùng và các hoá đơn.",
       "i.import": "Nhập dữ liệu",
       "i.import.d": "Đưa dịch vụ vào từ ảnh bảng giá, hoặc lịch hẹn cũ từ bảng tính.",
+      "i.reset": "Đặt lại tiệm mẫu",
+      "i.reset.d": "Xoá mọi thứ bạn đã tạo khi dùng thử bản thiết kế. Chỉ trong trình duyệt này.",
+      "i.reset.none": "Trình duyệt này chưa lưu gì của tiệm mẫu.",
+      "i.reset.sure": "Bấm lần nữa để đặt lại",
+      "i.reset.sure.d": "Dịch vụ, tài nguyên, widget, giờ làm việc và lịch hẹn bạn đã tạo sẽ mất, tiệm trở về như lúc đầu.",
+      "i.reset.done": "Đã đặt lại tiệm mẫu",
     },
     en: {
       "doc.title": "Settings | pleasebookme",
@@ -71,7 +77,7 @@
       "i.general": "General",
       "i.general.d": "Language, timezone and how dates and times are shown.",
       "i.rules": "Booking rules",
-      "i.rules.d": "Minimum notice, how bookings are confirmed and which days take customers, for the whole shop.",
+      "i.rules.d": "Each service sets its own: notice, how far ahead, buffers and confirmation. Opens Services.",
       "i.look": "Appearance",
       "i.look.d": "Color and style of the booking page and the widgets.",
       "i.notify": "Notifications",
@@ -92,6 +98,12 @@
       "i.plan.d": "See your current plan and your invoices.",
       "i.import": "Import",
       "i.import.d": "Bring in services from a photo of your menu, or past bookings from a spreadsheet.",
+      "i.reset": "Reset sample shop",
+      "i.reset.d": "Remove everything you made while trying the design. In this browser only.",
+      "i.reset.none": "Nothing of the sample shop is saved in this browser.",
+      "i.reset.sure": "Press again to reset",
+      "i.reset.sure.d": "The services, resources, widgets, schedules and bookings you made go, and the shop starts again.",
+      "i.reset.done": "Sample shop reset",
     },
   });
 
@@ -123,6 +135,8 @@
       items: [
         { id: "plan", icon: "card" },
         { id: "import", icon: "download" },
+        // The mockup keeps what you make in this browser (assets/store.js).
+        { id: "reset", icon: "trash", reset: true },
       ],
     },
   ];
@@ -137,8 +151,22 @@
       .replace(/đ/g, "d");
 
   let query = "";
+  let sure = false; // the reset asks twice, like every delete in the design
+
+  function resetHTML(item) {
+    const kept = PBM.store.has();
+    const name = t(sure ? "i.reset.sure" : "i.reset");
+    const desc = t(!kept ? "i.reset.none" : sure ? "i.reset.sure.d" : "i.reset.d");
+    return `<li data-find="${plain(t("i.reset") + " " + t("i.reset.d"))}">
+        <button class="item item-reset ${sure ? "is-sure" : ""}" type="button" data-reset ${kept ? "" : "disabled"}>
+          <span class="tile">${icon(item.icon)}</span>
+          <span><strong>${name}</strong><span class="desc">${desc}</span></span>
+        </button>
+      </li>`;
+  }
 
   function itemHTML(item) {
+    if (item.reset) return resetHTML(item);
     const target = item.href ? `href="${item.href}"` : 'href="#" data-pending';
     return `<li data-find="${plain(t("i." + item.id) + " " + t("i." + item.id + ".d"))}">
         <a class="item" ${target}>
@@ -198,6 +226,30 @@
     filter();
   });
 
+  $("view").addEventListener("click", (event) => {
+    if (!event.target.closest("[data-reset]")) return;
+    if (!sure) {
+      sure = true;
+      render();
+      return document.querySelector("[data-reset]").focus();
+    }
+    sure = false;
+    PBM.store.reset();
+    try {
+      sessionStorage.setItem("pbm-reset", "1"); // say so once the page is back
+    } catch {
+      /* the page still starts again; it just says nothing */
+    }
+    location.reload(); // start again from the empty sample, sidebar included
+  });
+
+  // Leaving the button undoes the first press.
+  $("view").addEventListener("focusout", (event) => {
+    if (!sure || !event.target.closest("[data-reset]") || event.relatedTarget?.closest("[data-reset]")) return;
+    sure = false;
+    render();
+  });
+
   $("view").addEventListener("keydown", (event) => {
     if (event.key !== "Escape" || event.target.id !== "find" || !query) return;
     query = "";
@@ -208,4 +260,12 @@
   PBM.onChange(render);
   PBM.mount("settings");
   render();
+  try {
+    if (sessionStorage.getItem("pbm-reset")) {
+      sessionStorage.removeItem("pbm-reset");
+      PBM.toast(t("i.reset.done"));
+    }
+  } catch {
+    /* no session storage: nothing to say */
+  }
 })();

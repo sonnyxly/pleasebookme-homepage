@@ -1317,3 +1317,79 @@ html[data-window] .pv {
     margin: var(--space-2-5) 0;
   }
 }
+
+/* ---------- The editor on the stage ---------- */
+/* The editor is one pane that scrolls inside itself, so the parts that stay
+   in view (the sections and the preview) stick to its top, not the page's.
+   It answers to its own width like the page did, so the layouts above still
+   apply when a side form takes half of it. */
+
+.wd-pane {
+  padding: 0;
+  background: var(--paper);
+  border-color: transparent;
+}
+
+.wd-scroll {
+  container: page / inline-size;
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-3-5) var(--space-1) var(--space-3-5);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.pane-stage[data-as="full"] .wd-pane > .wd-scroll {
+  padding-inline: var(--space-1);
+}
+
+.wd-pane .ed-tabs,
+.wd-pane .ed-side {
+  top: 0;
+}
+
+/* With a form beside it, the editor reads as a pane like the form. */
+.pane-stage.is-split .wd-pane {
+  border-color: var(--line-strong);
+  background: var(--panel-solid);
+}
+
+.pane-stage.is-split .wd-scroll {
+  padding-inline: var(--space-3);
+}
+
+/* Two small links in a group's heading: "New service" and "All". */
+.group-links {
+  display: inline-flex;
+  gap: var(--space-3);
+}
+
+/* Limits and Pricing: drawn for the design, greyed until a later version. */
+.later-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ed-tabs .tag-later {
+  margin-left: auto;
+}
+
+.later-note {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-2-5) var(--space-3);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-card);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.later-box {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0.55;
+}

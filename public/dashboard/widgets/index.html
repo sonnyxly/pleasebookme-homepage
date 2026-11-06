@@ -34,21 +34,29 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/dashboard/assets/tokens.css?v=a28b2197" />
-    <link rel="stylesheet" href="/dashboard/assets/shell.css?v=e7deac23" />
-    <link rel="stylesheet" href="/dashboard/widgets/widgets.css?v=e0afcfce" />
+    <link rel="stylesheet" href="/dashboard/assets/shell.css?v=89c17816" />
+    <link rel="stylesheet" href="/dashboard/widgets/widgets.css?v=47a2fc5c" />
   </head>
   <body>
     <aside id="sidebar" class="chrome sidebar"></aside>
     <header id="topbar" class="chrome topbar"></header>
 
-    <!-- Three views share this page: the list of widgets, the editor for one
-         (the editor's address ends in #<widget id>), and that widget alone in
-         a window of its own (the address ends in ?window=<widget id>; the
-         sidebar and top bar are not drawn). -->
+    <!-- The list of widgets, or that widget alone in a window of its own (the
+         address ends in ?window=<widget id>; the sidebar and top bar are not
+         drawn). -->
     <main class="page" id="view"></main>
 
-    <script src="/dashboard/assets/shell.js?v=2e20a969"></script>
-    <script src="/dashboard/assets/sample.js?v=69bcba6b"></script>
-    <script src="/dashboard/widgets/widgets.js?v=d83968cc"></script>
+    <!-- The stage (shell.css), always full screen here: the editor for one
+         widget (#<widget id>) and, beside it, a new service or resource
+         (#<widget id>/new-service, /new-resource). -->
+    <div class="pane-stage" id="pane-stage" data-lock="full" hidden>
+      <section class="pane wd-pane" id="wd" aria-label="Widget" hidden></section>
+      <aside class="pane pane-side" id="wd-side" role="dialog" aria-labelledby="side-title" hidden></aside>
+    </div>
+
+    <script src="/dashboard/assets/shell.js?v=07c7cfd9"></script>
+    <script src="/dashboard/assets/sample.js?v=a2ab41de"></script>
+    <script src="/dashboard/assets/store.js?v=942b2426"></script>
+    <script src="/dashboard/widgets/widgets.js?v=87df4af0"></script>
   </body>
 </html>

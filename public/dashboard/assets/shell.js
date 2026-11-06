@@ -3,7 +3,7 @@
 (function () {
   "use strict";
 
-  const STORE = { lang: "pbm-lang", theme: "pbm-theme", sidebar: "pbm-sidebar", branches: "pbm-branches" };
+  const STORE = { lang: "pbm-lang", theme: "pbm-theme", sidebar: "pbm-sidebar", branches: "pbm-branches", openAs: "pbm-open-as" };
   const read = (key) => {
     try {
       return localStorage.getItem(key);
@@ -38,6 +38,8 @@
       "nav.label": "Các mục trong trang quản lý",
       "share.copy": "Sao chép link đặt lịch",
       "share.done": "Đã sao chép link đặt lịch",
+      "stage.full": "Mở toàn màn hình",
+      "stage.side": "Mở ở cạnh phải",
       "search.placeholder": "Tìm lịch hẹn, khách hoặc dịch vụ",
       "search.label": "Tìm kiếm",
       quick: "Tạo nhanh",
@@ -76,6 +78,8 @@
       "nav.label": "Dashboard sections",
       "share.copy": "Copy link to booking page",
       "share.done": "Booking page link copied",
+      "stage.full": "Open full screen",
+      "stage.side": "Open as side peek",
       "search.placeholder": "Search bookings, customers or services",
       "search.label": "Search",
       quick: "Create",
@@ -188,6 +192,9 @@
     phone: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/>',
     info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
     // Used by Widget đặt lịch: "open in a window of its own".
+    // The stage's two ways to open something: the whole room, or docked at the right.
+    full: '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>',
+    side: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/>',
     external: '<path d="M15 3h6v6M10 14 21 3M18 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/>',
     // Used by Cài đặt.
     store: '<path d="M4 9 5.5 4h13L20 9"/><path d="M4 9a2.67 2.67 0 0 0 5.33 0 2.67 2.67 0 0 0 5.34 0A2.67 2.67 0 0 0 20 9"/><path d="M5 12v8h14v-8M10 20v-4h4v4"/>',
@@ -217,13 +224,15 @@
 
   // `gap` starts a new group: the day's work, then setting the shop up, then
   // what to look at afterwards. A little space tells them apart, no labels.
+  // Widgets sit right under Bookings (Sonny, 4 November): a widget is where
+  // customers book from, the place Cal.com gives its Event Types.
   const NAV = [
     { id: "dashboard", icon: "grid", href: "/dashboard" },
     { id: "bookings", icon: "calendarCheck", href: "/dashboard/bookings" },
+    { id: "widgets", icon: "widget", href: "/dashboard/widgets" },
     { id: "availability", icon: "clock", href: "/dashboard/availability", gap: true },
     { id: "services", icon: "scissors", href: "/dashboard/services" },
     { id: "resources", icon: "users", href: "/dashboard/resources" },
-    { id: "widgets", icon: "widget", href: "/dashboard/widgets" },
     { id: "analytics", icon: "chart", href: "/dashboard/analytics", gap: true },
     { id: "integrations", icon: "plug", href: "/dashboard/integrations" },
     { id: "settings", icon: "sliders", href: "/dashboard/settings", gap: true },
@@ -232,6 +241,8 @@
   const SOON = [{ id: "notifications", icon: "bell" }];
 
   const BOOKING_LINK = "pleasebookme.app/booking/tiem-toc-mau";
+  // The name the owner gave the shop on Hồ sơ tiệm, once saved (assets/store.js).
+  const shopName = () => window.PBM_SAMPLE?.SHOP?.profile?.name || t("org.name");
   let active = "dashboard";
 
   function navLink(item) {
@@ -270,7 +281,7 @@
         ${langSwitch("drawer-lang")}
         <div class="account">
           <span class="avatar" aria-hidden="true">S</span>
-          <a class="account-text" href="/dashboard/profile"><strong>${t("org.name")}</strong><span>${t("org.role")}</span></a>
+          <a class="account-text" href="/dashboard/profile"><strong>${shopName()}</strong><span>${t("org.role")}</span></a>
           <button class="icon-btn" type="button" aria-label="${t("signout")}" title="${t("signout")}">${icon("logout")}</button>
         </div>
       </div>`;
@@ -398,6 +409,65 @@
     branchListeners.forEach((fn) => fn());
   }
 
+  // ---------- The stage: what is opened, over the page ----------
+  // Something opened (a resource, a new one, and later a service or a widget)
+  // fills the room beside the sidebar, as a page does in Notion. "Open as side
+  // peek" docks it at the right instead, with the page usable beside it; the
+  // choice is kept for every page. A second form opened from the first ("Add a
+  // new type") slides in beside it and the two share the room half and half
+  // (Trung's idea, 3 November). On a phone the second covers the first.
+  //
+  // A page puts a .pane-stage in its HTML with its panes inside, one of them marked
+  // .pane-side, and shows or hides the panes itself. The stage follows.
+
+  const stageEl = () => document.querySelector(".pane-stage");
+  const stageAs = () => (read(STORE.openAs) === "side" ? "side" : "full");
+
+  function stageToggle() {
+    const next = stageAs() === "full" ? "side" : "full";
+    return `<button class="icon-btn" type="button" data-stage-as="${next}" aria-label="${t("stage." + next)}" title="${t("stage." + next)}">${icon(next)}</button>`;
+  }
+
+  let splitTimer;
+  const stage = {
+    toggle: stageToggle,
+    get as() {
+      return stageAs();
+    },
+    // Shown while any pane in it is; the page behind is out of reach while it
+    // fills the room.
+    sync() {
+      const el = stageEl();
+      if (!el) return;
+      const open = [...el.children].some((pane) => !pane.hidden);
+      el.hidden = !open;
+      // A page whose editor needs the room (Widgets) pins it: data-lock="full".
+      el.dataset.as = el.dataset.lock || stageAs();
+      if (!open) el.classList.remove("is-split");
+      document.querySelector(".page")?.toggleAttribute("inert", open && el.dataset.as === "full");
+    },
+    // Slides `pane` (the .pane-side) in beside the main pane, or back out.
+    split(pane, on) {
+      const el = stageEl();
+      clearTimeout(splitTimer);
+      if (on) {
+        pane.classList.remove("is-leaving", "is-solo");
+        pane.hidden = false;
+        stage.sync();
+        void el.offsetWidth; // start from one column, so the move is seen
+        el.classList.add("is-split");
+      } else if (!pane.hidden) {
+        el.classList.remove("is-split");
+        pane.classList.add("is-leaving");
+        splitTimer = setTimeout(() => {
+          pane.hidden = true;
+          pane.classList.remove("is-leaving");
+          stage.sync();
+        }, 320);
+      }
+    },
+  };
+
   // ---------- Toast ----------
 
   let toastTimer;
@@ -449,7 +519,7 @@
 
     document.addEventListener("click", (event) => {
       const target = event.target.closest(
-        "[data-lang],[data-theme-toggle],[data-quick],[data-share],[data-nav-toggle],[data-sidebar-toggle],[data-pending]"
+        "[data-lang],[data-theme-toggle],[data-quick],[data-share],[data-nav-toggle],[data-sidebar-toggle],[data-pending],[data-stage-as]"
       );
       if (!target) return closeMenu();
 
@@ -462,6 +532,12 @@
         return document.querySelector("[data-sidebar-toggle]")?.focus();
       }
 
+      if (target.dataset.stageAs) {
+        write(STORE.openAs, target.dataset.stageAs);
+        stage.sync();
+        document.querySelectorAll("[data-stage-as]").forEach((button) => (button.outerHTML = stageToggle()));
+        return document.querySelector("[data-stage-as]")?.focus();
+      }
       if (target.dataset.lang) return setLang(target.dataset.lang);
       if ("themeToggle" in target.dataset) return setTheme(theme() === "dark" ? "light" : "dark");
       if ("navToggle" in target.dataset) return document.body.classList.toggle("nav-open");
@@ -524,6 +600,7 @@
     t,
     icon,
     toast,
+    stage,
     mount,
     addStrings,
     brand,

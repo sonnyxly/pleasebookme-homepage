@@ -524,3 +524,55 @@ select.time {
     flex: 1;
   }
 }
+
+/* ---------- The schedule on the stage ---------- */
+/* The form keeps its two columns while it has the room; it answers to the
+   pane's width, as it did to the page's. */
+
+/* Wider than a plain form's column, so the week's picture keeps its place
+   beside the days at full screen. */
+#av {
+  --pane-col: 1120px;
+}
+
+.av-body {
+  container: page / inline-size;
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-4);
+}
+
+/* Date overrides, kept with the schedule (the server cannot yet). */
+.ov-list {
+  display: grid;
+  margin: var(--space-3) 0 var(--space-2);
+  padding: 0;
+  list-style: none;
+}
+
+.ov-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--line);
+}
+
+.ov-list strong {
+  display: block;
+  font-size: var(--text-ui);
+}
+
+.ov-list small {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.reserved .ov-none {
+  margin: var(--space-2) 0;
+}
+
+.reserved .link-btn {
+  display: inline-block;
+  margin-top: var(--space-1-5);
+}

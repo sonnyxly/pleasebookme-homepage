@@ -642,5 +642,8 @@
     CLOSURES,
     BOOKINGS,
     CUSTOMERS,
+    // The widget defaults, read when called: assets/store.js makes the shop's
+    // main booking link with them once the first service exists.
+    widget,
   };
 })();
