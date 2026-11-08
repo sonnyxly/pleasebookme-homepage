@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- A design mockup with sample data: keep it out of search results. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/dashboard/assets/brand/pleasebookme-mark-small.svg" />
+    <title>Notifications | pleasebookme</title>
+    <script>
+      // Set the theme before the first paint: the saved choice, else dark.
+      (function () {
+        var saved;
+        try {
+          saved = localStorage.getItem("pbm-theme");
+        } catch (e) {}
+        if (saved !== "light" && saved !== "dark") {
+          saved = "dark";
+        }
+        document.documentElement.dataset.theme = saved;
+        try {
+          if (localStorage.getItem("pbm-sidebar") === "collapsed") {
+            document.documentElement.dataset.sidebar = "collapsed";
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/dashboard/assets/tokens.css?v=a28b2197" />
+    <link rel="stylesheet" href="/dashboard/assets/shell.css?v=a48a6f5e" />
+    <link rel="stylesheet" href="/dashboard/assets/page-kit.css?v=ec9795f0" />
+    <link rel="stylesheet" href="/dashboard/notifications/notifications.css?v=a649a623" />
+  </head>
+  <body>
+    <aside id="sidebar" class="chrome sidebar"></aside>
+    <header id="topbar" class="chrome topbar"></header>
+
+    <!-- Four tabs: Templates (#templates, the default; one opens at
+         #templates/<id>), Email sender (#sender), My notifications (#mine) and
+         Activity (#activity). Nothing opens over the page. -->
+    <main class="page" id="view"></main>
+
+    <script src="/dashboard/assets/shell.js?v=f3cda895"></script>
+    <script src="/dashboard/assets/sample.js?v=f72a9c5e"></script>
+    <script src="/dashboard/assets/store.js?v=c6cdc347"></script>
+    <script src="/dashboard/notifications/notifications.js?v=afe89277"></script>
+  </body>
+</html>

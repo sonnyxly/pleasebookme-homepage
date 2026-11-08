@@ -139,14 +139,13 @@
   // resource, a person another, a place another, and a shop can add more.
   // `asks` is the question a widget puts to the customer for that type.
   const RESOURCE_TYPES = [
-    { id: "branches", vi: "Chi nhánh", en: "Branches", icon: "pin", asks: "where" },
     { id: "people", vi: "Nhân viên", en: "Staff", icon: "users", asks: "who" },
     { id: "places", vi: "Chỗ", en: "Places", icon: "seat", asks: "which" },
   ];
 
   // The fields are the server's (name, slug, description, capacity, status),
   // plus three links: `does` (services it is assigned to), `branch` (the
-  // branch it belongs to, if any) and `code` (its colour on the calendar).
+  // branch, a child organization, it works at, if any) and `code` (its colour on the calendar).
   const slugOf = (text) =>
     text
       .normalize("NFD")
@@ -176,26 +175,6 @@
       ...fields,
     });
   const RESOURCES = [
-    resource({
-      id: "b1",
-      type: "branches",
-      name: "Cầu Giấy",
-      description: "12 Trần Thái Tông, Cầu Giấy, Hà Nội",
-      address: "12 Trần Thái Tông, Cầu Giấy, Hà Nội",
-      hours: "08:00 – 20:00",
-      capacity: 4,
-      does: [...SERVICE_ORDER],
-    }),
-    resource({
-      id: "b2",
-      type: "branches",
-      name: "Long Biên",
-      description: "623 Nguyễn Văn Cừ, Bồ Đề, Hà Nội",
-      address: "623 Nguyễn Văn Cừ, Bồ Đề, Hà Nội",
-      hours: "09:00 – 20:00",
-      capacity: 2,
-      does: [...SERVICE_ORDER],
-    }),
     ...STAFF.map((person) =>
       resource({
         id: "p" + person.id,
@@ -234,8 +213,32 @@
   RESOURCE_TYPES.forEach((type) => {
     RESOURCES.filter((r) => r.type === type.id).forEach((r, i) => (r.code = (i % 8) + 1));
   });
-  // The branches again, as a list of their own: most pages only ask "which branch?".
-  const BRANCHES = RESOURCES.filter((r) => r.type === "branches");
+  // The branches (6 November meeting with Trung): a branch is not a resource.
+  // It is a child organization of the shop (root, parent, child), with its own
+  // address, hours and resources, and it is not on the Resources page. Where a
+  // branch appears is in the widget's flow (its own question to the customer);
+  // a page to manage branches comes later. `resource()` is only used here for
+  // its defaults.
+  const BRANCHES = [
+    resource({
+      id: "b1",
+      name: "Cầu Giấy",
+      description: "12 Trần Thái Tông, Cầu Giấy, Hà Nội",
+      address: "12 Trần Thái Tông, Cầu Giấy, Hà Nội",
+      hours: "08:00 – 20:00",
+      capacity: 4,
+      does: [...SERVICE_ORDER],
+    }),
+    resource({
+      id: "b2",
+      name: "Long Biên",
+      description: "623 Nguyễn Văn Cừ, Bồ Đề, Hà Nội",
+      address: "623 Nguyễn Văn Cừ, Bồ Đề, Hà Nội",
+      hours: "09:00 – 20:00",
+      capacity: 2,
+      does: [...SERVICE_ORDER],
+    }),
+  ].map((b, i) => ({ ...b, code: i + 1 }));
 
   // A widget is one way into booking: a chosen part of the shop (branches,
   // services, resources) that can appear as a link, inside a website, or as a

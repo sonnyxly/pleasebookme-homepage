@@ -29,6 +29,7 @@
       "nav.availability": "Giờ làm việc",
       "nav.services": "Dịch vụ",
       "nav.resources": "Tài nguyên",
+      "nav.teams": "Nhóm",
       "nav.widgets": "Widget đặt lịch",
       "nav.integrations": "Tích hợp",
       "nav.analytics": "Phân tích",
@@ -58,6 +59,15 @@
       notDesigned: "Trang này chưa có trong bản mẫu.",
       "org.name": "Tiệm tóc Mẫu",
       "org.role": "Chủ tiệm",
+      "role.OWNER": "Chủ tiệm",
+      "role.MANAGER": "Quản lý",
+      "role.STAFF": "Nhân viên",
+      "role.MEMBER": "Thành viên (chỉ xem)",
+      "shops.open": "Đổi tiệm",
+      "shops.title": "Tiệm của bạn",
+      "shops.create": "Tạo tiệm mới",
+      "shops.note": "Một tài khoản, mỗi tiệm một tư cách thành viên. Vai trò của bạn ở mỗi tiệm có thể khác nhau.",
+      "shops.other": "Tiệm này chưa có trong bản mẫu.",
       "branch.label": "Chi nhánh đang xem",
       "branch.all": "Tất cả chi nhánh",
       "branch.some": ({ n }) => `${n} chi nhánh`,
@@ -69,6 +79,7 @@
       "nav.availability": "Availability",
       "nav.services": "Services",
       "nav.resources": "Resources",
+      "nav.teams": "Teams",
       "nav.widgets": "Widgets",
       "nav.integrations": "Integrations",
       "nav.analytics": "Analytics",
@@ -98,6 +109,15 @@
       notDesigned: "This page is not in the mockup yet.",
       "org.name": "Sample Barbershop",
       "org.role": "Owner",
+      "role.OWNER": "Owner",
+      "role.MANAGER": "Manager",
+      "role.STAFF": "Staff",
+      "role.MEMBER": "Member (view only)",
+      "shops.open": "Switch shop",
+      "shops.title": "Your shops",
+      "shops.create": "Create a shop",
+      "shops.note": "One account, one membership per shop. Your role can be different in each.",
+      "shops.other": "That shop is not in the mockup.",
       "branch.label": "Branches shown",
       "branch.all": "All branches",
       "branch.some": ({ n }) => `${n} branches`,
@@ -150,6 +170,15 @@
   // ---------- Icons ----------
 
   const ICONS = {
+    team: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M15.5 4.6a3.5 3.5 0 0 1 0 6.8M17.5 14a6.5 6.5 0 0 1 4 6"/>',
+    mail: '<rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="m3 7 9 6 9-6"/>',
+    moonQuiet: '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/>',
+    braces: '<path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/>',
+    reset: '<path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"/><path d="M3 3v5h5"/>',
+    alert: '<path d="M10.3 4.2 2.6 18a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0Z"/><path d="M12 9.5v4M12 17h.01"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    send: '<path d="M21 3 10 14M21 3l-7 18-4-7-7-4 18-7Z"/>',
+    drive: '<path d="M22 12H2M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.7 4H7.3a2 2 0 0 0-1.8 1.1ZM6 16h.01M10 16h.01"/>',
     grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
     calendarCheck: '<rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18M9 15.5l2 2 4-4"/>',
     calendar: '<rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/>',
@@ -233,13 +262,25 @@
     { id: "availability", icon: "clock", href: "/dashboard/availability", gap: true },
     { id: "services", icon: "scissors", href: "/dashboard/services" },
     { id: "resources", icon: "users", href: "/dashboard/resources" },
+    { id: "teams", icon: "team", href: "/dashboard/teams" },
     { id: "analytics", icon: "chart", href: "/dashboard/analytics", gap: true },
+    { id: "notifications", icon: "bell", href: "/dashboard/notifications" },
     { id: "integrations", icon: "plug", href: "/dashboard/integrations" },
     { id: "settings", icon: "sliders", href: "/dashboard/settings", gap: true },
   ];
   // On the server but not built into a page yet.
-  const SOON = [{ id: "notifications", icon: "bell" }];
+  // Empty since 7 November, when Notifications became a page. Kept for the next one.
+  const SOON = [];
 
+  // The shops this account belongs to: one membership each, with a role in each
+  // (meeting with Trung, 6 November). The first is the one open now; the
+  // others are sample names and are not drawn.
+  const SHOPS = [
+    { role: "org.role" },
+    { name: "Long Biên Hair Studio", role: "role.STAFF" },
+    { name: "PMU by Hà", role: "role.MEMBER" },
+  ];
+  const initial = (name) => (String(name).trim()[0] || "S").toUpperCase();
   const BOOKING_LINK = "pleasebookme.app/booking/tiem-toc-mau";
   // The name the owner gave the shop on Hồ sơ tiệm, once saved (assets/store.js).
   const shopName = () => window.PBM_SAMPLE?.SHOP?.profile?.name || t("org.name");
@@ -268,20 +309,30 @@
       <p class="tagline">${t("tagline")}</p>
       <nav class="nav" aria-label="${t("nav.label")}">
         <ul>${NAV.map(navLink).join("")}</ul>
-        <details class="nav-soon">
+        ${SOON.length ? `<details class="nav-soon">
           <summary class="nav-note"><span>${t("nav.soon")}</span>${icon("chevron")}</summary>
           <ul>${SOON.map(
             (item) =>
               `<li><span class="nav-link" aria-disabled="true">${icon(item.icon)}<span>${t("nav." + item.id)}</span></span></li>`
           ).join("")}</ul>
-        </details>
+        </details>` : ""}
       </nav>
       <div class="sidebar-foot">
         <button class="share" type="button" data-share>${icon("copy")}<span>${t("share.copy")}</span></button>
         ${langSwitch("drawer-lang")}
         <div class="account">
-          <span class="avatar" aria-hidden="true">S</span>
+          <button class="avatar shops-btn" type="button" data-shops aria-haspopup="true" aria-expanded="false" aria-label="${t("shops.open")}" title="${t("shops.open")}">${initial(shopName())}</button>
           <a class="account-text" href="/dashboard/profile"><strong>${shopName()}</strong><span>${t("org.role")}</span></a>
+          <div class="shops-menu menu panel" id="shops-menu" hidden>
+            <p class="shops-title">${t("shops.title")}</p>
+            ${SHOPS.map((shop, i) => {
+              const name = i ? shop.name : shopName();
+              return `<button class="shops-item" type="button" ${i ? "data-shop-other" : "data-shops"} aria-current="${!i}"><span class="avatar">${initial(name)}</span><span><strong>${name}</strong><small>${t(shop.role)}</small></span>${i ? "" : icon("check")}</button>`;
+            }).join("")}
+            <hr />
+            <button class="shops-item" type="button" data-pending>${icon("plus")}<span><strong>${t("shops.create")}</strong></span></button>
+            <p class="shops-note">${t("shops.note")}</p>
+          </div>
           <button class="icon-btn" type="button" aria-label="${t("signout")}" title="${t("signout")}">${icon("logout")}</button>
         </div>
       </div>`;
@@ -362,10 +413,16 @@
     },
     // True for a booking, person or place that belongs to a branch on show.
     has(id) {
+      return true;
+      // eslint-disable-next-line no-unreachable
       const ids = chosenBranches();
       return !ids.length || !id || ids.includes(id);
     },
+    // The picker is gone (6 November, Trung): a branch is its own organization,
+    // not a filter on this one's pages. Kept so pages that ask for it get nothing.
     html() {
+      return "";
+      // eslint-disable-next-line no-unreachable
       const list = everyBranch();
       if (list.length < 2) return "";
       const ids = chosenBranches();
@@ -488,6 +545,11 @@
   // ---------- Wiring ----------
 
   function closeMenu() {
+    const shops = document.getElementById("shops-menu");
+    if (shops && !shops.hidden) {
+      shops.hidden = true;
+      document.querySelector(".shops-btn")?.setAttribute("aria-expanded", "false");
+    }
     const menu = document.getElementById("quick-menu");
     if (menu && !menu.hidden) {
       menu.hidden = true;
@@ -519,9 +581,17 @@
 
     document.addEventListener("click", (event) => {
       const target = event.target.closest(
-        "[data-lang],[data-theme-toggle],[data-quick],[data-share],[data-nav-toggle],[data-sidebar-toggle],[data-pending],[data-stage-as]"
+        "[data-lang],[data-theme-toggle],[data-quick],[data-share],[data-nav-toggle],[data-sidebar-toggle],[data-pending],[data-stage-as],[data-shops],[data-shop-other]"
       );
       if (!target) return closeMenu();
+      if ("shops" in target.dataset || "shopOther" in target.dataset) {
+        const shops = document.getElementById("shops-menu");
+        const open = "shops" in target.dataset && shops.hidden;
+        shops.hidden = !open;
+        document.querySelector(".shops-btn")?.setAttribute("aria-expanded", String(open));
+        if ("shopOther" in target.dataset) toast(t("shops.other"));
+        return;
+      }
 
       if ("sidebarToggle" in target.dataset) {
         const root = document.documentElement;

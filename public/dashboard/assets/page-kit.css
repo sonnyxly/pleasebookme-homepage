@@ -1,0 +1,337 @@
+/* What Teams, Notifications and Integrations share (7 November): the heading,
+   a line of counts, a row of tabs, a toolbar, a status as a dot and a word, a
+   plain note box and the empty state. Pages built before them keep their own
+   copies of the heading; these three read it from here. */
+
+.page {
+  container: page / inline-size;
+}
+
+.kit {
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+/* ---------- Heading ---------- */
+
+.kit-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  margin: 0 var(--space-1) var(--space-2);
+}
+
+.kit-head h1 {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--fw-extrabold);
+  font-size: var(--text-title);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+.kit-head > p {
+  flex: 0 0 100%;
+  margin: 0;
+  padding-right: max(0px, 100% - 78ch);
+  font-size: var(--text-body);
+  color: var(--muted);
+}
+
+.kit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* One quiet line of counts under the heading. */
+.kit-counts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-4);
+  margin: var(--space-1) var(--space-1) var(--space-4);
+  font-size: var(--text-ui);
+  color: var(--muted);
+}
+
+/* ---------- Tabs ---------- */
+/* Links, so each tab has an address and the browser's back button works. */
+
+.kit-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  margin: 0 var(--space-1) var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+
+.kit-tabs a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: -1px;
+  padding: var(--space-1) 0 var(--space-2-5);
+  border-bottom: 2px solid transparent;
+  font-weight: var(--fw-medium);
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.kit-tabs a:hover {
+  color: var(--ink);
+}
+
+.kit-tabs a[aria-current="page"] {
+  border-color: var(--ink);
+  color: var(--ink);
+  font-weight: var(--fw-semibold);
+}
+
+/* ---------- Toolbar over a table ---------- */
+
+.kit-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  padding: var(--space-2-5);
+  border-radius: var(--r-card);
+}
+
+.kit-find {
+  position: relative;
+  flex: 1 1 220px;
+}
+
+.kit-find .icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.kit-find .input {
+  padding-left: var(--space-9);
+}
+
+.kit-bar select.input {
+  width: auto;
+  min-width: 160px;
+}
+
+/* ---------- A status: a dot and a word ---------- */
+
+.dot-word {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+
+.dot-word i {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.dot-word.is-warn i {
+  background: var(--code-3);
+}
+
+.dot-word.is-bad i {
+  background: var(--signal);
+}
+
+.dot-word.is-off i {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--muted);
+}
+
+.dot-word.is-muted {
+  color: var(--muted);
+}
+
+/* ---------- Boxes ---------- */
+
+.kit-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2-5);
+  padding: var(--space-3) var(--space-3-5);
+  border-radius: var(--r-card);
+  background: var(--well);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.kit-note > .icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  color: var(--accent);
+}
+
+.kit-note.is-bad {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--signal);
+}
+
+.kit-note.is-bad > .icon {
+  color: var(--signal);
+}
+
+.kit-note strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: var(--text-ui);
+  color: var(--ink);
+}
+
+.kit-sec-title {
+  margin: var(--space-6) var(--space-1) var(--space-1);
+  font-size: var(--text-h3);
+  font-weight: var(--fw-semibold);
+}
+
+.kit-sec-lede {
+  margin: 0 var(--space-1) var(--space-3);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.kit-empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-4);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-panel);
+  text-align: center;
+  color: var(--muted);
+}
+
+.kit-empty p {
+  margin: 0;
+  max-width: 52ch;
+}
+
+.kit-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin: var(--space-3) var(--space-1) 0;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.kit-sample {
+  margin: var(--space-5) var(--space-1) var(--space-1);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+/* A row of plain text links inside a table cell. */
+.kit-links {
+  display: inline-flex;
+  gap: var(--space-3);
+}
+
+.kit-links button {
+  padding: 0;
+  font: inherit;
+  font-weight: var(--fw-medium);
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.kit-links button.is-danger {
+  color: var(--signal);
+}
+
+.kit-links button:hover {
+  text-decoration: underline;
+}
+
+/* A person: a round initial, a name and a line under it. */
+.who {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2-5);
+  min-width: 0;
+}
+
+.who .face {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--well);
+  font-size: var(--text-small);
+  font-weight: var(--fw-semibold);
+}
+
+.who > span:last-child {
+  display: grid;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.who strong {
+  font-weight: var(--fw-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.who small {
+  font-size: var(--text-small);
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dt td .tag-later {
+  white-space: nowrap;
+}
+
+/* A person's colour code fills their initial (outranks .who .face). */
+.who .face.code-fill {
+  background: var(--code);
+  color: var(--code-ink);
+}
+
+.dt td.num {
+  white-space: nowrap;
+}
+
+/* A choice chip with words only, no round initial. */
+.chip-pick.is-plain span {
+  padding: 0 var(--space-3-5);
+}
+
+.kit-sample a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+
+.kit-sample a:hover {
+  color: var(--ink);
+}
+
+.pane-tools a.icon-btn {
+  color: inherit;
+}

@@ -1,0 +1,452 @@
+/* Teams: the members table, the two invitation tables, the day schedule, and
+   a person or the invite form on the stage. The heading, tabs and counts come
+   from assets/page-kit.css. */
+
+/* ---------- Tables ---------- */
+
+.dt tr[data-open] {
+  cursor: pointer;
+}
+
+.dt tr[data-open]:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+.dt .dt-go {
+  width: 32px;
+  color: var(--muted);
+}
+
+.dt .dt-go .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.dt tr.is-invited td {
+  color: var(--muted);
+}
+
+.dt .dt-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.you {
+  font-weight: var(--fw-regular);
+  color: var(--muted);
+}
+
+.role-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 var(--space-2-5);
+  border-radius: var(--r-chip);
+  background: var(--well);
+  font-size: var(--text-small);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+}
+
+.role-tag.is-big {
+  justify-self: start;
+  height: 30px;
+  margin: 0;
+  font-size: var(--text-ui);
+}
+
+.res-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+}
+
+.res-list span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  white-space: nowrap;
+}
+
+.res-list .code-dot {
+  width: 8px;
+  height: 8px;
+}
+
+.req-msg {
+  max-width: 36ch;
+  color: var(--muted);
+}
+
+.req-btns {
+  display: inline-flex;
+  gap: var(--space-2);
+}
+
+.dt select.input {
+  height: 34px;
+  min-width: 150px;
+}
+
+.only-you {
+  margin-top: var(--space-4);
+}
+
+/* ---------- Schedule: one lane per person, one day ---------- */
+
+.sch-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: 0 var(--space-1) var(--space-3);
+}
+
+.sch-day {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.sch-day h2 {
+  margin: 0;
+  font-size: var(--text-h3);
+  font-weight: var(--fw-semibold);
+}
+
+.sch-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-control);
+}
+
+.sch {
+  --who: 200px;
+  overflow: hidden;
+}
+
+.sch-head,
+.lane {
+  display: grid;
+  grid-template-columns: var(--who) 1fr;
+}
+
+.sch-head {
+  padding: var(--space-2) 0;
+  background: var(--well);
+  border-bottom: 1px solid var(--line);
+  font-size: var(--text-small);
+  font-weight: var(--fw-medium);
+  color: var(--muted);
+}
+
+.sch-head > span:first-child {
+  padding-left: var(--space-4);
+}
+
+.sch-hours {
+  position: relative;
+  height: 1.4em;
+}
+
+.sch-hours span {
+  position: absolute;
+  top: 0;
+  padding-left: var(--space-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.sch-body {
+  position: relative;
+}
+
+.lane + .lane {
+  border-top: 1px solid var(--line);
+}
+
+.lane-who {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  border-right: 1px solid var(--line);
+}
+
+.lane-track {
+  position: relative;
+  min-height: 64px;
+  background-image: linear-gradient(to right, var(--line) 1px, transparent 1px);
+  background-size: calc(100% / 12) 100%;
+}
+
+.off-hours {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--well);
+}
+
+.lane-book,
+.lane-away {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  display: grid;
+  align-content: center;
+  min-width: 0;
+  padding: 0 var(--space-2);
+  overflow: hidden;
+  border-radius: var(--r-chip);
+  line-height: 1.25;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.lane-book {
+  margin-left: 1px;
+  background: var(--surface);
+  box-shadow: inset 3px 0 0 var(--code);
+}
+
+.lane-book:hover {
+  background: var(--well);
+}
+
+.lane-away {
+  background: var(--well);
+  box-shadow: inset 3px 0 0 var(--code-3);
+}
+
+.lane-book strong,
+.lane-away strong {
+  font-size: var(--text-small);
+  font-weight: var(--fw-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lane-book small,
+.lane-away small {
+  font-size: var(--text-micro);
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sch-now {
+  position: absolute;
+  inset: 0 0 0 var(--who);
+  pointer-events: none;
+}
+
+.now-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--signal);
+}
+
+.sch-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin: var(--space-3) var(--space-1) 0;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.sch-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.sch-legend i {
+  width: 16px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.lg-book {
+  background: var(--surface);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.lg-out {
+  background: var(--well);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.lg-off {
+  background: var(--well);
+  box-shadow: inset 3px 0 0 var(--code-3);
+}
+
+.lg-now {
+  width: 3px !important;
+  background: var(--signal);
+}
+
+@container page (max-width: 760px) {
+  .sch {
+    --who: 120px;
+  }
+
+  .lane-who small {
+    display: none;
+  }
+}
+
+/* ---------- A person on the stage ---------- */
+
+.who.is-big .face {
+  width: 44px;
+  height: 44px;
+  font-size: var(--text-body);
+}
+
+.who.is-big h2 {
+  margin: 0;
+  font-size: var(--text-h2);
+}
+
+.can-list {
+  display: grid;
+  gap: var(--space-1-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-small);
+}
+
+.can-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.can-list .icon {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  color: var(--accent);
+}
+
+.can-list li.is-no {
+  color: var(--muted);
+}
+
+.can-list li.is-no .icon {
+  color: var(--muted);
+}
+
+.can-box {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3-5);
+  border-radius: var(--r-card);
+  background: var(--well);
+}
+
+.can-box strong {
+  font-size: var(--text-small);
+}
+
+.linked,
+.offs {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.linked li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+
+.linked li > span:first-child {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.linked a {
+  font-weight: var(--fw-semibold);
+  color: inherit;
+}
+
+.linked small,
+.offs small {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.offs li {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-2-5) var(--space-3);
+  border-radius: var(--r-card);
+  background: var(--well);
+}
+
+.link-add {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.link-add .input {
+  flex: 1;
+}
+
+.sec-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.sec-line > span {
+  display: grid;
+  gap: 2px;
+}
+
+.sec-line small {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.peek-lede.first {
+  margin-top: 0;
+}
+
+.peek-sec > .btn,
+.peek-sec > a.btn {
+  justify-self: start;
+}
+
+#invite textarea.input {
+  height: auto;
+  min-height: 84px;
+  padding-block: var(--space-2-5);
+  resize: vertical;
+}
+
+#tab > .kit-note {
+  margin-top: var(--space-4);
+}

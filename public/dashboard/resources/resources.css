@@ -183,13 +183,6 @@ td > .state.is-retired {
 }
 
 .type,
-.link-to {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  white-space: nowrap;
-}
-
 .type .icon {
   width: 16px;
   height: 16px;
@@ -828,7 +821,6 @@ td > .state.is-retired {
   }
 
   .dt .c-type,
-  .dt .c-link,
   .dt .c-cap {
     display: none;
   }

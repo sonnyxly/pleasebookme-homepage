@@ -17,10 +17,11 @@
   const KEY = "pbm-shop";
   // Raise this when the shape of the sample changes, so a shop saved by older
   // pages is dropped rather than half read.
-  const VERSION = 1;
+  const VERSION = 2; // 2 (7 November): branches left RESOURCES, so a shop saved with them is dropped
   const S = window.PBM_SAMPLE;
 
-  // What is kept. BRANCHES and STAFF are not: both are rebuilt from RESOURCES,
+  // What is kept. STAFF is not: it is rebuilt from RESOURCES. BRANCHES is not either:
+  // branches are child organizations, not resources, and nothing here makes them yet,
   // which is where a branch or a person is made.
   const LISTS = ["SERVICE_ORDER", "SCHEDULES", "RESOURCE_TYPES", "RESOURCES", "WIDGETS", "CLOSURES", "BOOKINGS", "CUSTOMERS"];
   const MAPS = ["SHOP", "SERVICES"];
@@ -52,6 +53,9 @@
     try {
       localStorage.removeItem(KEY);
       localStorage.removeItem("pbm-widget-window"); // the widget window's copy of an unsaved draft
+      localStorage.removeItem("pbm-team"); // Teams: members, invitations, requests
+      localStorage.removeItem("pbm-notify"); // Notifications: templates, sender, my settings
+      localStorage.removeItem("pbm-apps"); // Integrations: what is connected
     } catch {
       /* nothing was kept, so there is nothing to clear */
     }
@@ -112,7 +116,6 @@
       .filter((r) => r.status === "ACTIVE" || named.has(r.staffId))
       .map((r) => ({ id: r.staffId, name: r.name, branch: r.branch, note: r.description, code: r.code }));
     S.STAFF.splice(0, S.STAFF.length, ...staff);
-    S.BRANCHES.splice(0, S.BRANCHES.length, ...S.RESOURCES.filter((r) => r.type === "branches"));
   }
 
   // ---------- Putting a saved shop back ----------

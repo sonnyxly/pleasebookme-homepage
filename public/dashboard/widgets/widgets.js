@@ -596,7 +596,10 @@
     const d = dayOf(iso);
     return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
   };
-  const ofType = (type) => RESOURCES.filter((r) => r.type === type);
+  // Branches are not resources (6 November), but the widget still asks about
+  // them, so they sit beside the resource types here as a group of their own.
+  const BRANCH_TYPE = { id: "branches", vi: "Chi nhánh", en: "Branches", icon: "pin", asks: "where" };
+  const ofType = (type) => (type === "branches" ? BRANCHES : RESOURCES.filter((r) => r.type === type));
   const linkOf = (w) => `pleasebookme.app/booking/${SHOP.slug}${w.path ? "/" + w.path : ""}`;
   const keyOf = (w) => "pbm_" + (w.path || "main").replace(/-/g, "_");
 
@@ -766,7 +769,7 @@
 
     // One block per type of resource the shop uses, so a type added later gets
     // its own. A type with nothing in it is a layer the shop does not have.
-    const resources = RESOURCE_TYPES.map((type) => {
+    const resources = [BRANCH_TYPE, ...RESOURCE_TYPES].map((type) => {
       const all = ofType(type.id).filter((r) => r.status === "ACTIVE");
       const mine = w[type.id];
       if (!all.length || !mine) return "";

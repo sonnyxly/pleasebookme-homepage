@@ -532,3 +532,222 @@
     padding: var(--space-3) var(--space-4);
   }
 }
+
+/* ---------- The catalogue (7 November) ---------- */
+/* It is wider than Google Calendar's own page: a grid of cards needs room. */
+
+.app-tile[class*="code-"] {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--code) 22%, transparent);
+  color: var(--ink);
+}
+
+.bad-banner {
+  align-items: center;
+  margin-bottom: var(--space-2);
+  padding: var(--space-3-5) var(--space-4);
+  font-size: var(--text-ui);
+}
+
+.bad-banner > span {
+  flex: 1;
+}
+
+.conn-list {
+  display: grid;
+}
+
+.conn-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3-5) var(--space-5);
+}
+
+.conn-row + .conn-row {
+  border-top: 1px solid var(--line);
+}
+
+.conn-row .app-tile {
+  width: 40px;
+  height: 40px;
+}
+
+.conn-text {
+  flex: 1;
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.conn-text strong {
+  font-weight: var(--fw-semibold);
+}
+
+.conn-text small {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.cat-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.cat-bar .kit-find {
+  flex: 0 1 300px;
+}
+
+.cat-chip {
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.cat-chip span {
+  height: 34px;
+}
+
+.cat-chip[aria-pressed="true"] span {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: var(--space-4);
+}
+
+.app-card {
+  display: grid;
+  grid-template-rows: auto auto auto 1fr auto;
+  gap: var(--space-1);
+  padding: var(--space-5);
+}
+
+.app-card.is-soon {
+  opacity: 0.6;
+}
+
+.app-card .app-tile {
+  margin-bottom: var(--space-3);
+}
+
+.app-card h3 {
+  margin: 0;
+  font-size: var(--text-lead);
+}
+
+.app-cat {
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.app-d {
+  margin: var(--space-2) 0 var(--space-4);
+  font-size: var(--text-small);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.app-card footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.per-person {
+  margin-top: var(--space-5);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  justify-self: start;
+  margin-left: var(--space-1);
+  font-size: var(--text-ui);
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: var(--ink);
+}
+
+.back-link .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.connect-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.connect-title h2 {
+  margin: 0;
+}
+
+.connect-title small {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.connect-you {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2-5);
+  margin: 0;
+  padding: var(--space-3) var(--space-3-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+
+.connect-you .icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------- The apps' real logos ---------- */
+/* A logo sits on a plain tile in the page's own colour, so every brand's own
+   colours read the same on dark and light. */
+
+.app-tile {
+  background: var(--well);
+}
+
+.app-tile[class*="code-"] {
+  background: var(--well);
+}
+
+.app-logo {
+  display: block;
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.app-card .app-tile .app-logo {
+  width: 28px;
+  height: 28px;
+}
+
+.conn-row .app-tile .app-logo {
+  width: 22px;
+  height: 22px;
+}
+
+.connect-title .app-tile .app-logo {
+  width: 26px;
+  height: 26px;
+}

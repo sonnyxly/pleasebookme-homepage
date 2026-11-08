@@ -32,21 +32,28 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/dashboard/assets/tokens.css?v=a28b2197" />
-    <link rel="stylesheet" href="/dashboard/assets/shell.css?v=89c17816" />
-    <link rel="stylesheet" href="/dashboard/integrations/integrations.css?v=3a6b446c" />
+    <link rel="stylesheet" href="/dashboard/assets/shell.css?v=a48a6f5e" />
+    <link rel="stylesheet" href="/dashboard/assets/page-kit.css?v=ec9795f0" />
+    <link rel="stylesheet" href="/dashboard/integrations/integrations.css?v=5aad7f62" />
   </head>
   <body>
     <aside id="sidebar" class="chrome sidebar"></aside>
     <header id="topbar" class="chrome topbar"></header>
 
-    <!-- Google Calendar first, laid out as Cal.com's calendar settings are:
-         where bookings are added, then checking for conflicts. Three states,
-         picked by the address: #none, #no-calendar, or connected. -->
+    <!-- The catalogue first (7 November), as Cal.com's app store: what is
+         connected, then every integration by category. Google Calendar has a
+         page of its own (#google-calendar), laid out as Cal.com's calendar
+         settings are. Connecting Sheets or Drive opens a form on the stage
+         (#connect/sheets, #connect/drive). -->
     <main class="page" id="view"></main>
 
-    <script src="/dashboard/assets/sample.js?v=a2ab41de"></script>
-    <script src="/dashboard/assets/shell.js?v=07c7cfd9"></script>
-    <script src="/dashboard/assets/store.js?v=942b2426"></script>
-    <script src="/dashboard/integrations/integrations.js?v=561f5b1f"></script>
+    <div class="pane-stage" id="pane-stage" hidden>
+      <aside class="pane peek" id="connect" role="dialog" aria-labelledby="connect-title" hidden></aside>
+    </div>
+
+    <script src="/dashboard/assets/sample.js?v=f72a9c5e"></script>
+    <script src="/dashboard/assets/shell.js?v=f3cda895"></script>
+    <script src="/dashboard/assets/store.js?v=c6cdc347"></script>
+    <script src="/dashboard/integrations/integrations.js?v=8476a9d7"></script>
   </body>
 </html>

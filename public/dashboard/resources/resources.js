@@ -1,5 +1,6 @@
-/* Tài nguyên: everything a booking can take up or happen at. Branches, staff
-   and places are all resources of different types, and a shop can add types.
+/* Tài nguyên: everything a booking can take up or happen at. Staff and places
+   are resources of different types, and a shop can add types. Branches are not
+   here (6 November): a branch is a child organization, not a resource.
 
    It began as a redesign of the page in the app (client/features/resources):
    the same counts, filters, table and two forms. Since 3 November it also does
@@ -9,11 +10,9 @@
    server already has the endpoints for both (PUT and DELETE on resources and
    resource types, and the tables the peek's sections read).
 
-   Two things here are not in the app yet. Both come from how the shop is meant
-   to work, where resources connect to each other without needing each other:
-     - `code`, the colour a resource wears on the calendar;
-     - `branch`, a link from one resource to another (a person or a chair to
-       the branch it is at). */
+   One thing here is not in the app yet: `code`, the colour a resource wears on
+   the calendar. A person here is the public face of a member of the team (the
+   widget shows resources, never members): who it is lives on Nhóm. */
 (function () {
   "use strict";
 
@@ -23,7 +22,7 @@
     vi: {
       "doc.title": "Tài nguyên | pleasebookme",
       "page.title": "Tài nguyên",
-      "page.lede": "Chi nhánh, nhân viên, chỗ ngồi và những thứ khác mà dịch vụ của tiệm cần đến.",
+      "page.lede": "Nhân viên, chỗ ngồi và những thứ khác mà dịch vụ của tiệm cần đến.",
       new: "Thêm tài nguyên",
       "sum.total": ({ n }) => `${n} tài nguyên:`,
       "sum.ACTIVE": ({ n }) => `${n} đang hoạt động`,
@@ -40,7 +39,6 @@
       "filter.clear": "Xoá bộ lọc",
       "col.resource": "Tài nguyên",
       "col.type": "Loại",
-      "col.link": "Liên kết",
       "col.capacity": "Sức chứa",
       "col.status": "Trạng thái",
       "col.services": "Dịch vụ được gán",
@@ -50,7 +48,6 @@
       "st.RETIRED": "Ngừng dùng",
       "svc.all": "Tất cả dịch vụ",
       "svc.none": "Chưa gán",
-      "link.count": ({ n }) => `${n} tài nguyên`,
       "empty.none": "Chưa có tài nguyên nào. Thêm một tài nguyên để gán cho dịch vụ.",
       "empty.filtered": "Không có tài nguyên nào khớp bộ lọc. Thử xoá bộ lọc.",
       "page.showing": ({ from, to, n }) => `Hiển thị ${from} đến ${to} trong ${n} tài nguyên`,
@@ -86,12 +83,9 @@
       "links": "Trên lịch và liên kết",
       "f.code": "Màu trên lịch",
       "f.code.n": ({ n }) => `Màu ${n}`,
-      "f.link": "Liên kết với",
-      "f.link.none": "Không liên kết",
-      "f.link.hint": "Không bắt buộc. Ví dụ một chiếc ghế hoặc một người thợ ở một chi nhánh.",
       "added": ({ name }) => `Đã thêm ${name}`,
       "notype.title": "Tạo loại tài nguyên trước",
-      "notype.text": "Mỗi tài nguyên cần một loại, và tiệm chưa có loại nào. Thêm một loại như Chi nhánh, Nhân viên hoặc Ghế trước khi thêm tài nguyên.",
+      "notype.text": "Mỗi tài nguyên cần một loại, và tiệm chưa có loại nào. Thêm một loại như Nhân viên hoặc Ghế trước khi thêm tài nguyên.",
       "type.title": "Thêm loại tài nguyên",
       "type.lede": "Đặt một nhóm dùng lại được trước khi thêm tài nguyên thuộc nhóm đó.",
       "type.name": "Tên",
@@ -147,7 +141,6 @@
       "del.sure": "Chắc chắn xoá",
       deleted: ({ name }) => `Đã xoá ${name}`,
       "del.blocked": ({ name, uses }) => `Chưa xoá được ${name}: ${uses}. Hãy ngừng dùng thay vì xoá, để lịch sử còn nguyên.`,
-      "uses.links": ({ n }) => `${n} tài nguyên liên kết với nó`,
       "uses.bookings": ({ n }) => `${n} lịch hẹn dùng nó`,
       "uses.and": " và ",
       "del.retire": "Ngừng dùng",
@@ -163,7 +156,7 @@
     en: {
       "doc.title": "Resources | pleasebookme",
       "page.title": "Resources",
-      "page.lede": "The branches, staff, seats and other things your services need.",
+      "page.lede": "The staff, seats and other things your services need.",
       new: "Add resource",
       "sum.total": ({ n }) => `${n} ${n === 1 ? "resource" : "resources"}:`,
       "sum.ACTIVE": ({ n }) => `${n} active`,
@@ -180,7 +173,6 @@
       "filter.clear": "Clear filters",
       "col.resource": "Resource",
       "col.type": "Type",
-      "col.link": "Linked to",
       "col.capacity": "Capacity",
       "col.status": "Status",
       "col.services": "Assigned services",
@@ -190,7 +182,6 @@
       "st.RETIRED": "Retired",
       "svc.all": "All services",
       "svc.none": "None",
-      "link.count": ({ n }) => `${n} ${n === 1 ? "resource" : "resources"}`,
       "empty.none": "No resources yet. Add one to start assigning it to services.",
       "empty.filtered": "No resources match these filters. Try clearing them.",
       "page.showing": ({ from, to, n }) => `Showing ${from} to ${to} of ${n} ${n === 1 ? "resource" : "resources"}`,
@@ -226,12 +217,9 @@
       "links": "On the calendar, and links",
       "f.code": "Color on the calendar",
       "f.code.n": ({ n }) => `Color ${n}`,
-      "f.link": "Linked to",
-      "f.link.none": "Not linked",
-      "f.link.hint": "Optional. For example a chair or a barber at one branch.",
       "added": ({ name }) => `Added ${name}`,
       "notype.title": "Create a resource type first",
-      "notype.text": "Every resource needs a type, and the shop does not have one yet. Add a type such as Branch, Staff or Chair before adding the resource.",
+      "notype.text": "Every resource needs a type, and the shop does not have one yet. Add a type such as Staff or Chair before adding the resource.",
       "type.title": "Add resource type",
       "type.lede": "Define a reusable group before adding resources of that type.",
       "type.name": "Name",
@@ -287,7 +275,6 @@
       "del.sure": "Yes, delete",
       deleted: ({ name }) => `Deleted ${name}`,
       "del.blocked": ({ name, uses }) => `${name} can't be deleted: ${uses}. Retire it instead, so its history stays whole.`,
-      "uses.links": ({ n }) => `${n} ${n === 1 ? "resource is" : "resources are"} linked to it`,
       "uses.bookings": ({ n }) => `${n} ${n === 1 ? "booking uses" : "bookings use"} it`,
       "uses.and": " and ",
       "del.retire": "Retire instead",
@@ -303,7 +290,7 @@
     },
   });
 
-  const { RESOURCES, RESOURCE_TYPES, SERVICES, SERVICE_ORDER, SCHEDULES, STAFF, BOOKINGS, TODAY } = PBM_SAMPLE;
+  const { RESOURCES, RESOURCE_TYPES, BRANCHES, SERVICES, SERVICE_ORDER, SCHEDULES, STAFF, BOOKINGS, TODAY } = PBM_SAMPLE;
 
   // What the peek edits beyond the list's columns, each a table the server
   // already has: `bookable` (resources.is_bookable), `hours` (a schedule, from
@@ -378,7 +365,6 @@
     capacity: "",
     status: "ACTIVE",
     code: (RESOURCES.length % 8) + 1,
-    branch: "",
   });
   const blankType = () => ({ name: "", description: "", icon: "box" });
 
@@ -416,24 +402,14 @@
     return r.does.map((id) => SERVICES[id][PBM.lang]).join(", ");
   }
 
-  // A link reads from either end: a chair names its branch, a branch counts what is at it.
-  function linkCell(r) {
-    const to = r.branch && RESOURCES.find((other) => other.id === r.branch);
-    if (to) return `<span class="link-to"><i class="code-dot code-${to.code}"></i>${esc(to.name)}</span>`;
-    const n = RESOURCES.filter((other) => other.branch === r.id).length;
-    return n ? t("link.count", { n }) : `<span class="dt-quiet">–</span>`;
-  }
-
   function rowHTML(r) {
     const type = typeOf(r.type);
     const typeHTML = `<span class="type">${icon(type.icon || "box")}${esc(typeName(type))}</span>`;
-    const link = linkCell(r);
-    // On a phone a row is three lines, and type, link and capacity share the
+    // On a phone a row is three lines, and type and capacity share the
     // second. That line is a cell of its own that only a phone shows
     // (resources.css); empty parts are left out rather than shown as dashes.
     const meta = [
       typeHTML,
-      link.includes("dt-quiet") ? "" : link,
       r.capacity != null ? `${t("col.capacity")} <span class="num">${r.capacity}</span>` : "",
     ]
       .filter(Boolean)
@@ -445,7 +421,6 @@
         <td class="c-state">${stateOf(r.status)}</td>
         <td class="c-name"><span class="dt-name"><i class="code-dot code-${r.code}"></i><span><button class="row-open" type="button" data-open="${r.id}" aria-label="${esc(t("open", { name: r.name }))}" aria-expanded="${open}"><strong>${esc(r.name)}</strong></button><small>${esc(r.slug)}</small></span></span></td>
         <td class="c-type">${typeHTML}</td>
-        <td class="c-link">${link}</td>
         <td class="c-cap num">${r.capacity ?? `<span class="dt-quiet">–</span>`}</td>
         <td class="c-svc" data-label="${t("col.services")}">${servicesCell(r)}</td>
         <td class="c-meta">${meta}</td>
@@ -471,7 +446,7 @@
           <table class="dt">
             <thead><tr>
               <th>${t("col.status")}</th><th>${t("col.resource")}</th><th>${t("col.type")}</th>
-              <th>${t("col.link")}</th><th>${t("col.capacity")}</th><th>${t("col.services")}</th>
+              <th>${t("col.capacity")}</th><th>${t("col.services")}</th>
             </tr></thead>
             <tbody>${rows.map(rowHTML).join("")}</tbody>
           </table>
@@ -599,11 +574,6 @@
       return;
     }
 
-    const linkable = RESOURCE_TYPES.map((type) => ({
-      type,
-      items: RESOURCES.filter((r) => r.type === type.id && r.status !== "RETIRED"),
-    })).filter((group) => group.items.length);
-
     $("add").innerHTML = `${head}
       <form class="peek-body" id="form" data-form="resource" novalidate>
         <section class="peek-sec" aria-labelledby="basic-title">
@@ -662,21 +632,6 @@
                 .join("")}
             </div>
           </div>
-          <div class="field">
-            <label for="f-link">${t("f.link")}</label>
-            <select class="input" id="f-link" data-key="branch">
-              <option value="">${t("f.link.none")}</option>
-              ${linkable
-                .map(
-                  (group) =>
-                    `<optgroup label="${esc(typeName(group.type))}">${group.items
-                      .map((r) => `<option value="${r.id}" ${d.branch === r.id ? "selected" : ""}>${esc(r.name)}</option>`)
-                      .join("")}</optgroup>`
-                )
-                .join("")}
-            </select>
-            <small>${t("f.link.hint")}</small>
-          </div>
         </section>
       </form>
       <footer class="sheet-actions peek-actions">
@@ -715,7 +670,6 @@
       capacity: String(d.capacity).trim() ? Number(d.capacity) : null,
       status: d.status,
       code: d.code,
-      branch: d.branch || undefined,
       does: [],
       bookable: d.status !== "RETIRED",
       hours: null,
@@ -809,13 +763,12 @@
   // What still points at a resource. Bookings keep the resource they used, so a
   // resource with any is retired, not deleted (the server answers 409 too).
   function usesOf(r) {
-    const links = RESOURCES.filter((other) => other.branch === r.id).length;
-    const bookings = BOOKINGS.filter((b) => b.branch === r.id || "p" + b.staff === r.id).length;
-    return { links, bookings, any: links + bookings > 0 };
+    const bookings = BOOKINGS.filter((b) => "p" + b.staff === r.id).length;
+    return { bookings, any: bookings > 0 };
   }
 
-  function usesText({ links, bookings }) {
-    return [links && t("uses.links", { n: links }), bookings && t("uses.bookings", { n: bookings })].filter(Boolean).join(t("uses.and"));
+  function usesText({ bookings }) {
+    return [bookings && t("uses.bookings", { n: bookings })].filter(Boolean).join(t("uses.and"));
   }
 
   function openPeek(kind, id) {
@@ -854,8 +807,7 @@
   function resourcePeekHTML() {
     const d = state.peek.draft;
     const type = typeOf(d.type);
-    const branch = d.branch && RESOURCES.find((r) => r.id === d.branch);
-    const linkable = RESOURCES.filter((r) => r.id !== d.id && r.status !== "RETIRED" && r.branch !== d.id);
+    const branch = d.branch && BRANCHES.find((b) => b.id === d.branch);
     const uses = usesOf(d);
     const isPerson = type?.asks === "who";
     const off = [...d.off].sort((a, b) => a.from.localeCompare(b.from));
@@ -904,13 +856,6 @@
               <label for="p-capacity">${t("f.capacity")}</label>
               <input class="input" id="p-capacity" data-p="capacity" inputmode="numeric" value="${esc(d.capacity ?? "")}" placeholder="${t("f.capacity.ph")}" ${pInvalid("capacity", "p-capacity")} />
               ${pErr("capacity", "p-capacity")}
-            </div>
-            <div class="field">
-              <label for="p-link">${t("f.link")}</label>
-              <select class="input" id="p-link" data-p="branch">
-                <option value="">${t("f.link.none")}</option>
-                ${linkable.map((r) => `<option value="${r.id}" ${d.branch === r.id ? "selected" : ""}>${esc(r.name)}</option>`).join("")}
-              </select>
             </div>
           </div>
           <div class="field">
@@ -1202,7 +1147,7 @@
     else if (el.id === "p-bookable") p.draft.bookable = el.checked;
     else if (el.dataset.svc) {
       p.draft.does = SERVICE_ORDER.filter((id) => (id === el.dataset.svc ? el.checked : p.draft.does.includes(id)));
-    } else if (el.id === "p-type" || el.id === "p-link") {
+    } else if (el.id === "p-type") {
       // Both change what the peek shows (the account field, the hours' default).
       return renderPeek();
     } else return;
