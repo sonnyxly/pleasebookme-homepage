@@ -27,29 +27,17 @@
   margin: 0 var(--space-1) var(--space-3);
 }
 
-.head::after {
-  content: "";
-  order: 3;
-  flex-basis: 100%;
-  height: 0;
-}
-
+/* One row since 8 November: the date buttons, the date they stand for, what the
+   calendar shows, and the two actions at the right. No page title. */
 .head h1 {
-  order: 0;
-  margin: 0 var(--space-2-5) 0 0;
-  font-family: var(--font-display);
-  font-weight: var(--fw-extrabold);
-  font-size: var(--text-title);
-  line-height: 1.2;
-  letter-spacing: -0.015em;
-}
-
-.head p {
   order: 1;
-  flex: 1 1 260px;
-  margin: 0;
-  font-size: var(--text-body);
-  color: var(--muted);
+  margin: 0 var(--space-2) 0 var(--space-1);
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--text-lead);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 /* ---------- Toolbar ---------- */
@@ -59,19 +47,20 @@
 }
 
 .toolbar > * {
-  order: 4;
+  order: 2;
 }
 
 .toolbar [data-block] {
-  order: 2;
+  order: 3;
   margin-left: auto;
 }
 
 .toolbar [data-add] {
-  order: 3;
+  order: 4;
 }
 
 .datenav {
+  order: 0 !important;
   display: flex;
   align-items: center;
   gap: var(--space-1);

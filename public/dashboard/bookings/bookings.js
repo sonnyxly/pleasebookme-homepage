@@ -66,7 +66,7 @@
       add: "Thêm lịch hẹn",
       block: "Chặn giờ",
       todo: "Cần bạn xử lý",
-      "rail.unmarked": "Đã qua, cần cập nhật",
+      "rail.unmarked": "Đã qua, chờ kết quả",
       "rail.unmarked.hint": "Khách đã đến hay không đến? Lịch nằm ở đây cho tới khi bạn ghi lại.",
       "rail.unmarked.empty": "Mọi lịch đã qua đều được ghi lại.",
       "rail.unmarked.more": ({ n }) => `và ${n} lịch nữa`,
@@ -205,13 +205,13 @@
       add: "Add booking",
       block: "Block time",
       todo: "Needs action",
-      "rail.unmarked": "Past, not marked",
+      "rail.unmarked": "Past, awaiting outcome",
       "rail.unmarked.hint": "Did the customer show up? A booking stays here until you mark it.",
-      "rail.unmarked.empty": "Every past booking is marked.",
+      "rail.unmarked.empty": "Every past booking has an outcome.",
       "rail.unmarked.more": ({ n }) => `and ${n} more`,
       "out.done": "Completed",
       "out.noShow": "No-show",
-      "out.wait": "Not marked",
+      "out.wait": "Awaiting outcome",
       "act.done": "Completed",
       "act.noshow": "No-show",
       "act.done.long": "Mark as completed",
@@ -220,7 +220,7 @@
       "act.move": "Reschedule",
       "toast.done": "Marked {name} as completed",
       "toast.noshow": "Marked {name} as no-show",
-      "toast.unmark": "{name}'s booking is not marked",
+      "toast.unmark": "{name}'s booking is awaiting an outcome",
       "form.add": "Add booking",
       "form.move": "Reschedule booking",
       "form.customer": "Customer's name",
@@ -298,10 +298,9 @@
 
   // What a booking's colour can stand for. Status is always there; the others
   // appear only when the shop has more than one of the thing to tell apart.
+  // Colours stand for status only (Trung, 6 November): a colour per person would
+  // really colour a resource, not the staff member, and the data would split.
   const COLOURS = ["status"];
-  if (BRANCHES.length > 1) COLOURS.push("branch");
-  if (STAFF.length > 1) COLOURS.push("staff");
-  if (WIDGETS.length > 1) COLOURS.push("widget");
   const HOUR = 64; // px per hour before the calendar is fitted to its panel
   const HOURS = (CLOSE - OPEN) / 60;
   const SHORT_PX = 40; // a block shorter than this shows its text on one line
@@ -453,7 +452,6 @@
 
     if (state.range === "day") {
       $("title").textContent = longDate(state.date);
-      $("lede").textContent = t("lede.day", { ...counts, today: offsetOf(state.date) === 0 });
     } else {
       const days = weekDays();
       const sameMonth = days[0].getMonth() === days[6].getMonth();
@@ -461,7 +459,6 @@
         from: fmt(sameMonth ? { day: "numeric" } : { day: "numeric", month: "long" }, days[0]),
         to: fmt({ day: "numeric", month: "long" }, days[6]),
       });
-      $("lede").textContent = t("lede.week", counts);
     }
     document.title = t("doc.title");
   }
@@ -472,6 +469,8 @@
     const unit = state.range;
     // Adding or blocking time needs someone to do the work and something to book.
     const canBook = STAFF.length > 0 && SERVICE_ORDER.length > 0;
+    // The date is the label of the date buttons, not a page title (Trung,
+    // 6 November: Bookings shows the calendar only, as Cal.com does).
     $("toolbar").innerHTML = `
       <div class="datenav">
         <button class="icon-btn" type="button" data-step="-1" aria-label="${t("step.prev." + unit)}">${icon("left")}</button>
@@ -1396,17 +1395,6 @@
             <label for="st-note">${t("st.note")}</label>
             <input class="input" id="st-note" name="note" value="${esc(d.note)}" placeholder="${t("st.note.ph")}" autocomplete="off" />
           </div>
-          ${
-            BRANCHES.length
-              ? `<div class="field">
-            <label for="st-branch">${t("st.branch")}</label>
-            <select class="input" id="st-branch" name="branch">
-              <option value="" ${d.branch ? "" : "selected"}>${t("st.branch.none")}</option>
-              ${BRANCHES.map((b) => `<option value="${b.id}" ${d.branch === b.id ? "selected" : ""}>${esc(b.name)}</option>`).join("")}
-            </select>
-          </div>`
-              : ""
-          }
           <label class="check"><input type="checkbox" name="does" ${d.does ? "checked" : ""} /><span>${t("st.does")}</span></label>
           <div class="field">
             <span class="label" id="st-code-label">${t("st.code")}</span>
@@ -1496,7 +1484,7 @@
       toast(t("ns.added", { name: d.name }));
     } else {
       d.note = clean(data.get("note") || "");
-      d.branch = data.get("branch") || "";
+      d.branch = data.get("branch") ?? d.branch ?? "";
       d.does = data.has("does");
       d.code = Number(data.get("code")) || d.code;
       if (!d.name) return fail("st-name");

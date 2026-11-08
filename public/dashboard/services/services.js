@@ -1152,14 +1152,6 @@
             <label for="st-note">${t("st.note")}</label>
             <input class="input" id="st-note" name="note" value="${esc(d.note)}" placeholder="${t("st.note.ph")}" autocomplete="off" />
           </div>
-          ${
-            BRANCHES.length
-              ? `<div class="field">
-            <label for="st-branch">${t("st.branch")}</label>
-            <select class="input" id="st-branch" name="branch">${option("", t("st.branch.none"), d.branch)}${BRANCHES.map((b) => option(b.id, esc(b.name), d.branch)).join("")}</select>
-          </div>`
-              : ""
-          }
           <div class="field">
             <span class="label" id="st-code-label">${t("st.code")}</span>
             <div class="code-picks" role="radiogroup" aria-labelledby="st-code-label">
@@ -1185,7 +1177,7 @@
     const data = new FormData($("staff-form"));
     d.name = data.get("name").trim();
     d.note = data.get("note").trim();
-    d.branch = data.get("branch") || "";
+    d.branch = data.get("branch") ?? d.branch ?? "";
     d.code = Number(data.get("code")) || d.code;
     if (!d.name) {
       $("st-name").setAttribute("aria-invalid", "true");

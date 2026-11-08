@@ -1686,14 +1686,6 @@
             <input class="input" id="nr-name" name="name" value="${esc(d.name)}" autocomplete="off" aria-describedby="nr-name-error" />
             <span class="error" id="nr-name-error" hidden>${t("nr.name.error")}</span>
           </div>
-          ${
-            homes.length
-              ? `<div class="field">
-            <label for="nr-branch">${t("nr.branch")}</label>
-            <select class="input" id="nr-branch" name="branch">${option("", t("nr.branch.none"), d.branch)}${homes.map((b) => option(b.id, esc(b.name), d.branch)).join("")}</select>
-          </div>`
-              : ""
-          }
           <label class="check"><input type="checkbox" name="does" ${d.does ? "checked" : ""} /><span>${t("nr.does")}</span></label>
           ${codePicks(d.code)}
         </section>
@@ -1777,7 +1769,7 @@
       toast(t("ns.added", { name: d.name }));
     } else {
       d.type = data.get("type");
-      d.branch = data.get("branch") || "";
+      d.branch = data.get("branch") ?? d.branch ?? "";
       d.does = data.has("does");
       d.code = Number(data.get("code")) || d.code;
       if (!d.name) return fail("nr-name");

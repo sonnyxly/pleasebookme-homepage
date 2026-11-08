@@ -123,7 +123,7 @@
       "lg.done": "Đã diễn ra",
       "lg.noshow": "Vắng mặt",
       "lg.cancelled": "Đã huỷ",
-      "lg.waiting": "Chưa cập nhật",
+      "lg.waiting": "Chờ kết quả",
       "lg.prev": "Kỳ so sánh",
       "tip.all": ({ label, n, d, s, c, w, days, p }) =>
         `${label}: ${n} lịch hẹn (${d} đã diễn ra, ${s} vắng mặt, ${c} huỷ${w ? `, ${w} chưa cập nhật` : ""})${days > 1 ? `, gộp ${days} ngày` : ""}. Kỳ so sánh: ${p}.`,
@@ -197,7 +197,7 @@
       "what.customers": "New customers came for the first time in the period. Returning customers had been before. Only customers who actually came are counted.",
       "what.peak": "The two hours in a row in which the most bookings start in a week.",
       "sub.bookings": ({ d, s, c, w }) =>
-        `${d} completed, ${s} ${plural(s, "no-show", "no-shows")}, ${c} canceled${w ? `, ${w} not marked yet` : ""}`,
+        `${d} completed, ${s} ${plural(s, "no-show", "no-shows")}, ${c} canceled${w ? `, ${w} awaiting outcome` : ""}`,
       "sub.util": ({ b, a }) => `${b} hours booked out of ${a} working hours`,
       "sub.lost": ({ c, s, n }) => `${c} canceled and ${s} ${plural(s, "no-show", "no-shows")}, out of ${n} bookings`,
       "sub.customers": ({ back, all }) => `${back} returning. ${all} customers came in all`,
@@ -247,10 +247,10 @@
       "lg.done": "Completed",
       "lg.noshow": "No-show",
       "lg.cancelled": "Canceled",
-      "lg.waiting": "Not marked",
+      "lg.waiting": "Awaiting outcome",
       "lg.prev": "Comparison period",
       "tip.all": ({ label, n, d, s, c, w, days, p }) =>
-        `${label}: ${n} ${plural(n, "booking", "bookings")} (${d} completed, ${s} ${plural(s, "no-show", "no-shows")}, ${c} canceled${w ? `, ${w} not marked yet` : ""})${days > 1 ? `, ${days} days added up` : ""}. Comparison period: ${p}.`,
+        `${label}: ${n} ${plural(n, "booking", "bookings")} (${d} completed, ${s} ${plural(s, "no-show", "no-shows")}, ${c} canceled${w ? `, ${w} awaiting outcome` : ""})${days > 1 ? `, ${days} days added up` : ""}. Comparison period: ${p}.`,
       "tip.one": ({ label, v, word, n, days, p }) =>
         `${label}: ${v} ${word}, out of ${n} ${plural(n, "booking", "bookings")}${days > 1 ? ` over ${days} days` : ""}. Comparison period: ${p}.`,
       "word.done": "completed",
