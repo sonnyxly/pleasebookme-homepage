@@ -7,7 +7,9 @@
        other types the shop adds).
      - For every one of those, the widget either fixes it or leaves it for the
        customer to choose. A widget for one branch skips the branch question;
-       a general one asks it first. The same goes for services and resources.
+       a general one asks it. The same goes for services and resources.
+     - Services come first (Sonny, 11 November): the customer says what they
+       want, then the date, the branch that can do it, the time, the person.
      - The same widget can sit in several places: its own link (with a QR
        code), inside a page of a website, or behind a pop-up button. The shop's
        main link is simply its default widget.
@@ -78,10 +80,10 @@
       "tab.price": "Giá riêng",
       "scope.lede": "Widget này mở ra phần nào của tiệm. Thứ gì chỉ còn một lựa chọn thì khách không phải chọn nữa.",
       "g.resources": "Tài nguyên",
-      "g.resources.lede": "Chi nhánh, nhân viên và chỗ là tài nguyên: các lớp đặt lên trên dịch vụ. Tiệm không dùng lớp nào thì khách không bị hỏi về lớp đó.",
+      "g.resources.lede": "Chi nhánh, nhân viên và chỗ là các lớp đặt lên trên dịch vụ (chi nhánh không phải tài nguyên). Tiệm không dùng lớp nào thì khách không bị hỏi về lớp đó.",
       "g.branches": "Chi nhánh",
       "g.services": "Dịch vụ",
-      "branches.many": "Khách chọn chi nhánh ngay sau khi chọn ngày, rồi thấy dịch vụ ở đó.",
+      "branches.many": "Khách chọn dịch vụ trước, rồi ngày, rồi một chi nhánh làm được các dịch vụ ấy.",
       "branches.one": ({ name }) => `Khách vào thẳng chi nhánh ${name}.`,
       "branches.none": "Chọn ít nhất một chi nhánh.",
       "auto.branches": "Tự thêm chi nhánh mới mở",
@@ -240,10 +242,10 @@
       "tab.price": "Pricing",
       "scope.lede": "Which part of the shop this widget opens. Anything left with one option is not asked.",
       "g.resources": "Resources",
-      "g.resources.lede": "Branches, staff and places are resources: layers on top of the services. A layer the shop does not use is never asked about.",
+      "g.resources.lede": "Branches, staff and places are layers on top of the services (a branch is not a resource). A layer the shop does not use is never asked about.",
       "g.branches": "Branches",
       "g.services": "Services",
-      "branches.many": "The customer chooses a branch right after the date, then sees its services.",
+      "branches.many": "The customer picks the services first, then the date, then a branch that does them.",
       "branches.one": ({ name }) => `The customer goes straight to the ${name} branch.`,
       "branches.none": "Choose at least one branch.",
       "auto.branches": "Add newly opened branches automatically",
@@ -552,8 +554,9 @@
     pv: null, // where the preview's pretend customer has got to
     openedAs: null, // the id the editor was opened with ("new" stays "new" after the first save)
   };
-  // The order is the customer's: a date, then (if the shop has them) a branch,
-  // the services, a time that fits them, and only then, if they wish, a person.
+  // The order is the customer's: the services first (11 November), then a date,
+  // a branch that does them (if the shop has several), a time that fits them,
+  // and only then, if they wish, a person.
   const freshPreview = () => ({
     i: 0,
     date: null,
@@ -631,9 +634,12 @@
     // time are always asked. A resource adds a question only when there is
     // more than one to choose from, and the person comes last because it is
     // the one question the customer may skip.
-    const steps = ["date"];
-    if (branches.length > 1) steps.push("branch");
+    // Services lead (Sonny, 11 November): what the customer wants decides
+    // which branches, times and people can serve it.
+    const steps = [];
     if (offered.length > 1) steps.push("services");
+    steps.push("date");
+    if (branches.length > 1) steps.push("branch");
     steps.push("time");
     if (w.people.pick === "customer" && people.length > 1) steps.push("person");
     if (w.places.pick === "customer" && places.length > 1) steps.push("place");
@@ -1274,7 +1280,10 @@
     } else if (step === "branch") {
       title = p("branch");
       ready = branchId !== null;
+      // Only branches with someone who does every chosen service.
+      const serves = (b) => !sc.staffed || pv.basket.every((id) => sc.people.some((r) => (!r.branch || r.branch === b.id) && r.does.includes(id)));
       body = sc.branches
+        .filter(serves)
         .map(
           (b) => `<button type="button" class="pv-opt${b.id === branchId ? " is-on" : ""}" data-pv-branch="${b.id}" data-focus="pvb${b.id}" aria-pressed="${
             b.id === branchId
